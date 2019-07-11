@@ -8,11 +8,13 @@
  * License: GPL2
  * Text Domain: newspack-content-converter
  * Domain Path: /languages/
+ *
+ * @package Newspack
  */
 
 defined( 'ABSPATH' ) || exit;
 
-if ( ! class_exists('\NewspackContentConverter\Converter') ) {
+if ( ! class_exists( '\NewspackContentConverter\Converter' ) ) {
 	include_once dirname( __FILE__ ) . '/lib/class-converter.php';
 }
 
