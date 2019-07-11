@@ -6,8 +6,8 @@ import { render } from '@wordpress/element';
 /**
  * Internal dependencies.
  */
-import ContentConverter from './components/src/content-converter';
-import * as serviceWorker from './serviceWorker';
+import ContentConverter from './content-converter';
+import * as serviceWorker from './service-worker';
 
 window.onload = function() {
   document.getElementsByClassName( 'edit-post-header' )[ 0 ].style.display = 'none';

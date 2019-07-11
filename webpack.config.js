@@ -9,7 +9,7 @@ const path = require( 'path' );
 const webpackConfig = getBaseWebpackConfig(
 	{ WP: true },
 	{
-		entry: './src/',
+		entry: './assets/src/',
 		'output-path': path.join( __dirname, 'assets', 'dist' ),
 	}
 );
