@@ -32,6 +32,8 @@
     ]
   },
   "devDependencies": {
-    "cra-build-watch": "^1.4.1"
+    "cra-build-watch": "^1.4.1",
+    "eslint": "^6.0.1",
+    "prettier": "https://github.com/Automattic/wp-prettier/releases/download/wp-1.16.4/wp-prettier-1.16.4.tgz"
   }
 }
