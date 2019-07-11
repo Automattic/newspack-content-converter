@@ -1,39 +1,21 @@
 {
-  "name": "ra",
+  "name": "newspack-content-converter",
   "version": "0.1.0",
   "private": true,
-  "dependencies": {
-    "@wordpress/element": "^2.5.0",
-    "@wordpress/i18n": "^3.5.0",
-    "react": "^16.8.6",
-    "react-dom": "^16.8.6",
-    "react-scripts": "3.0.1"
-  },
+  "dependencies": {},
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject",
-    "watch": "cra-build-watch"
-  },
-  "eslintConfig": {
-    "extends": "react-app"
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
+    "build:webpack": "calypso-build --config='./webpack.config.js'",
+    "clean": "rm -rf assets/dist/"
   },
   "devDependencies": {
-    "cra-build-watch": "^1.4.1",
-    "eslint": "^6.0.1",
-    "prettier": "https://github.com/Automattic/wp-prettier/releases/download/wp-1.16.4/wp-prettier-1.16.4.tgz"
+    "@automattic/calypso-build": "^2.0.0",
+    "@babel/core": "^7.4.0",
+    "@wordpress/blocks": "^6.2.0",
+    "@wordpress/browserslist-config": "^2.2.2",
+    "@wordpress/data": "^4.6.0",
+    "@wordpress/element": "^2.3.0",
+    "eslint": "^5.16.0",
+    "prettier": "https://github.com/Automattic/wp-prettier/releases/download/wp-1.16.4/wp-prettier-1.16.4.tgz",
+    "webpack": "^4.29.6"
   }
 }
