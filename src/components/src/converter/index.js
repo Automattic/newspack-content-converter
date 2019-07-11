@@ -1,5 +1,6 @@
 import { createBlock, getBlockContent, rawHandler } from '@wordpress/blocks';
 import { dispatch, select } from '@wordpress/data';
+import apiFetch from '@wordpress/api-fetch';
 
 const NEWSPACK_CONVERTER_API_BASE_URL = '/newspack-content-converter';
 
@@ -74,11 +75,10 @@ export function removeAllBlocks() {
  */
 export function getPostContentById( id ) {
 	return (
-		wp
-			.apiFetch( {
-				path: '/wp/v2/posts?include=' + id,
-				method: 'GET',
-			} )
+		apiFetch( {
+			path: '/wp/v2/posts?include=' + id,
+			method: 'GET',
+		} )
 			// currently fetching 1 post only ; could also .resolve( JSON.stringify( response ) )
 			.then( response => Promise.resolve( response[ 0 ] ) )
 	);
@@ -148,17 +148,15 @@ export function getAllBlocksContents() {
 export function updatePost( data, id ) {
 	const dataEncoded = encodeURIComponent( data );
 
-	return wp
-		.apiFetch( {
-			path: NEWSPACK_CONVERTER_API_BASE_URL + '/update-post',
-			method: 'POST',
-			headers: {
-				Accept: 'application/json, text/javascript, */*; q=0.01',
-				'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-			},
-			body: `id=${ id }&content=${ dataEncoded }`,
-		} )
-		.then( response => Promise.resolve( response ) );
+	return apiFetch( {
+		path: NEWSPACK_CONVERTER_API_BASE_URL + '/update-post',
+		method: 'POST',
+		headers: {
+			Accept: 'application/json, text/javascript, */*; q=0.01',
+			'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+		},
+		body: `id=${ id }&content=${ dataEncoded }`,
+	} ).then( response => Promise.resolve( response ) );
 }
 
 export default {
