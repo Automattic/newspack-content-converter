@@ -1,3 +1,5 @@
+import { createBlock, getBlockContent, rawHandler } from '@wordpress/blocks';
+
 const NEWSPACK_CONVERTER_API_BASE_URL = '/newspack-content-converter';
 
 /**
@@ -90,7 +92,7 @@ export function getPostContentById( id ) {
 export function insertClassicBlockWithContent( data ) {
 	return new Promise( function( resolve, reject ) {
 		const html = data.content.rendered;
-		var block = wp.blocks.createBlock( 'core/freeform' );
+		var block = createBlock( 'core/freeform' );
 		block.attributes.content = html;
 		wp.data.dispatch( 'core/block-editor' ).insertBlocks( block );
 		// --- OR: let block = wp.blocks.createBlock( "core/freeform", { content: 'test' } );
@@ -112,8 +114,8 @@ export function dispatchConvertClassicToBlocks() {
 				if ( block.name === 'core/freeform' ) {
 					wp.data.dispatch( 'core/editor' ).replaceBlocks(
 						block.clientId,
-						wp.blocks.rawHandler( {
-							HTML: wp.blocks.getBlockContent( block ),
+						rawHandler( {
+							HTML: getBlockContent( block ),
 						} )
 					);
 				}
