@@ -1,4 +1,5 @@
 import { createBlock, getBlockContent, rawHandler } from '@wordpress/blocks';
+import { dispatch, select } from '@wordpress/data';
 
 const NEWSPACK_CONVERTER_API_BASE_URL = '/newspack-content-converter';
 
@@ -60,7 +61,7 @@ export function runSinglePost( postId ) {
  */
 export function removeAllBlocks() {
 	return new Promise( function( resolve, reject ) {
-		wp.data.dispatch( 'core/block-editor' ).resetBlocks( [] );
+		dispatch( 'core/block-editor' ).resetBlocks( [] );
 		resolve();
 	} );
 }
@@ -94,7 +95,7 @@ export function insertClassicBlockWithContent( data ) {
 		const html = data.content.rendered;
 		var block = createBlock( 'core/freeform' );
 		block.attributes.content = html;
-		wp.data.dispatch( 'core/block-editor' ).insertBlocks( block );
+		dispatch( 'core/block-editor' ).insertBlocks( block );
 		// --- OR: let block = wp.blocks.createBlock( "core/freeform", { content: 'test' } );
 		resolve();
 	} );
@@ -107,12 +108,11 @@ export function insertClassicBlockWithContent( data ) {
  */
 export function dispatchConvertClassicToBlocks() {
 	return new Promise( function( resolve, reject ) {
-		wp.data
-			.select( 'core/block-editor' )
+		select( 'core/block-editor' )
 			.getBlocks()
 			.forEach( function( block, blockIndex ) {
 				if ( block.name === 'core/freeform' ) {
-					wp.data.dispatch( 'core/editor' ).replaceBlocks(
+					dispatch( 'core/editor' ).replaceBlocks(
 						block.clientId,
 						rawHandler( {
 							HTML: getBlockContent( block ),
@@ -133,7 +133,7 @@ export function dispatchConvertClassicToBlocks() {
  */
 export function getAllBlocksContents() {
 	return new Promise( function( resolve, reject ) {
-		const allBlocksContents = wp.data.select( 'core/editor' ).getEditedPostContent();
+		const allBlocksContents = select( 'core/editor' ).getEditedPostContent();
 		resolve( allBlocksContents );
 	} );
 }
