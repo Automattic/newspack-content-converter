@@ -1,0 +1,30 @@
+{
+    "name": "automattic/newspack-content-converter",
+    "description": "Plugin that enables mass conversion of pre-Gutenberg post content to the Gutenberg Blocks content.",
+    "type": "wordpress-plugin",
+    "license": "GPL-2.0-or-later",
+    "require": {
+        "composer/installers": "^1.6",
+        "brainmaestro/composer-git-hooks": "^2.7",
+        "xwp/wp-dev-lib": "^1.2"
+    },
+    "require-dev": {
+        "automattic/vipwpcs": "^0.4.0",
+        "wp-coding-standards/wpcs": "*",
+        "dealerdirect/phpcodesniffer-composer-installer": "*",
+        "phpcompatibility/phpcompatibility-wp": "*"
+    },
+    "scripts": {
+        "post-install-cmd": [
+            "vendor/bin/cghooks add --no-lock"
+        ],
+        "post-update-cmd": [
+            "vendor/bin/cghooks update"
+        ]
+    },
+    "extra": {
+        "hooks": {
+            "pre-commit": "./vendor/xwp/wp-dev-lib/scripts/pre-commit"
+        }
+    }
+}

@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<ruleset name="WordPress Coding Standards for Plugins">
+  <description>Generally-applicable sniffs for WordPress plugins</description>
+
+  <rule ref="WordPress-Extra" />
+  <rule ref="WordPress-Docs" />
+  <rule ref="WordPress-VIP-Go" />
+
+  <!--
+  <config name="minimum_supported_wp_version" value="4.6"/>
+  <rule ref="WordPress.WP.I18n">
+    <properties>
+      <property name="text_domain" type="array">
+        <element value="example"/>
+        <element value="default"/>
+      </property>
+    </properties>
+  </rule>
+  <rule ref="WordPress.NamingConventions.PrefixAllGlobals">
+    <properties>
+      <property name="prefixes" type="array">
+        <element value="example"/>
+      </property>
+    </properties>
+  </rule>
+  -->
+
+  <rule ref="PHPCompatibilityWP"/>
+  <config name="testVersion" value="5.6-"/>
+
+  <arg name="extensions" value="php"/>
+
+  <!-- Show sniff codes in all reports -->
+  <arg value="s"/>
+
+  <!-- Allow invoking just `phpcs` on command line without assuming STDIN for file input. -->
+  <file>.</file>
+
+  <exclude-pattern>*/dev-lib/*</exclude-pattern>
+  <exclude-pattern>*/node_modules/*</exclude-pattern>
+  <exclude-pattern>*/vendor/*</exclude-pattern>
+  <exclude-pattern>*/assets/dist/*</exclude-pattern>
+</ruleset>
