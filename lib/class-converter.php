@@ -1,14 +1,29 @@
 <?php
+/**
+ * Convert pre-Gutenberg post content to Gutenberg Blocks
+ *
+ * @package Newspack
+ */
 
 namespace NewspackContentConverter;
 
+/**
+ * Gutenberg Converter Class
+ */
 class Converter {
 
-    private $temp_log_file;
+	/**
+	 * Path to the temporary log file.
+	 *
+	 * @var string
+	 */
+	private $temp_log_file;
 
+	/**
+	 * Initialize the converter.
+	 */
 	public function init() {
-
-	    $this->temp_log_file = dirname( __FILE__ ) . '/../convert.log';
+		$this->temp_log_file = dirname( __FILE__ ) . '/../convert.log';
 
 		$this->add_admin_menu();
 		$this->redirect_page_to_editor();
@@ -18,7 +33,6 @@ class Converter {
 		// TODO: content insertion temporary disabled, since Block Editor automatically saves it as new Drafts...
 		// add_filter( 'default_title', [ $this, 'newspack_content_converter_title' ] );
 		// add_filter( 'default_content', [ $this, 'newspack_content_converter_content' ] );
-
 	}
 
 	/**
@@ -34,9 +48,12 @@ class Converter {
 	 * Plugin tab & page -- currently automatically redirected by $this->newspack_content_converter_redirect().
 	 */
 	private function add_admin_menu() {
-		add_action( 'admin_menu', function() {
-			add_menu_page( 'newspack-content-converter', __( 'Newspack Content Converter' ), 'manage_options', 'newspack-content-converter', 'converter_plugin_page' );
-		} );
+		add_action(
+			'admin_menu',
+			function() {
+				add_menu_page( 'newspack-content-converter', __( 'Newspack Content Converter' ), 'manage_options', 'newspack-content-converter', 'converter_plugin_page' );
+			}
+		);
 	}
 
 	/**
@@ -52,19 +69,21 @@ class Converter {
 	 * Routes' registration.
 	 */
 	private function register_api_routes() {
-
-	    // Endpoint to update converted Post content.
-		add_action( 'rest_api_init', function() {
-			register_rest_route(
-				'newspack-content-converter',
-				'/update-post',
-				[
-					'methods'             => 'POST',
-					'callback'            => [ $this, 'update_converted_post_content' ],
-					'permission_callback' => [ $this, 'newspack_content_converter_rest_permission' ],
-				]
-			);
-		} );
+		// Endpoint to update converted Post content.
+		add_action(
+			'rest_api_init',
+			function() {
+				register_rest_route(
+					'newspack-content-converter',
+					'/update-post',
+					[
+						'methods'             => 'POST',
+						'callback'            => [ $this, 'update_converted_post_content' ],
+						'permission_callback' => [ $this, 'newspack_content_converter_rest_permission' ],
+					]
+				);
+			}
+		);
 	}
 
 	/**
@@ -78,12 +97,17 @@ class Converter {
 
 		// TODO: actually update post content.
 		$this->write_to_log_file(
-			">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> START post_id=" . $id . "\n" .
+			'>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> START post_id=' . $id . '\n' .
 			$content . "\n" .
-			">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> END post_id=" . $id . "\n\n"
+			'>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> END post_id=' . $id . '\n\n'
 		);
 	}
 
+	/**
+	 * Write a message to log file
+	 *
+	 * @param string $msg The message to write.
+	 */
 	private function write_to_log_file( $msg ) {
 
 		$fh = fopen( $this->temp_log_file, 'a' ) or die( "Can't open file" );
@@ -120,10 +144,10 @@ class Converter {
 		global $pagenow;
 
 		if (
-            'admin.php' === $pagenow &&
-            isset( $_GET['page'] ) &&
-            'newspack-content-converter' === $_GET['page']
-        ) {
+			'admin.php' === $pagenow &&
+			isset( $_GET['page'] ) &&
+			'newspack-content-converter' === $_GET['page']
+		) {
 			wp_safe_redirect( admin_url( 'post-new.php?newspack-content-converter' ) );
 			exit;
 		}
@@ -141,7 +165,7 @@ class Converter {
 			return $content;
 		}
 
-		return "<!-- wp:paragraph --><p>". __( 'Please hold...', 'newspack-content-converter' ) ."</p><!-- /wp:paragraph -->";
+		return '<!-- wp:paragraph --><p>' . __( 'Please hold...', 'newspack-content-converter' ) . '</p><!-- /wp:paragraph -->';
 	}
 
 	/**
@@ -204,7 +228,8 @@ class Converter {
 			'newspack-content-converter-script',
 			plugins_url( 'newspack_content_converter_init.js', __FILE__ ),
 			[],
-			filemtime( plugin_dir_path( __FILE__ ) . '/newspack_content_converter_init.js' )
+			filemtime( plugin_dir_path( __FILE__ ) . '/newspack_content_converter_init.js' ),
+			false
 		);
 
 		$js_files = $this->get_all_files_in_dir( plugin_dir_path( __FILE__ ) . './../build/js', '.js' );

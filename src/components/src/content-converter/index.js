@@ -1,23 +1,22 @@
-import React from "react";
+import React from 'react';
 import { Component } from '@wordpress/element';
-import { __ } from "@wordpress/i18n";
+import { __ } from '@wordpress/i18n';
 
-import converter from "./../lib/converter";
-import "./style.css";
+import converter from '../converter';
+import './style.css';
 
 class ContentConverter extends Component {
-
 	/**
 	 * Constructor.
 	 */
 	constructor( props ) {
-		super( props  );
+		super( props );
 
 		this.state = {
 			isActive: false,
-			postIdsCsv: ""
+			postIdsCsv: '',
 		};
-	};
+	}
 
 	/*
 	 * Conversion main handler. Chains promises to ensure sequential async operations execution.
@@ -58,36 +57,29 @@ class ContentConverter extends Component {
 	render() {
 		const { isActive, postIdsCsv } = this.state;
 		const isButtonDisabled = isActive;
-		const labelButton = isActive ? __( "Converting..." ) : __( "Convert" ) ;
+		const labelButton = isActive ? __( 'Converting...' ) : __( 'Convert' );
 
 		return (
 			<div id="ncc-content">
-				<h1>
-					{ __( "Newspack Content Converter" ) }
-				</h1>
-				<label htmlFor="ncc_post_ids_csv">
-					{ __( "Post IDs CSV" ) }
-				</label>
+				<h1>{ __( 'Newspack Content Converter' ) }</h1>
+				<label htmlFor="ncc_post_ids_csv">{ __( 'Post IDs CSV' ) }</label>
 				<input
 					type="text"
 					id="ncc_post_ids_csv"
-					placeholder={ __( "Post IDs CSV" ) }
+					placeholder={ __( 'Post IDs CSV' ) }
 					value={ postIdsCsv }
 					onChange={ this.handlePostIdsInputChange }
-				>
-				</input>
+				/>
 				<input
 					type="submit"
 					id="ncc_run_button"
 					value={ labelButton }
-					onClick={ ( event ) => this.handleOnClick( event ) }
+					onClick={ event => this.handleOnClick( event ) }
 					disabled={ isButtonDisabled }
-				>
-				</input>
+				/>
 			</div>
 		);
 	}
-
-};
+}
 
 export default ContentConverter;
