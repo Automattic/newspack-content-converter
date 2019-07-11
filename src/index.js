@@ -1,5 +1,5 @@
 import { render } from '@wordpress/element';
-import App from './App';
+import ContentConverter from './components/src/content-converter';
 import * as serviceWorker from './serviceWorker';
 
 window.onload = function() {
@@ -10,7 +10,7 @@ window.onload = function() {
     .getElementsByClassName( 'edit-post-header' )[ 0 ]
     .insertAdjacentHTML( 'afterend', '<div id="root"></div>' );
 
-  render( <App />, document.getElementById( 'root' ) );
+  render( <ContentConverter />, document.getElementById( 'root' ) );
 }
 
 // If you want your app to work offline and load faster, you can change
