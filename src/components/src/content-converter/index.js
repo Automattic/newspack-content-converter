@@ -2,7 +2,7 @@ import React from 'react';
 import { Component } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
-import converter from './../lib/converter';
+import converter from '../converter';
 import './style.css';
 
 class ContentConverter extends Component {
