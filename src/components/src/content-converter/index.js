@@ -1,6 +1,12 @@
+/**
+ * WordPress dependencies.
+ */
 import { Component } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
+/**
+ * Internal dependencies.
+ */
 import converter from '../converter';
 import './style.css';
 

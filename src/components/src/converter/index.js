@@ -1,6 +1,9 @@
+/**
+ * WordPress dependencies.
+ */
+import apiFetch from '@wordpress/api-fetch';
 import { createBlock, getBlockContent, rawHandler } from '@wordpress/blocks';
 import { dispatch, select } from '@wordpress/data';
-import apiFetch from '@wordpress/api-fetch';
 
 const NEWSPACK_CONVERTER_API_BASE_URL = '/newspack-content-converter';
 
