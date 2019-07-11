@@ -1,4 +1,11 @@
+/**
+ * WordPress dependencies.
+ */
 import { render } from '@wordpress/element';
+
+/**
+ * Internal dependencies.
+ */
 import ContentConverter from './components/src/content-converter';
 import * as serviceWorker from './serviceWorker';
 
