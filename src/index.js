@@ -1,9 +1,17 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
+import { render } from '@wordpress/element';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 
-ReactDOM.render( <App />, document.getElementById( 'root' ) );
+window.onload = function() {
+  document.getElementsByClassName( 'edit-post-header' )[ 0 ].style.display = 'none';
+  document.getElementsByClassName( 'edit-post-layout__content' )[ 0 ].style.display = 'none';
+  document.getElementsByClassName( 'edit-post-sidebar' )[ 0 ].style.display = 'none';
+  document
+    .getElementsByClassName( 'edit-post-header' )[ 0 ]
+    .insertAdjacentHTML( 'afterend', '<div id="root"></div>' );
+
+  render( <App />, document.getElementById( 'root' ) );
+}
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
