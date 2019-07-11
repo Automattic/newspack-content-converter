@@ -7,7 +7,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies.
  */
-import converter from '../converter';
+import { runMultiplePosts } from '../utilities';
 import './style.css';
 
 class ContentConverter extends Component {
@@ -22,7 +22,6 @@ class ContentConverter extends Component {
 			postIdsCsv: '',
 		};
 	}
-
 	/*
 	 * Conversion main handler. Chains promises to ensure sequential async operations execution.
 	 */
@@ -37,7 +36,7 @@ class ContentConverter extends Component {
 			.then( () => {
 				const { postIdsCsv } = this.state;
 
-				return converter.runMultiplePosts( postIdsCsv );
+				return runMultiplePosts( postIdsCsv );
 			} )
 			.then( () => {
 				return new Promise( ( resolve, reject ) => {
