@@ -226,18 +226,18 @@ class Converter {
 
 		wp_enqueue_script(
 			'newspack-content-converter-script',
-			plugins_url( 'newspack_content_converter_init.js', __FILE__ ),
+			plugins_url( '../assets/dist/main.js', __FILE__ ),
 			[],
-			filemtime( plugin_dir_path( __FILE__ ) . '/newspack_content_converter_init.js' ),
+			filemtime( plugin_dir_path( __FILE__ ) . '../assets/dist/main.js' ),
 			false
 		);
 
-		$js_files = $this->get_all_files_in_dir( plugin_dir_path( __FILE__ ) . './../build/js', '.js' );
-		foreach ( $js_files as $key => $js_file ) {
-			$js_files[ $key ] = '/wp-content/plugins/newspack-content-converter/build/js/' . $js_file;
-		}
-
-		wp_localize_script( 'newspack-content-converter-script', 'converterScriptResources', $js_files );
+		wp_enqueue_style(
+			'newspack-content-converter-script',
+			plugins_url( '../assets/dist/main.css', __FILE__ ),
+			[],
+			filemtime( plugin_dir_path( __FILE__ ) . '../assets/dist/main.css' )
+		);
 	}
 
 }
