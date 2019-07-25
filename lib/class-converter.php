@@ -7,6 +7,8 @@
 
 namespace NewspackContentConverter;
 
+use \NewspackContentConverter\ContentPatcher\PatchHandler;
+
 /**
  * Gutenberg Converter Class
  */
@@ -20,19 +22,22 @@ class Converter {
 	private $temp_log_file;
 
 	/**
+	 * @var PatchHandler
+	 */
+	private $patcher_handler;
+
+	/**
 	 * Initialize the converter.
 	 */
-	public function init() {
+	public function __construct( PatchHandler $patcher_handler ) {
+
 		$this->temp_log_file = dirname( __FILE__ ) . '/../convert.log';
+		$this->patcher_handler = $patcher_handler;
 
 		$this->add_admin_menu();
 		$this->redirect_page_to_editor();
 		$this->enqueue_newspack_block_editor_assets();
 		$this->register_api_routes();
-
-		// TODO: content insertion temporary disabled, since Block Editor automatically saves it as new Drafts...
-		// add_filter( 'default_title', [ $this, 'newspack_content_converter_title' ] );
-		// add_filter( 'default_content', [ $this, 'newspack_content_converter_content' ] );
 	}
 
 	/**
@@ -92,15 +97,34 @@ class Converter {
 	 * @param WP_REST_Request $params Params: 'id' Post ID, 'content' Post content.
 	 */
 	public function update_converted_post_content( $params ) {
-		$id      = $params->get_param( 'id' );
-		$content = $params->get_param( 'content' );
+		$postId         = $params->get_param( 'postId' );
+		$content_html   = $params->get_param( 'content_html' );
+		$content_blocks = $params->get_param( 'content_blocks' );
+
+		$content_blocks_patched = $this->patch_converted_blocks_content( $content_html, $content_blocks );
 
 		// TODO: actually update post content.
 		$this->write_to_log_file(
-			'>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> START post_id=' . $id . '\n' .
-			$content . "\n" .
-			'>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> END post_id=' . $id . '\n\n'
+			'================= START post_id=' . $postId . "\n" .
+			$postId . "\n" .
+			$content_blocks_patched . "\n" .
+			// print_r($params, true) . "\n" .
+			// $content_html . "\n" .
+			// $content_blocks . "\n" .
+			'================= END post_id=' . $postId . "\n\n"
 		);
+	}
+
+	/**
+	 * Runs patches on converted blocks content.
+	 *
+	 * @param string $content_html
+	 * @param string $content_blocks
+	 *
+	 * @return string|null Patched blocks content.
+	 */
+	private function patch_converted_blocks_content( $content_html, $content_blocks ) {
+		return $this->patcher_handler->run_all_patches( $content_html, $content_blocks );
 	}
 
 	/**
@@ -154,36 +178,6 @@ class Converter {
 	}
 
 	/**
-	 * Assigns custom content to the Block Editor.
-	 *
-	 * @param string $content Default post content.
-	 *
-	 * @return string
-	 */
-	public function newspack_content_converter_content( $content ) {
-		if ( ! $this->is_content_converter_page() ) {
-			return $content;
-		}
-
-		return '<!-- wp:paragraph --><p>' . __( 'Please hold...', 'newspack-content-converter' ) . '</p><!-- /wp:paragraph -->';
-	}
-
-	/**
-	 * Assigns custom title to the Block Editor.
-	 *
-	 * @param string $title Default post title.
-	 *
-	 * @return string Demo title, or the default title.
-	 */
-	public function newspack_content_converter_title( $title ) {
-		if ( ! $this->is_content_converter_page() ) {
-			return $title;
-		}
-
-		return __( 'Newspack content converter', 'newspack-content-converter' );
-	}
-
-	/**
 	 * Gets all files in directory. Can filter results by extension.
 	 *
 	 * @param string      $dir_path         Full path to scan for files.
@@ -227,7 +221,24 @@ class Converter {
 		wp_enqueue_script(
 			'newspack-content-converter-script',
 			plugins_url( '../assets/dist/main.js', __FILE__ ),
-			[],
+			[ 'wp-element', 'wp-components', /*'wp-blocks',*/
+                // TODO: remove those that are unused (list taken gutenberg/docs/contributors/scripts.md)
+                'wp-annotations',
+                'wp-block-editor',
+                'wp-blocks',
+                'wp-components',
+                'wp-compose',
+                'wp-data',
+                'wp-dom-ready',
+                'wp-edit-post',
+                'wp-edit-post',
+                'wp-editor',
+                'wp-element',
+                'wp-hooks',
+                'wp-i18n',
+                'wp-plugins',
+                'wp-rich-text',
+            ],
 			filemtime( plugin_dir_path( __FILE__ ) . '../assets/dist/main.js' ),
 			false
 		);
