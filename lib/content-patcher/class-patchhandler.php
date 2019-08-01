@@ -56,12 +56,10 @@ class PatchHandler implements PatchHandlerInterface {
 	 * @return string|null
 	 */
 	public function run_all_patches( $html_content, $block_content ) {
-		$patched_block_content = $block_content;
-
 		foreach ( $this->patchers as $patcher ) {
-			$patched_block_content = $patcher->patch_blocks_contents( $html_content, $patched_block_content );
+			$block_content = $patcher->patch_blocks_contents( $html_content, $block_content );
 		}
 
-		return $patched_block_content;
+		return $block_content;
 	}
 }
