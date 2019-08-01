@@ -95,7 +95,7 @@ export function getPostContentById( id ) {
  */
 export function insertClassicBlockWithContent( html ) {
 	return new Promise( function( resolve, reject ) {
-		var block = createBlock( 'core/freeform' );
+		const block = createBlock( 'core/freeform' );
 		block.attributes.content = html;
 		dispatch( 'core/block-editor' ).insertBlocks( block );
 		// --- OR: let block = wp.blocks.createBlock( "core/freeform", { content: 'test' } );
