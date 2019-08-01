@@ -150,7 +150,11 @@ export function updatePost( postId, blocks, html ) {
 			Accept: 'application/json, text/javascript, */*; q=0.01',
 			'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
 		},
-		body: `postId=${ postId }&content_blocks=${ blocksEncoded }&content_html=${ htmlEncoded }`,
+		data: {
+			post_id: postId,
+			content_blocks: blocksEncoded,
+			content_html: htmlEncoded
+		},
 	} ).then( response => Promise.resolve( response ) );
 }
 
