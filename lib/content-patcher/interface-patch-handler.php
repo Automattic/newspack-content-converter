@@ -1,4 +1,9 @@
 <?php
+/**
+ * PatchHandlerInterface.
+ *
+ * @package Newspack
+ */
 
 namespace NewspackContentConverter\ContentPatcher;
 
@@ -12,6 +17,6 @@ interface PatchHandlerInterface {
 	 *
 	 * @return string Patched block content.
 	 */
-	public function run_all_patches( string $html_content, string $block_content ) : ?string;
+	public function run_all_patches( $html_content, $block_content );
 
 }

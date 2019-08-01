@@ -22,16 +22,20 @@ class Converter {
 	private $temp_log_file;
 
 	/**
+	 * The PatchHandler.
+	 *
 	 * @var PatchHandler
 	 */
 	private $patcher_handler;
 
 	/**
-	 * Initialize the converter.
+	 * Constructor.
+	 *
+	 * @param PatchHandler $patcher_handler The PatchHandler.
 	 */
 	public function __construct( PatchHandler $patcher_handler ) {
 
-		$this->temp_log_file = dirname( __FILE__ ) . '/../convert.log';
+		$this->temp_log_file   = dirname( __FILE__ ) . '/../convert.log';
 		$this->patcher_handler = $patcher_handler;
 
 		$this->add_admin_menu();
@@ -46,7 +50,7 @@ class Converter {
 	 * @return bool
 	 */
 	private function is_content_converter_page() {
-		return isset( $_GET[ 'newspack-content-converter' ] );
+		return isset( $_GET['newspack-content-converter'] );
 	}
 
 	/**
@@ -97,7 +101,7 @@ class Converter {
 	 * @param WP_REST_Request $params Params: 'id' Post ID, 'content' Post content.
 	 */
 	public function update_converted_post_content( $params ) {
-		$postId         = $params->get_param( 'postId' );
+		$post_id        = $params->get_param( 'postId' );
 		$content_html   = $params->get_param( 'content_html' );
 		$content_blocks = $params->get_param( 'content_blocks' );
 
@@ -105,21 +109,21 @@ class Converter {
 
 		// TODO: actually update post content.
 		$this->write_to_log_file(
-			'================= START post_id=' . $postId . "\n" .
-			$postId . "\n" .
+			'================= START post_id=' . $post_id . "\n" .
+			$post_id . "\n" .
 			$content_blocks_patched . "\n" .
 			// print_r($params, true) . "\n" .
 			// $content_html . "\n" .
 			// $content_blocks . "\n" .
-			'================= END post_id=' . $postId . "\n\n"
+			'================= END post_id=' . $post_id . "\n\n"
 		);
 	}
 
 	/**
 	 * Runs patches on converted blocks content.
 	 *
-	 * @param string $content_html
-	 * @param string $content_blocks
+	 * @param string $content_html   HTML content.
+	 * @param string $content_blocks Blocks content.
 	 *
 	 * @return string|null Patched blocks content.
 	 */
@@ -133,10 +137,12 @@ class Converter {
 	 * @param string $msg The message to write.
 	 */
 	private function write_to_log_file( $msg ) {
-
+		/*
+		// TODO: remove -- temporarily available for temp debugging purposes.
 		$fh = fopen( $this->temp_log_file, 'a' ) or die( "Can't open file" );
 		fwrite( $fh, $msg );
 		fclose( $fh );
+		 */
 	}
 
 	/**
@@ -199,7 +205,7 @@ class Converter {
 			$files = array_values( $files );
 		}
 
-		return $files ?? [];
+		return isset( $files ) ? $files : [];
 	}
 
 
@@ -221,24 +227,27 @@ class Converter {
 		wp_enqueue_script(
 			'newspack-content-converter-script',
 			plugins_url( '../assets/dist/main.js', __FILE__ ),
-			[ 'wp-element', 'wp-components', /*'wp-blocks',*/
-                // TODO: remove those that are unused (list taken gutenberg/docs/contributors/scripts.md)
-                'wp-annotations',
-                'wp-block-editor',
-                'wp-blocks',
-                'wp-components',
-                'wp-compose',
-                'wp-data',
-                'wp-dom-ready',
-                'wp-edit-post',
-                'wp-edit-post',
-                'wp-editor',
-                'wp-element',
-                'wp-hooks',
-                'wp-i18n',
-                'wp-plugins',
-                'wp-rich-text',
-            ],
+			[
+				'wp-element',
+				'wp-components',
+				// TODO: remove those that are unused (list taken gutenberg/docs/contributors/scripts.md).
+				// 'wp-blocks' .
+				'wp-annotations',
+				'wp-block-editor',
+				'wp-blocks',
+				'wp-components',
+				'wp-compose',
+				'wp-data',
+				'wp-dom-ready',
+				'wp-edit-post',
+				'wp-edit-post',
+				'wp-editor',
+				'wp-element',
+				'wp-hooks',
+				'wp-i18n',
+				'wp-plugins',
+				'wp-rich-text',
+			],
 			filemtime( plugin_dir_path( __FILE__ ) . '../assets/dist/main.js' ),
 			false
 		);
