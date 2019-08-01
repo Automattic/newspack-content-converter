@@ -1,7 +1,17 @@
 <?php
+/**
+ * PatcherInterface to be used by all content patchers.
+ *
+ * @package Newspack
+ */
 
 namespace NewspackContentConverter\ContentPatcher;
 
+/**
+ * Interface PatcherInterface
+ *
+ * @package NewspackContentConverter\ContentPatcher
+ */
 interface PatcherInterface {
 
 	/**
@@ -12,6 +22,6 @@ interface PatcherInterface {
 	 *
 	 * @return string Patched block content.
 	 */
-	public function patch_blocks_contents( string $html_content, string $block_content ) : ?string;
+	public function patch_blocks_contents( $html_content, $block_content );
 
 }
