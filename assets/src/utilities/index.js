@@ -36,24 +36,12 @@ export function runSinglePost( postId ) {
 		.then( () => {
 			console.log( ` ---- ${ postId } ----` );
 		} )
-		.then( () => {
-			return removeAllBlocks();
-		} )
-		.then( () => {
-			return getPostContentById( postId );
-		} )
-		.then( html => {
-			return insertClassicBlockWithContent( html );
-		} )
-		.then( html => {
-			return dispatchConvertClassicToBlocks( html );
-		} )
-		.then( html => {
-			return getAllBlocksContents( postId, html );
-		} )
-		.then( ( [ blocks, html ] ) => {
-			return updatePost( postId, blocks, html );
-		} )
+		.then( () => removeAllBlocks() )
+		.then( () => getPostContentById( postId ) )
+		.then( html => insertClassicBlockWithContent( html ) )
+		.then( html => dispatchConvertClassicToBlocks( html ) )
+		.then( html => getAllBlocksContents( postId, html ) )
+		.then( ( [ blocks, html ] ) => updatePost( postId, blocks, html ) )
 		.then( () => {
 			console.log( ' ---- done ----' );
 		} );
