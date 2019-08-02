@@ -31,8 +31,9 @@ class ImgPatcher extends PatcherAbstract implements PatcherInterface {
 			\s*             # followed by zero or more spaces
 			=               # the equals char
 			\s*             # once again, with possible zero or more spaces
-			["\\\'+]?       # the attribute value starts with a double or a single quote
-			([^"\\\']+.*?)  # and it ends with a double or single quote -- and it is the value we are capturing with the parenthesis
+			["\']           # the attribute value starts with one double or a single quote
+			([^"\']+)       # capture (using parenthesis) the value -- one or more chars except (and up to) double or single quote
+                            # (we don\'t care about the rest of the string, since we\'ve captured the attribute by now)
 		/xim',
 		'replace_blocks_element' => '|\/>|',
 	];
