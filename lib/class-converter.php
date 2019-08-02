@@ -38,10 +38,26 @@ class Converter {
 		$this->temp_log_file   = dirname( __FILE__ ) . '/../convert.log';
 		$this->patcher_handler = $patcher_handler;
 
+		$this->disable_autosave_posts();
 		$this->add_admin_menu();
 		$this->redirect_page_to_editor();
 		$this->enqueue_newspack_block_editor_assets();
 		$this->register_api_routes();
+	}
+
+	/**
+	 * Disables auto-saving on the Plugin's page.
+	 * The Converter plugin works on this page /wp-admin/post-new.php?newspack-content-converter, and the autosave feature
+	 * automatically rewrites this URL to the newly saved draft's post ID.
+	 */
+	private function disable_autosave_posts() {
+		if ( ! $this->is_content_converter_page() ) {
+			return;
+		}
+
+		if ( false === defined( 'AUTOSAVE_INTERVAL' ) ) {
+			define( 'AUTOSAVE_INTERVAL', 60 * 60 * 24 * 5 ); // Seconds.
+		}
 	}
 
 	/**
@@ -101,9 +117,14 @@ class Converter {
 	 * @param WP_REST_Request $params Params: 'id' Post ID, 'content' Post content.
 	 */
 	public function update_converted_post_content( $params ) {
-		$post_id        = $params->get_param( 'postId' );
-		$content_html   = $params->get_param( 'content_html' );
-		$content_blocks = $params->get_param( 'content_blocks' );
+		$json_params    = $params->get_json_params();
+		$post_id        = isset( $json_params['post_id'] ) ? $json_params['post_id'] : null;
+		$content_html   = isset( $json_params['content_html'] ) ? $json_params['content_html'] : null;
+		$content_blocks = isset( $json_params['content_blocks'] ) ? $json_params['content_blocks'] : null;
+
+		if ( ! $post_id || ! $content_html || ! $content_blocks ) {
+			return;
+		}
 
 		$content_blocks_patched = $this->patch_converted_blocks_content( $content_html, $content_blocks );
 
@@ -112,7 +133,7 @@ class Converter {
 			'================= START post_id=' . $post_id . "\n" .
 			$post_id . "\n" .
 			$content_blocks_patched . "\n" .
-			// print_r($params, true) . "\n" .
+			// print_r( $json_params, true ) . "\n" .
 			// $content_html . "\n" .
 			// $content_blocks . "\n" .
 			'================= END post_id=' . $post_id . "\n\n"
@@ -182,32 +203,6 @@ class Converter {
 			exit;
 		}
 	}
-
-	/**
-	 * Gets all files in directory. Can filter results by extension.
-	 *
-	 * @param string      $dir_path         Full path to scan for files.
-	 * @param string|null $extension_filter If provided, only returns files with this extension.
-	 *
-	 * @return array Files found in the directory.
-	 */
-	private function get_all_files_in_dir( $dir_path, $extension_filter = null ) {
-		$files = scandir( $dir_path );
-		$files = array_diff( scandir( $dir_path ), [ '.', '..' ] );
-
-		if ( $extension_filter ) {
-			foreach ( $files as $key => $file ) {
-				$file_extension = substr( $file, -1 * strlen( $extension_filter ) );
-				if ( strtolower( $extension_filter ) !== strtolower( $file_extension ) ) {
-					unset( $files[ $key ] );
-				}
-			}
-			$files = array_values( $files );
-		}
-
-		return isset( $files ) ? $files : [];
-	}
-
 
 	/**
 	 * Enqueues Block Editor assets for NCC.

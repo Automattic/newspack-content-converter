@@ -17,8 +17,11 @@ export function runMultiplePosts( postIdsCsv ) {
 	const postIds = postIdsCsv.split( ',' );
 
 	var result = Promise.resolve();
-	postIds.forEach( postId => {
-		result = result.then( () => runSinglePost( postId ) );
+	postIds.forEach( ( postId, key ) => {
+		result = result.then( () => {
+			console.log( `converting ${ postId }, ${ key + 1 }/${ postIds.length } ` );
+			return runSinglePost( postId );
+		} );
 	} );
 
 	return result;
@@ -33,18 +36,12 @@ export function runMultiplePosts( postIdsCsv ) {
  */
 export function runSinglePost( postId ) {
 	return Promise.resolve()
-		.then( () => {
-			console.log( ` ---- ${ postId } ----` );
-		} )
 		.then( () => removeAllBlocks() )
 		.then( () => getPostContentById( postId ) )
 		.then( html => insertClassicBlockWithContent( html ) )
 		.then( html => dispatchConvertClassicToBlocks( html ) )
 		.then( html => getAllBlocksContents( postId, html ) )
-		.then( ( [ blocks, html ] ) => updatePost( postId, blocks, html ) )
-		.then( () => {
-			console.log( ' ---- done ----' );
-		} );
+		.then( ( [ blocks, html ] ) => updatePost( postId, blocks, html ) );
 }
 
 /**
@@ -54,7 +51,7 @@ export function runSinglePost( postId ) {
 export function removeAllBlocks() {
 	return new Promise( function( resolve, reject ) {
 		dispatch( 'core/block-editor' ).resetBlocks( [] );
-		resolve();
+		return resolve();
 	} );
 }
 
@@ -140,9 +137,6 @@ export function getAllBlocksContents( postId, html ) {
  * @returns {*}
  */
 export function updatePost( postId, blocks, html ) {
-	const blocksEncoded = encodeURIComponent( blocks );
-	const htmlEncoded = encodeURIComponent( html );
-
 	return apiFetch( {
 		path: NEWSPACK_CONVERTER_API_BASE_URL + '/update-post',
 		method: 'POST',
@@ -152,8 +146,8 @@ export function updatePost( postId, blocks, html ) {
 		},
 		data: {
 			post_id: postId,
-			content_blocks: blocksEncoded,
-			content_html: htmlEncoded
+			content_blocks: blocks,
+			content_html: html
 		},
 	} ).then( response => Promise.resolve( response ) );
 }

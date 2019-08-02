@@ -49,8 +49,8 @@ class ContentConverter extends Component {
 	/*
 	 * handlePostIdsInputChange().
 	 */
-	handlePostIdsInputChange = ( { currentTarget: input } ) => {
-		const postIdsCsv = input.value;
+	handleOnChangeIds = event => {
+		const postIdsCsv = event.target.value;
 
 		this.setState( { postIdsCsv } );
 	};
@@ -67,12 +67,11 @@ class ContentConverter extends Component {
 			<div id="ncc-content">
 				<h1>{ __( 'Newspack Content Converter' ) }</h1>
 				<label htmlFor="ncc_post_ids_csv">{ __( 'Post IDs CSV' ) }</label>
-				<input
-					type="text"
+				<textarea
 					id="ncc_post_ids_csv"
 					placeholder={ __( 'Post IDs CSV' ) }
 					value={ postIdsCsv }
-					onChange={ this.handlePostIdsInputChange }
+					onChange={ this.handleOnChangeIds }
 				/>
 				<input
 					type="submit"
