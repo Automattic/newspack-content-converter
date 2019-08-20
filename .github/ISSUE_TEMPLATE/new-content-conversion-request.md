@@ -10,6 +10,9 @@ assignees: ''
 **Is your feature request related to a problem? Please describe.**
 A clear and concise description of what the problem is. Ex. I'm seeing this type of HTML code which I believe should be converted into [...]
 
+**Provide the website/source where this problem can be seen**
+Describe where examples of this can be seen.
+
 **Describe the solution you'd like**
 A clear and concise description of what you want to happen.
 
