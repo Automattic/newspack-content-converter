@@ -25,5 +25,8 @@ Give the example of blocks code you'd like the source transformed into.
 **Describe alternatives you've considered**
 Have you considered any alternatives? A clear and concise description of any alternative solutions or features you've considered.
 
+**Screenshots**
+If applicable, add screenshots to help explain your problem.
+
 **Additional context**
 Add any other context or screenshots about the feature request here.
