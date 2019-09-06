@@ -13,16 +13,15 @@ const NEWSPACK_CONVERTER_API_BASE_URL = '/newspack-content-converter';
  * @param string postIdsCsv CSV string of Post IDs.
  * @returns {Promise<void>}
  */
-export function runMultiplePosts( postIdsCsv ) {
-	const postIds = postIdsCsv.split( ',' );
-
+export function runMultiplePosts(postIds) {
 	var result = Promise.resolve();
-	postIds.forEach( ( postId, key ) => {
-		result = result.then( () => {
-			console.log( `converting ${ postId }, ${ key + 1 }/${ postIds.length } ` );
-			return runSinglePost( postId );
-		} );
-	} );
+	postIds.forEach((postId, key) => {
+		postId = parseInt(postId);
+		result = result.then(() => {
+			console.log(`converting ${postId}, ${key + 1}/${postIds.length} `);
+			return runSinglePost(postId);
+		});
+	});
 
 	return result;
 }
@@ -34,14 +33,14 @@ export function runMultiplePosts( postIdsCsv ) {
  * @param postId
  * @returns {Promise<void | never>}
  */
-export function runSinglePost( postId ) {
+export function runSinglePost(postId) {
 	return Promise.resolve()
-		.then( () => removeAllBlocks() )
-		.then( () => getPostContentById( postId ) )
-		.then( html => insertClassicBlockWithContent( html ) )
-		.then( html => dispatchConvertClassicToBlocks( html ) )
-		.then( html => getAllBlocksContents( postId, html ) )
-		.then( ( [ blocks, html ] ) => updatePost( postId, blocks, html ) );
+		.then(() => removeAllBlocks())
+		.then(() => getPostContentById(postId))
+		.then(html => insertClassicBlockWithContent(html))
+		.then(html => dispatchConvertClassicToBlocks(html))
+		.then(html => getAllBlocksContents(postId, html))
+		.then(([blocks, html]) => updatePost(postId, blocks, html));
 }
 
 /**
@@ -49,27 +48,32 @@ export function runSinglePost( postId ) {
  * @returns {Promise<any> | Promise}
  */
 export function removeAllBlocks() {
-	return new Promise( function( resolve, reject ) {
-		dispatch( 'core/block-editor' ).resetBlocks( [] );
+	return new Promise(function(resolve, reject) {
+		dispatch('core/block-editor').resetBlocks([]);
 		return resolve();
-	} );
+	});
 }
 
 /**
- * Fetches contents of a single Post.
+ * Fetches contents of a single Post or Page.
  *
  * @param id
  * @returns string
  */
-export function getPostContentById( id ) {
-	return (
-		apiFetch( {
-			path: '/wp/v2/posts?include=' + id,
-			method: 'GET',
-		} )
-			// currently fetching 1 post only ; could also .resolve( JSON.stringify( response ) )
-			.then( response => Promise.resolve( response[ 0 ].content.rendered ) )
-	);
+export function getPostContentById(id) {
+	return apiFetch({
+		path: NEWSPACK_CONVERTER_API_BASE_URL + '/get-post-content-by-id',
+		method: 'POST',
+		headers: {
+			Accept: 'application/json, text/javascript, */*; q=0.01',
+			'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+		},
+		data: {
+			id: id,
+		},
+	}).then(response => {
+		return Promise.resolve(response);
+	});
 }
 
 /**
@@ -78,14 +82,14 @@ export function getPostContentById( id ) {
  * @param String html HTML source before conversion.
  * @returns {Promise<any> | Promise}
  */
-export function insertClassicBlockWithContent( html ) {
-	return new Promise( function( resolve, reject ) {
-		const block = createBlock( 'core/freeform' );
+export function insertClassicBlockWithContent(html) {
+	return new Promise(function(resolve, reject) {
+		const block = createBlock('core/freeform');
 		block.attributes.content = html;
-		dispatch( 'core/block-editor' ).insertBlocks( block );
+		dispatch('core/block-editor').insertBlocks(block);
 		// --- OR: let block = wp.blocks.createBlock( "core/freeform", { content: 'test' } );
-		resolve( html );
-	} );
+		resolve(html);
+	});
 }
 
 /**
@@ -94,22 +98,22 @@ export function insertClassicBlockWithContent( html ) {
  * @param String html HTML source before conversion.
  * @returns {Promise<any> | Promise}
  */
-export function dispatchConvertClassicToBlocks( html ) {
-	return new Promise( function( resolve, reject ) {
-		select( 'core/block-editor' )
+export function dispatchConvertClassicToBlocks(html) {
+	return new Promise(function(resolve, reject) {
+		select('core/block-editor')
 			.getBlocks()
-			.forEach( function( block, blockIndex ) {
-				if ( block.name === 'core/freeform' ) {
-					dispatch( 'core/editor' ).replaceBlocks(
+			.forEach(function(block, blockIndex) {
+				if (block.name === 'core/freeform') {
+					dispatch('core/editor').replaceBlocks(
 						block.clientId,
-						rawHandler( {
-							HTML: getBlockContent( block ),
-						} )
+						rawHandler({
+							HTML: getBlockContent(block),
+						})
 					);
 				}
-			} );
-		resolve( html );
-	} );
+			});
+		resolve(html);
+	});
 }
 
 /**
@@ -121,11 +125,11 @@ export function dispatchConvertClassicToBlocks( html ) {
  * @param String html HTML source before conversion.
  * @returns {Promise<any> | Promise}
  */
-export function getAllBlocksContents( postId, html ) {
-	return new Promise( function( resolve, reject ) {
-		const allBlocksContents = select( 'core/editor' ).getEditedPostContent();
-		resolve( [ allBlocksContents, html ] );
-	} );
+export function getAllBlocksContents(postId, html) {
+	return new Promise(function(resolve, reject) {
+		const allBlocksContents = select('core/editor').getEditedPostContent();
+		resolve([allBlocksContents, html]);
+	});
 }
 
 /**
@@ -136,9 +140,9 @@ export function getAllBlocksContents( postId, html ) {
  * @param string html   HTML source before conversion.
  * @returns {*}
  */
-export function updatePost( postId, blocks, html ) {
-	return apiFetch( {
-		path: NEWSPACK_CONVERTER_API_BASE_URL + '/update-post',
+export function updatePost(postId, blocks, html) {
+	return apiFetch({
+		path: NEWSPACK_CONVERTER_API_BASE_URL + '/conversion/update-post',
 		method: 'POST',
 		headers: {
 			Accept: 'application/json, text/javascript, */*; q=0.01',
@@ -147,12 +151,101 @@ export function updatePost( postId, blocks, html ) {
 		data: {
 			post_id: postId,
 			content_blocks: blocks,
-			content_html: html
+			content_html: html,
 		},
-	} ).then( response => Promise.resolve( response ) );
+	}).then(response => Promise.resolve(response));
+}
+
+export function fetchConversionBatch() {
+	return apiFetch({
+		path: NEWSPACK_CONVERTER_API_BASE_URL + '/conversion/get-batch-data',
+		method: 'GET',
+		headers: {
+			Accept: 'application/json, text/javascript, */*; q=0.01',
+			'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+		},
+	}).then(response => Promise.resolve(response));
+}
+
+export function fetchSettingsInfo() {
+	return apiFetch({
+		path: NEWSPACK_CONVERTER_API_BASE_URL + '/settings/get-info',
+		method: 'GET',
+		headers: {
+			Accept: 'application/json, text/javascript, */*; q=0.01',
+			'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+		},
+	}).then(response => Promise.resolve(response));
+}
+
+export function fetchConversionInfo() {
+	return apiFetch({
+		path: NEWSPACK_CONVERTER_API_BASE_URL + '/conversion/get-info',
+		method: 'GET',
+		headers: {
+			Accept: 'application/json, text/javascript, */*; q=0.01',
+			'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+		},
+	}).then(response => Promise.resolve(response));
+}
+
+export function postConversionInitialize() {
+	return apiFetch({
+		path: NEWSPACK_CONVERTER_API_BASE_URL + '/conversion/initialize',
+		method: 'POST',
+		headers: {
+			Accept: 'application/json, text/javascript, */*; q=0.01',
+			'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+		},
+		data: {
+			request: 'initialize',
+		},
+	}).then(response => Promise.resolve(response));
+}
+
+export function fetchPatchingInfo() {
+	return apiFetch({
+		path: NEWSPACK_CONVERTER_API_BASE_URL + '/patching/get-info',
+		method: 'GET',
+		headers: {
+			Accept: 'application/json, text/javascript, */*; q=0.01',
+			'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+		},
+	}).then(response => Promise.resolve(response));
+}
+
+export function postPatchingInitialize() {
+	return apiFetch({
+		path: NEWSPACK_CONVERTER_API_BASE_URL + '/patching/initialize',
+		method: 'POST',
+		headers: {
+			Accept: 'application/json, text/javascript, */*; q=0.01',
+			'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+		},
+		data: {
+			request: 'initialize',
+		},
+	}).then(response => Promise.resolve(response));
+}
+
+export function callPatchingProcessNextBatch() {
+	return apiFetch({
+		path: NEWSPACK_CONVERTER_API_BASE_URL + '/patching/process-next-batch',
+		method: 'GET',
+		headers: {
+			Accept: 'application/json, text/javascript, */*; q=0.01',
+			'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+		},
+	}).then(response => Promise.resolve(response));
 }
 
 export default {
 	runSinglePost,
 	runMultiplePosts,
+	fetchConversionBatch,
+	fetchSettingsInfo,
+	fetchConversionInfo,
+	fetchPatchingInfo,
+	postPatchingInitialize,
+	callPatchingProcessNextBatch,
 };
