@@ -188,14 +188,14 @@ class Converter {
 		global $current_screen;
 
 		return isset( $current_screen ) && in_array(
-			$current_screen->id,
-			array(
-				'toplevel_page_ncc-settings',
-				'newspack-content-converter_page_ncc-conversion',
-				'newspack-content-converter_page_ncc-patchers',
-				'admin_page_ncc-content-repatching',
-			)
-		);
+				$current_screen->id,
+				array(
+					'toplevel_page_ncc-settings',
+					'newspack-content-converter_page_ncc-conversion',
+					'newspack-content-converter_page_ncc-patchers',
+					'admin_page_ncc-content-repatching',
+				)
+			);
 	}
 
 	/**
