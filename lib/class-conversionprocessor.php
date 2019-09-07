@@ -300,7 +300,7 @@ class ConversionProcessor {
 	 * @return int|null Number of posts/content processed by a conversion batch.
 	 */
 	public function get_conversion_batch_size() {
-		$batch_size = get_option( Config::get_instance()->get( 'conversion_batch_size' ), null );
+		$batch_size = get_option( Config::get_instance()->get( 'option_conversion_batch_size' ), null );
 
 		return null == $batch_size ? null : (int) $batch_size;
 	}
