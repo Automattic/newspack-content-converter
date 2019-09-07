@@ -79,14 +79,12 @@ class ContentConverter extends Component {
 					<h3>{__('Do not close this page!')}</h3>
 					<ul>
 						<li>
-							•{' '}
 							{__(
 								'This page will occasionally automatically reload, and notify you when the conversion is complete.'
 							)}
 						</li>
-						<li>• {__('If asked to Reload, chose yes.')}</li>
+						<li>{__('If asked to Reload, chose yes.')}</li>
 						<li>
-							•{' '}
 							{__(
 								'You may also carefully open an additional tab to convert another batch in parallel.'
 							)}
