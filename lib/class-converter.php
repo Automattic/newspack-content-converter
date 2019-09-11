@@ -84,14 +84,14 @@ class Converter {
 					__( 'Newspack Content Converter' ),
 					__( 'Newspack Content Converter' ),
 					'manage_options',
-					'ncc-settings',
+					'newspack-content-converter',
 					function () {
 						echo '<div id="ncc-settings"></div>';
 					}
 				);
 
 				add_submenu_page(
-					'ncc-settings',
+					'newspack-content-converter',
 					__( 'Run Conversion' ),
 					__( 'Run Conversion' ),
 					'manage_options',
@@ -102,7 +102,7 @@ class Converter {
 				);
 
 				add_submenu_page(
-					'ncc-settings',
+					'newspack-content-converter',
 					__( 'Re-apply Patchers *dev*' ),
 					__( 'Re-apply Patchers *dev*' ),
 					'manage_options',
@@ -184,17 +184,12 @@ class Converter {
 	 * @return bool
 	 */
 	private function is_current_page_a_plugin_page() {
-		global $current_screen;
+		$current_screen = get_current_screen();
 
-		return isset( $current_screen ) && in_array(
-				$current_screen->id,
-				array(
-					'toplevel_page_ncc-settings',
-					'newspack-content-converter_page_ncc-conversion',
-					'newspack-content-converter_page_ncc-patchers',
-					'admin_page_ncc-content-repatching',
-				)
-			);
+		return isset( $current_screen ) && (
+			false !== strpos( $current_screen->id, 'newspack-content-converter' ) ||
+			'admin_page_ncc-content-repatching' === $current_screen->id
+		);
 	}
 
 	/**
