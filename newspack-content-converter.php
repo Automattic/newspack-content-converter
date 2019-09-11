@@ -27,15 +27,17 @@ require_once dirname( __FILE__ ) . '/dependency-includer-script.php';
 // Construct the app with a dependency graph, without the use of a service container.
 new \NewspackContentConverter\Converter(
 	new \NewspackContentConverter\Installer(),
-	new \NewspackContentConverter\ConversionProcessor(
-		new \NewspackContentConverter\ContentPatcher\PatchHandler(
-			array(
-				new \NewspackContentConverter\ContentPatcher\Patchers\ImgPatcher(),
-				new \NewspackContentConverter\ContentPatcher\Patchers\CaptionImgPatcher(),
-				new \NewspackContentConverter\ContentPatcher\Patchers\ParagraphPatcher(),
-				new \NewspackContentConverter\ContentPatcher\Patchers\BlockquotePatcher(),
-				new \NewspackContentConverter\ContentPatcher\Patchers\VideoPatcher(),
-				new \NewspackContentConverter\ContentPatcher\Patchers\AudioPatcher(),
+	new \NewspackContentConverter\ConverterController(
+		new \NewspackContentConverter\ConversionProcessor(
+			new \NewspackContentConverter\ContentPatcher\PatchHandler(
+				array(
+					new \NewspackContentConverter\ContentPatcher\Patchers\ImgPatcher(),
+					new \NewspackContentConverter\ContentPatcher\Patchers\CaptionImgPatcher(),
+					new \NewspackContentConverter\ContentPatcher\Patchers\ParagraphPatcher(),
+					new \NewspackContentConverter\ContentPatcher\Patchers\BlockquotePatcher(),
+					new \NewspackContentConverter\ContentPatcher\Patchers\VideoPatcher(),
+					new \NewspackContentConverter\ContentPatcher\Patchers\AudioPatcher(),
+				)
 			)
 		)
 	)

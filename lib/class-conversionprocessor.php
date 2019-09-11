@@ -115,7 +115,7 @@ class ConversionProcessor {
 
 		$table_name = Config::get_instance()->get( 'table_name' );
 		$table_name = esc_sql( $table_name );
-		$results = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM {$table_name} WHERE ID = %d;", $post_id ) );
+		$results    = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM {$table_name} WHERE ID = %d;", $post_id ) );
 		if ( ! $results ) {
 			return null;
 		}

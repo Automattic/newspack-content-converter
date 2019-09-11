@@ -12,6 +12,9 @@ if ( ! class_exists( '\NewspackContentConverter\Config' ) ) {
 if ( ! class_exists( '\NewspackContentConverter\Converter' ) ) {
 	include_once dirname( __FILE__ ) . '/lib/class-converter.php';
 }
+if ( ! class_exists( '\NewspackContentConverter\ConverterController' ) ) {
+	include_once dirname( __FILE__ ) . '/lib/class-convertercontroller.php';
+}
 if ( ! class_exists( '\NewspackContentConverter\Installer' ) ) {
 	include_once dirname( __FILE__ ) . '/lib/class-installer.php';
 }
