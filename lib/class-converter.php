@@ -154,7 +154,6 @@ class Converter {
 				'wp-annotations',
 				'wp-block-editor',
 				'wp-blocks',
-				'wp-components',
 				'wp-compose',
 				'wp-data',
 				'wp-dom-ready',
