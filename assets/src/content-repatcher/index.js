@@ -8,7 +8,6 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies.
  */
 import { fetchPatchingInfo, callPatchingProcessNextBatch } from '../utilities';
-import './style.css';
 
 class ContentRepatcher extends Component {
 	/**

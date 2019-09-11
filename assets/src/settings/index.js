@@ -7,7 +7,6 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies.
  */
-import './style.css';
 import { fetchSettingsInfo, runMultiplePosts } from "../utilities";
 
 class Settings extends Component {

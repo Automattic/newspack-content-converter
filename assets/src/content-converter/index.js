@@ -8,7 +8,6 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies.
  */
 import { runMultiplePosts, fetchConversionBatch } from '../utilities';
-import './style.css';
 
 class ContentConverter extends Component {
 	/**
