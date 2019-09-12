@@ -165,7 +165,6 @@ export function fetchConversionInfo() {
 export function postConversionInitialize() {
 	return apiFetch({
 		path: NEWSPACK_CONVERTER_API_BASE_URL + '/conversion/initialize',
-		method: 'POST',
 	}).then(response => Promise.resolve(response));
 }
 
@@ -178,7 +177,6 @@ export function fetchPatchingInfo() {
 export function postPatchingInitialize() {
 	return apiFetch({
 		path: NEWSPACK_CONVERTER_API_BASE_URL + '/patching/initialize',
-		method: 'POST',
 	}).then(response => Promise.resolve(response));
 }
 

@@ -67,7 +67,7 @@ class ConverterController extends WP_REST_Controller {
 			$namespace,
 			'/conversion/initialize',
 			[
-				'methods'             => WP_REST_Server::CREATABLE,
+				'methods'             => WP_REST_Server::READABLE,
 				'callback'            => [ $this, 'api_conversion_initialize' ],
 				'permission_callback' => [ $this, 'newspack_content_converter_rest_permission' ],
 			]
@@ -100,7 +100,7 @@ class ConverterController extends WP_REST_Controller {
 			$namespace,
 			'/patching/initialize',
 			[
-				'methods'             => WP_REST_Server::CREATABLE,
+				'methods'             => WP_REST_Server::READABLE,
 				'callback'            => [ $this, 'api_patching_initialize' ],
 				'permission_callback' => [ $this, 'newspack_content_converter_rest_permission' ],
 			]
