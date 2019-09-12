@@ -169,13 +169,11 @@ class ConverterController extends WP_REST_Controller {
 		$queued_entries        = $this->conversion_processor->get_queued_entries_total_number();
 
 		return [
-			'info' => [
-				'conversionContentTypesCsv'    => $content_types_csv,
-				'conversionContentStatusesCsv' => $content_statuses_csv,
-				'conversionBatchSize'          => $conversion_batch_size,
-				'patchingBatchSize'            => $patching_batch_size,
-				'queuedEntries'                => $queued_entries,
-			],
+			'conversionContentTypesCsv'    => $content_types_csv,
+			'conversionContentStatusesCsv' => $content_statuses_csv,
+			'conversionBatchSize'          => $conversion_batch_size,
+			'patchingBatchSize'            => $patching_batch_size,
+			'queuedEntries'                => $queued_entries,
 		];
 	}
 
@@ -193,13 +191,11 @@ class ConverterController extends WP_REST_Controller {
 		$max_batch             = $this->conversion_processor->get_conversion_max_batch();
 
 		return [
-			'info' => [
-				'isConversionOngoing' => $is_conversion_ongoing ? '1' : '0',
-				'queuedEntries'       => $queued_entries,
-				'conversionBatchSize' => $conversion_batch_size,
-				'queuedBatchesCsv'    => implode( ',', $queued_batches ),
-				'maxBatch'            => $max_batch,
-			],
+			'isConversionOngoing' => $is_conversion_ongoing ? '1' : '0',
+			'queuedEntries'       => $queued_entries,
+			'conversionBatchSize' => $conversion_batch_size,
+			'queuedBatchesCsv'    => implode( ',', $queued_batches ),
+			'maxBatch'            => $max_batch,
 		];
 	}
 
@@ -255,13 +251,11 @@ class ConverterController extends WP_REST_Controller {
 		$queued_entries          = $this->conversion_processor->get_queued_entries_total_number();
 
 		return [
-			'info' => [
-				'isPatchingOngoing'        => $is_patching_ongoing,
-				'queuedBatchesPatchingCsv' => implode( ',', $queued_batches_patching ),
-				'maxBatchPatching'         => $max_batch_patching,
-				'patchingBatchSize'        => $patching_batch_size,
-				'queuedEntries'            => $queued_entries,
-			],
+			'isPatchingOngoing'        => $is_patching_ongoing,
+			'queuedBatchesPatchingCsv' => implode( ',', $queued_batches_patching ),
+			'maxBatchPatching'         => $max_batch_patching,
+			'patchingBatchSize'        => $patching_batch_size,
+			'queuedEntries'            => $queued_entries,
 		];
 
 	}

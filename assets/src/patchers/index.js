@@ -27,8 +27,8 @@ class Patchers extends Component {
 		return Promise.resolve()
 			.then( () => fetchPatchingInfo() )
 			.then( response => {
-				if ( response && response.info ) {
-					const { isPatchingOngoing, queuedBatchesPatchingCsv, maxBatchPatching, patchingBatchSize, queuedEntries } = response.info;
+				if ( response ) {
+					const { isPatchingOngoing, queuedBatchesPatchingCsv, maxBatchPatching, patchingBatchSize, queuedEntries } = response;
 					this.setState( { isPatchingOngoing , queuedBatchesPatchingCsv, maxBatchPatching, patchingBatchSize, queuedEntries } );
 				}
 				return new Promise( ( resolve, reject ) => resolve() );

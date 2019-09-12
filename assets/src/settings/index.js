@@ -29,8 +29,8 @@ class Settings extends Component {
 		return Promise.resolve()
 			.then( () => fetchSettingsInfo() )
 			.then( response => {
-				if ( response && response.info ) {
-					const { conversionContentTypesCsv, conversionContentStatusesCsv, conversionBatchSize, patchingBatchSize, queuedEntries } = response.info;
+				if ( response ) {
+					const { conversionContentTypesCsv, conversionContentStatusesCsv, conversionBatchSize, patchingBatchSize, queuedEntries } = response;
 					this.setState( { conversionContentTypesCsv, conversionContentStatusesCsv, conversionBatchSize, patchingBatchSize, queuedEntries } );
 				}
 				return new Promise( ( resolve, reject ) => resolve() );

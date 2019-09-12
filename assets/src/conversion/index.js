@@ -27,8 +27,8 @@ class Conversion extends Component {
 		return Promise.resolve()
 			.then( () => fetchConversionInfo() )
 			.then( response => {
-				if ( response && response.info ) {
-					const { isConversionOngoing, queuedEntries, conversionBatchSize, queuedBatchesCsv, maxBatch } = response.info;
+				if ( response ) {
+					const { isConversionOngoing, queuedEntries, conversionBatchSize, queuedBatchesCsv, maxBatch } = response;
 					this.setState( { isConversionOngoing, queuedEntries, conversionBatchSize, queuedBatchesCsv, maxBatch } );
 				}
 				return new Promise( ( resolve, reject ) => resolve() );
