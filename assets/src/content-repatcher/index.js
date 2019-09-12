@@ -29,9 +29,8 @@ class ContentRepatcher extends Component {
 		return Promise.resolve()
 			.then( () => fetchPatchingInfo() )
 			.then( response => {
-				if ( response && response.info ) {
-					const { isPatchingOngoing, queuedBatchesPatchingCsv, maxBatchPatching, patchingBatchSize } = response.info;
-
+				if ( response ) {
+					const { isPatchingOngoing, queuedBatchesPatchingCsv, maxBatchPatching, patchingBatchSize } = response;
 					if ( '0' == isPatchingOngoing ) {
 						this.setState( { isActive: false } );
 						console.log( ' ----------------------- FINISHED.' );
@@ -85,7 +84,7 @@ class ContentRepatcher extends Component {
 				<div className="ncc-page">
 					<h1>{ __( 'Content Re-patching...' ) }</h1>
 					<img src="/wp-admin/images/wpspin_light.gif" />
-					&nbsp; { __( 'Now patching next batch' ) } ...
+					&nbsp; { __( 'Now patching the next batch' ) } ...
 					<br />
 
 					<h3>{ __( 'Patching is currently in progress...' ) }</h3>

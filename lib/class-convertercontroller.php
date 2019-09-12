@@ -268,13 +268,6 @@ class ConverterController extends WP_REST_Controller {
 	 * @return array Formatted response.
 	 */
 	public function api_patching_initialize( $params ) {
-		$json_params   = $params->get_json_params();
-		$request_param = isset( $json_params['request'] ) ? $json_params['request'] : null;
-
-		if ( ! $request_param || 'initialize' !== $request_param ) {
-			return;
-		}
-
 		$initialized = $this->conversion_processor->initialize_patching();
 
 		return ( true === $initialized ) ? [ 'result' => 'queued' ] : null;
