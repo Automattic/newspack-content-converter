@@ -162,18 +162,12 @@ class ConverterController extends WP_REST_Controller {
 	 * @return array Info for the settings page.
 	 */
 	public function api_settings_get_info() {
-		$content_types_csv     = $this->conversion_processor->get_conversion_content_types();
-		$content_statuses_csv  = $this->conversion_processor->get_conversion_content_statuses();
-		$conversion_batch_size = $this->conversion_processor->get_conversion_batch_size();
-		$patching_batch_size   = $this->conversion_processor->get_patching_batch_size();
-		$queued_entries        = $this->conversion_processor->get_queued_entries_total_number();
-
 		return rest_ensure_response( [
-			'conversionContentTypesCsv'    => $content_types_csv,
-			'conversionContentStatusesCsv' => $content_statuses_csv,
-			'conversionBatchSize'          => $conversion_batch_size,
-			'patchingBatchSize'            => $patching_batch_size,
-			'queuedEntries'                => $queued_entries,
+			'conversionContentTypesCsv'    => $this->conversion_processor->get_conversion_content_types(),
+			'conversionContentStatusesCsv' => $this->conversion_processor->get_conversion_content_statuses(),
+			'conversionBatchSize'          => $this->conversion_processor->get_conversion_batch_size(),
+			'patchingBatchSize'            => $this->conversion_processor->get_patching_batch_size(),
+			'queuedEntries'                => $this->conversion_processor->get_queued_entries_total_number(),
 		] );
 	}
 
@@ -184,18 +178,12 @@ class ConverterController extends WP_REST_Controller {
 	 * @return array Info for the settings page.
 	 */
 	public function api_conversion_get_info() {
-		$is_conversion_ongoing = $this->conversion_processor->is_conversion_queued();
-		$queued_entries        = $this->conversion_processor->get_queued_entries_total_number();
-		$conversion_batch_size = $this->conversion_processor->get_conversion_batch_size();
-		$queued_batches        = $this->conversion_processor->get_conversion_queued_batches();
-		$max_batch             = $this->conversion_processor->get_conversion_max_batch();
-
 		return rest_ensure_response( [
-			'isConversionOngoing' => $is_conversion_ongoing ? '1' : '0',
-			'queuedEntries'       => $queued_entries,
-			'conversionBatchSize' => $conversion_batch_size,
-			'queuedBatches'       => $queued_batches,
-			'maxBatch'            => $max_batch,
+			'isConversionOngoing' => $this->conversion_processor->is_conversion_queued() ? '1' : '0',
+			'queuedEntries'       => $this->conversion_processor->get_queued_entries_total_number(),
+			'conversionBatchSize' => $this->conversion_processor->get_conversion_batch_size(),
+			'queuedBatches'       => $this->conversion_processor->get_conversion_queued_batches(),
+			'maxBatch'            => $this->conversion_processor->get_conversion_max_batch(),
 		] );
 	}
 
@@ -219,14 +207,10 @@ class ConverterController extends WP_REST_Controller {
 	 * @return array Conversion batch data.
 	 */
 	public function api_conversion_get_batch_data() {
-		$ids        = $this->conversion_processor->set_next_conversion_batch_to_queue();
-		$this_batch = max( $this->conversion_processor->get_conversion_queued_batches() );
-		$max_batch  = $this->conversion_processor->get_conversion_max_batch();
-
 		return rest_ensure_response( [
-			'ids'       => $ids,
-			'thisBatch' => $this_batch,
-			'maxBatch'  => $max_batch,
+			'ids'       => $this->conversion_processor->set_next_conversion_batch_to_queue(),
+			'thisBatch' => max( $this->conversion_processor->get_conversion_queued_batches() ),
+			'maxBatch'  => $this->conversion_processor->get_conversion_max_batch(),
 		] );
 	}
 
@@ -237,18 +221,12 @@ class ConverterController extends WP_REST_Controller {
 	 * @return array Info for the patching page.
 	 */
 	public function api_patching_get_info() {
-		$is_patching_ongoing     = $this->conversion_processor->is_patching_queued();
-		$queued_batches_patching = $this->conversion_processor->get_patching_queued_batches();
-		$max_batch_patching      = $this->conversion_processor->get_patching_max_batch();
-		$patching_batch_size     = $this->conversion_processor->get_patching_batch_size();
-		$queued_entries          = $this->conversion_processor->get_queued_entries_total_number();
-
 		return rest_ensure_response( [
-			'isPatchingOngoing'        => $is_patching_ongoing,
-			'queuedBatchesPatching'    => $queued_batches_patching,
-			'maxBatchPatching'         => $max_batch_patching,
-			'patchingBatchSize'        => $patching_batch_size,
-			'queuedEntries'            => $queued_entries,
+			'isPatchingOngoing'        => $this->conversion_processor->is_patching_queued(),
+			'queuedBatchesPatching'    => $this->conversion_processor->get_patching_queued_batches(),
+			'maxBatchPatching'         => $this->conversion_processor->get_patching_max_batch(),
+			'patchingBatchSize'        => $this->conversion_processor->get_patching_batch_size(),
+			'queuedEntries'            => $this->conversion_processor->get_queued_entries_total_number(),
 		] );
 
 	}
