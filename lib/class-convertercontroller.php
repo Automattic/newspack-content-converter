@@ -46,7 +46,7 @@ class ConverterController extends WP_REST_Controller {
 			'/settings/get-info',
 			[
 				'methods'             => WP_REST_Server::READABLE,
-				'callback'            => [ $this, 'api_settings_get_info' ],
+				'callback'            => [ $this, 'settings_get_info' ],
 				'permission_callback' => [ $this, 'newspack_content_converter_rest_permission' ],
 			]
 		);
@@ -57,7 +57,7 @@ class ConverterController extends WP_REST_Controller {
 			'/conversion/get-info',
 			[
 				'methods'             => WP_REST_Server::READABLE,
-				'callback'            => [ $this, 'api_conversion_get_info' ],
+				'callback'            => [ $this, 'conversion_get_info' ],
 				'permission_callback' => [ $this, 'newspack_content_converter_rest_permission' ],
 			]
 		);
@@ -68,7 +68,7 @@ class ConverterController extends WP_REST_Controller {
 			'/conversion/initialize',
 			[
 				'methods'             => WP_REST_Server::READABLE,
-				'callback'            => [ $this, 'api_conversion_initialize' ],
+				'callback'            => [ $this, 'conversion_initialize' ],
 				'permission_callback' => [ $this, 'newspack_content_converter_rest_permission' ],
 			]
 		);
@@ -79,7 +79,7 @@ class ConverterController extends WP_REST_Controller {
 			'/conversion/get-batch-data',
 			[
 				'methods'             => WP_REST_Server::READABLE,
-				'callback'            => [ $this, 'api_conversion_get_batch_data' ],
+				'callback'            => [ $this, 'conversion_get_batch_data' ],
 				'permission_callback' => [ $this, 'newspack_content_converter_rest_permission' ],
 			]
 		);
@@ -90,7 +90,7 @@ class ConverterController extends WP_REST_Controller {
 			'/patching/get-info',
 			[
 				'methods'             => WP_REST_Server::READABLE,
-				'callback'            => [ $this, 'api_patching_get_info' ],
+				'callback'            => [ $this, 'patching_get_info' ],
 				'permission_callback' => [ $this, 'newspack_content_converter_rest_permission' ],
 			]
 		);
@@ -101,7 +101,7 @@ class ConverterController extends WP_REST_Controller {
 			'/patching/initialize',
 			[
 				'methods'             => WP_REST_Server::READABLE,
-				'callback'            => [ $this, 'api_patching_initialize' ],
+				'callback'            => [ $this, 'patching_initialize' ],
 				'permission_callback' => [ $this, 'newspack_content_converter_rest_permission' ],
 			]
 		);
@@ -112,7 +112,7 @@ class ConverterController extends WP_REST_Controller {
 			'/patching/process-next-batch',
 			[
 				'methods'             => WP_REST_Server::READABLE,
-				'callback'            => [ $this, 'api_patching_process_next_batch' ],
+				'callback'            => [ $this, 'patching_process_next_batch' ],
 				'permission_callback' => [ $this, 'newspack_content_converter_rest_permission' ],
 			]
 		);
@@ -123,7 +123,7 @@ class ConverterController extends WP_REST_Controller {
 			'/get-post-content-by-id/(?P<id>\d+)',
 			[
 				'methods'             => WP_REST_Server::READABLE,
-				'callback'            => [ $this, 'api_get_post_content_by_id' ],
+				'callback'            => [ $this, 'get_post_content_by_id' ],
 				'args'                => [ 'id' ],
 				'permission_callback' => [ $this, 'newspack_content_converter_rest_permission' ],
 			]
@@ -135,7 +135,7 @@ class ConverterController extends WP_REST_Controller {
 			'/conversion/update-post',
 			[
 				'methods'             => WP_REST_Server::CREATABLE,
-				'callback'            => [ $this, 'api_update_converted_post_content' ],
+				'callback'            => [ $this, 'update_converted_post_content' ],
 				'permission_callback' => [ $this, 'newspack_content_converter_rest_permission' ],
 			]
 		);
@@ -162,7 +162,7 @@ class ConverterController extends WP_REST_Controller {
 	 *
 	 * @return array Info for the settings page.
 	 */
-	public function api_settings_get_info() {
+	public function settings_get_info() {
 		return rest_ensure_response( [
 			'conversionContentTypesCsv'    => $this->conversion_processor->get_conversion_content_types(),
 			'conversionContentStatusesCsv' => $this->conversion_processor->get_conversion_content_statuses(),
@@ -178,7 +178,7 @@ class ConverterController extends WP_REST_Controller {
 	 *
 	 * @return array Info for the settings page.
 	 */
-	public function api_conversion_get_info() {
+	public function conversion_get_info() {
 		return rest_ensure_response( [
 			'isConversionOngoing' => $this->conversion_processor->is_conversion_queued() ? '1' : '0',
 			'queuedEntries'       => $this->conversion_processor->get_queued_entries_total_number(),
@@ -195,7 +195,7 @@ class ConverterController extends WP_REST_Controller {
 	 * @param WP_REST_Request $params JSON param, key 'request' with value 'initialize'.
 	 * @return array Formatted response.
 	 */
-	public function api_conversion_initialize() {
+	public function conversion_initialize() {
 		$initialized = $this->conversion_processor->initialize_conversion();
 
 		return ( true === $initialized ) ? rest_ensure_response( [ 'result' => 'queued' ] ) : null;
@@ -207,7 +207,7 @@ class ConverterController extends WP_REST_Controller {
 	 *
 	 * @return array Conversion batch data.
 	 */
-	public function api_conversion_get_batch_data() {
+	public function conversion_get_batch_data() {
 		return rest_ensure_response( [
 			'ids'       => $this->conversion_processor->set_next_conversion_batch_to_queue(),
 			'thisBatch' => max( $this->conversion_processor->get_conversion_queued_batches() ),
@@ -221,7 +221,7 @@ class ConverterController extends WP_REST_Controller {
 	 *
 	 * @return array Info for the patching page.
 	 */
-	public function api_patching_get_info() {
+	public function patching_get_info() {
 		return rest_ensure_response( [
 			'isPatchingOngoing'        => $this->conversion_processor->is_patching_queued(),
 			'queuedBatchesPatching'    => $this->conversion_processor->get_patching_queued_batches(),
@@ -239,7 +239,7 @@ class ConverterController extends WP_REST_Controller {
 	 * @param WP_REST_Request $params JSON param, key 'request' with value 'initialize'.
 	 * @return array Formatted response.
 	 */
-	public function api_patching_initialize() {
+	public function patching_initialize() {
 		$initialized = $this->conversion_processor->initialize_patching();
 
 		return ( true === $initialized ) ? rest_ensure_response( [ 'result' => 'queued' ] ) : null;
@@ -251,7 +251,7 @@ class ConverterController extends WP_REST_Controller {
 	 *
 	 * @return array Formatted response.
 	 */
-	public function api_patching_process_next_batch() {
+	public function patching_process_next_batch() {
 		if ( ! $this->conversion_processor->is_patching_queued() ) {
 			return;
 		}
@@ -278,7 +278,7 @@ class ConverterController extends WP_REST_Controller {
 	 * @param WP_REST_Request $params Request parameters.
 	 * @return array Post content.
 	 */
-	public function api_get_post_content_by_id( $params ) {
+	public function get_post_content_by_id( $params ) {
 		$post_id     = $params['id'];
 
 		return rest_ensure_response( $this->conversion_processor->get_post_content_by_id( $post_id ) );
@@ -290,7 +290,7 @@ class ConverterController extends WP_REST_Controller {
 	 *
 	 * @param WP_REST_Request $params Params: 'id' Post ID, 'content' Post content.
 	 */
-	public function api_update_converted_post_content( $params ) {
+	public function update_converted_post_content( $params ) {
 		$json_params    = $params->get_json_params();
 		$post_id        = isset( $json_params['post_id'] ) ? $json_params['post_id'] : null;
 		$content_html   = isset( $json_params['content_html'] ) ? $json_params['content_html'] : null;
