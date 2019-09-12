@@ -34,8 +34,7 @@ export function runMultiplePosts(postIds) {
  * @returns {Promise<void | never>}
  */
 export function runSinglePost(postId) {
-	return Promise.resolve()
-		.then(() => removeAllBlocks())
+	return removeAllBlocks()
 		.then(() => getPostContentById(postId))
 		.then(html => insertClassicBlockWithContent(html))
 		.then(html => dispatchConvertClassicToBlocks(html))

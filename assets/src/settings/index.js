@@ -26,8 +26,7 @@ class Settings extends Component {
 	}
 
 	componentDidMount() {
-		return Promise.resolve()
-			.then( () => fetchSettingsInfo() )
+		return fetchSettingsInfo()
 			.then( response => {
 				if ( response ) {
 					const { conversionContentTypesCsv, conversionContentStatusesCsv, conversionBatchSize, patchingBatchSize, queuedEntries } = response;

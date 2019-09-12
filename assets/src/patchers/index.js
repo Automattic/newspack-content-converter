@@ -24,8 +24,7 @@ class Patchers extends Component {
 	}
 
 	componentDidMount() {
-		return Promise.resolve()
-			.then( () => fetchPatchingInfo() )
+		return fetchPatchingInfo()
 			.then( response => {
 				if ( response ) {
 					const { isPatchingOngoing, queuedBatchesPatching, maxBatchPatching, patchingBatchSize, queuedEntries } = response;
@@ -36,10 +35,7 @@ class Patchers extends Component {
 	}
 
 	handleOnClickInitializePatching = () => {
-		return Promise.resolve()
-			.then( () => {
-				return postPatchingInitialize();
-			} )
+		return postPatchingInitialize()
 			.then( response => {
 				console.log(response)
 

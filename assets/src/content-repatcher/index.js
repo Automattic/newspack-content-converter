@@ -26,8 +26,7 @@ class ContentRepatcher extends Component {
 	}
 
 	componentDidMount() {
-		return Promise.resolve()
-			.then( () => fetchPatchingInfo() )
+		return fetchPatchingInfo()
 			.then( response => {
 				if ( response ) {
 					const { isPatchingOngoing, queuedBatchesPatching, maxBatchPatching, patchingBatchSize } = response;

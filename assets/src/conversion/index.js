@@ -24,8 +24,7 @@ class Conversion extends Component {
 	}
 
 	componentDidMount() {
-		return Promise.resolve()
-			.then( () => fetchConversionInfo() )
+		return fetchConversionInfo()
 			.then( response => {
 				if ( response ) {
 					const { isConversionOngoing, queuedEntries, conversionBatchSize, queuedBatches, maxBatch } = response;
@@ -37,10 +36,7 @@ class Conversion extends Component {
 	}
 
 	handleOnClickInitializeConversion = () => {
-		return Promise.resolve()
-			.then( () => {
-				return postConversionInitialize();
-			} )
+		return postConversionInitialize()
 			.then( response => {
 				console.log(response)
 

@@ -25,8 +25,7 @@ class ContentConverter extends Component {
 	}
 
 	componentDidMount() {
-		return Promise.resolve()
-			.then(() => fetchConversionBatch())
+		return fetchConversionBatch()
 			.then(response => {
 				if (response && response.ids) {
 					const { ids: postIds, thisBatch, maxBatch } = response;
