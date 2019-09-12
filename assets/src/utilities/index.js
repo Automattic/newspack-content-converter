@@ -63,11 +63,6 @@ export function removeAllBlocks() {
 export function getPostContentById(id) {
 	return apiFetch({
 		path: NEWSPACK_CONVERTER_API_BASE_URL + `/get-post-content-by-id/${id}`,
-		method: 'GET',
-		headers: {
-			Accept: 'application/json, text/javascript, */*; q=0.01',
-			'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-		},
 	}).then(response => {
 		return Promise.resolve(response);
 	});
@@ -141,10 +136,6 @@ export function updatePost(postId, blocks, html) {
 	return apiFetch({
 		path: NEWSPACK_CONVERTER_API_BASE_URL + '/conversion/update-post',
 		method: 'POST',
-		headers: {
-			Accept: 'application/json, text/javascript, */*; q=0.01',
-			'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-		},
 		data: {
 			post_id: postId,
 			content_blocks: blocks,
@@ -156,33 +147,18 @@ export function updatePost(postId, blocks, html) {
 export function fetchConversionBatch() {
 	return apiFetch({
 		path: NEWSPACK_CONVERTER_API_BASE_URL + '/conversion/get-batch-data',
-		method: 'GET',
-		headers: {
-			Accept: 'application/json, text/javascript, */*; q=0.01',
-			'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-		},
 	}).then(response => Promise.resolve(response));
 }
 
 export function fetchSettingsInfo() {
 	return apiFetch({
 		path: NEWSPACK_CONVERTER_API_BASE_URL + '/settings/get-info',
-		method: 'GET',
-		headers: {
-			Accept: 'application/json, text/javascript, */*; q=0.01',
-			'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-		},
 	}).then(response => Promise.resolve(response));
 }
 
 export function fetchConversionInfo() {
 	return apiFetch({
 		path: NEWSPACK_CONVERTER_API_BASE_URL + '/conversion/get-info',
-		method: 'GET',
-		headers: {
-			Accept: 'application/json, text/javascript, */*; q=0.01',
-			'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-		},
 	}).then(response => Promise.resolve(response));
 }
 
@@ -190,21 +166,12 @@ export function postConversionInitialize() {
 	return apiFetch({
 		path: NEWSPACK_CONVERTER_API_BASE_URL + '/conversion/initialize',
 		method: 'POST',
-		headers: {
-			Accept: 'application/json, text/javascript, */*; q=0.01',
-			'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-		},
 	}).then(response => Promise.resolve(response));
 }
 
 export function fetchPatchingInfo() {
 	return apiFetch({
 		path: NEWSPACK_CONVERTER_API_BASE_URL + '/patching/get-info',
-		method: 'GET',
-		headers: {
-			Accept: 'application/json, text/javascript, */*; q=0.01',
-			'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-		},
 	}).then(response => Promise.resolve(response));
 }
 
@@ -212,21 +179,12 @@ export function postPatchingInitialize() {
 	return apiFetch({
 		path: NEWSPACK_CONVERTER_API_BASE_URL + '/patching/initialize',
 		method: 'POST',
-		headers: {
-			Accept: 'application/json, text/javascript, */*; q=0.01',
-			'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-		},
 	}).then(response => Promise.resolve(response));
 }
 
 export function callPatchingProcessNextBatch() {
 	return apiFetch({
 		path: NEWSPACK_CONVERTER_API_BASE_URL + '/patching/process-next-batch',
-		method: 'GET',
-		headers: {
-			Accept: 'application/json, text/javascript, */*; q=0.01',
-			'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-		},
 	}).then(response => Promise.resolve(response));
 }
 
