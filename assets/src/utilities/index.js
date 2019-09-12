@@ -62,14 +62,11 @@ export function removeAllBlocks() {
  */
 export function getPostContentById(id) {
 	return apiFetch({
-		path: NEWSPACK_CONVERTER_API_BASE_URL + '/get-post-content-by-id',
-		method: 'POST',
+		path: NEWSPACK_CONVERTER_API_BASE_URL + `/get-post-content-by-id/${id}`,
+		method: 'GET',
 		headers: {
 			Accept: 'application/json, text/javascript, */*; q=0.01',
 			'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-		},
-		data: {
-			id: id,
 		},
 	}).then(response => {
 		return Promise.resolve(response);

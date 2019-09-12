@@ -120,10 +120,11 @@ class ConverterController extends WP_REST_Controller {
 		// Fetches post_content.
 		register_rest_route(
 			$namespace,
-			'/get-post-content-by-id',
+			'/get-post-content-by-id/(?P<id>\d+)',
 			[
-				'methods'             => WP_REST_Server::CREATABLE,
+				'methods'             => WP_REST_Server::READABLE,
 				'callback'            => [ $this, 'api_get_post_content_by_id' ],
+				'args'                => [ 'id' ],
 				'permission_callback' => [ $this, 'newspack_content_converter_rest_permission' ],
 			]
 		);
@@ -274,16 +275,11 @@ class ConverterController extends WP_REST_Controller {
 	 * Callback for the /get-post-content-by-id route.
 	 * Fetches post_content.
 	 *
-	 * @param WP_REST_Request $params Params: 'id' Post ID.
+	 * @param WP_REST_Request $params Request parameters.
 	 * @return array Post content.
 	 */
 	public function api_get_post_content_by_id( $params ) {
-		$json_params = $params->get_json_params();
-		$post_id     = isset( $json_params['id'] ) ? $json_params['id'] : null;
-
-		if ( ! $post_id ) {
-			return;
-		}
+		$post_id     = $params['id'];
 
 		return rest_ensure_response( $this->conversion_processor->get_post_content_by_id( $post_id ) );
 	}
