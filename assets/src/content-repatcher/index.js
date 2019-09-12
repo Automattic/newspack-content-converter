@@ -19,7 +19,7 @@ class ContentRepatcher extends Component {
 		this.state = {
 			isActive: null,
 			isPatchingOngoing: null,
-			queuedBatchesPatchingCsv: '',
+			queuedBatchesPatching: '',
 			maxBatchPatching: '',
 			patchingBatchSize: '',
 		};
@@ -30,7 +30,7 @@ class ContentRepatcher extends Component {
 			.then( () => fetchPatchingInfo() )
 			.then( response => {
 				if ( response ) {
-					const { isPatchingOngoing, queuedBatchesPatchingCsv, maxBatchPatching, patchingBatchSize } = response;
+					const { isPatchingOngoing, queuedBatchesPatching, maxBatchPatching, patchingBatchSize } = response;
 					if ( '0' == isPatchingOngoing ) {
 						this.setState( { isActive: false } );
 						console.log( ' ----------------------- FINISHED.' );
@@ -39,7 +39,7 @@ class ContentRepatcher extends Component {
 						throw new Error( 'Patching is not scheduled.' );
 					}
 
-					this.setState( { isPatchingOngoing, queuedBatchesPatchingCsv, maxBatchPatching, patchingBatchSize , isActive: true } );
+					this.setState( { isPatchingOngoing, queuedBatchesPatching, maxBatchPatching, patchingBatchSize , isActive: true } );
 				}
 
 				console.log( ' ----------------------- ABOUT TO PATCH NEXT BATCH.' );
@@ -67,7 +67,8 @@ class ContentRepatcher extends Component {
 	 * render().
 	 */
 	render() {
-		const { isActive, queuedBatchesPatchingCsv, maxBatchPatching, patchingBatchSize } = this.state;
+		const { isActive, queuedBatchesPatching, maxBatchPatching, patchingBatchSize } = this.state;
+		const queuedBatchesPatchingCsv = queuedBatchesPatching ? queuedBatchesPatching.join( ', ' ) : '';
 
 		if ( null == isActive ) {
 

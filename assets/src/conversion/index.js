@@ -28,7 +28,8 @@ class Conversion extends Component {
 			.then( () => fetchConversionInfo() )
 			.then( response => {
 				if ( response ) {
-					const { isConversionOngoing, queuedEntries, conversionBatchSize, queuedBatchesCsv, maxBatch } = response;
+					const { isConversionOngoing, queuedEntries, conversionBatchSize, queuedBatches, maxBatch } = response;
+					const queuedBatchesCsv = queuedBatches.join( ',' );
 					this.setState( { isConversionOngoing, queuedEntries, conversionBatchSize, queuedBatchesCsv, maxBatch } );
 				}
 				return new Promise( ( resolve, reject ) => resolve() );

@@ -194,7 +194,7 @@ class ConverterController extends WP_REST_Controller {
 			'isConversionOngoing' => $is_conversion_ongoing ? '1' : '0',
 			'queuedEntries'       => $queued_entries,
 			'conversionBatchSize' => $conversion_batch_size,
-			'queuedBatchesCsv'    => implode( ',', $queued_batches ),
+			'queuedBatches'       => $queued_batches,
 			'maxBatch'            => $max_batch,
 		];
 	}
@@ -245,7 +245,7 @@ class ConverterController extends WP_REST_Controller {
 
 		return [
 			'isPatchingOngoing'        => $is_patching_ongoing,
-			'queuedBatchesPatchingCsv' => implode( ',', $queued_batches_patching ),
+			'queuedBatchesPatching'    => $queued_batches_patching,
 			'maxBatchPatching'         => $max_batch_patching,
 			'patchingBatchSize'        => $patching_batch_size,
 			'queuedEntries'            => $queued_entries,

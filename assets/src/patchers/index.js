@@ -16,7 +16,7 @@ class Patchers extends Component {
 
 		this.state = {
 			isPatchingOngoing: null,
-			queuedBatchesPatchingCsv: '',
+			queuedBatchesPatching: '',
 			maxBatchPatching: '',
 			patchingBatchSize: '',
 			queuedEntries: '',
@@ -28,8 +28,8 @@ class Patchers extends Component {
 			.then( () => fetchPatchingInfo() )
 			.then( response => {
 				if ( response ) {
-					const { isPatchingOngoing, queuedBatchesPatchingCsv, maxBatchPatching, patchingBatchSize, queuedEntries } = response;
-					this.setState( { isPatchingOngoing , queuedBatchesPatchingCsv, maxBatchPatching, patchingBatchSize, queuedEntries } );
+					const { isPatchingOngoing, queuedBatchesPatching, maxBatchPatching, patchingBatchSize, queuedEntries } = response;
+					this.setState( { isPatchingOngoing , queuedBatchesPatching, maxBatchPatching, patchingBatchSize, queuedEntries } );
 				}
 				return new Promise( ( resolve, reject ) => resolve() );
 			} );
@@ -56,7 +56,8 @@ class Patchers extends Component {
 	 * render().
 	 */
 	render() {
-		const { isPatchingOngoing, queuedBatchesPatchingCsv, maxBatchPatching, patchingBatchSize, queuedEntries } = this.state;
+		const { isPatchingOngoing, queuedBatchesPatching, maxBatchPatching, patchingBatchSize, queuedEntries } = this.state;
+		const queuedBatchesPatchingCsv = queuedBatchesPatching ? queuedBatchesPatching.join( ', ' ) : '';
 
 		// Non loaded state.
 		if ( null == isPatchingOngoing ) {
