@@ -168,13 +168,13 @@ class ConverterController extends WP_REST_Controller {
 		$patching_batch_size   = $this->conversion_processor->get_patching_batch_size();
 		$queued_entries        = $this->conversion_processor->get_queued_entries_total_number();
 
-		return [
+		return rest_ensure_response( [
 			'conversionContentTypesCsv'    => $content_types_csv,
 			'conversionContentStatusesCsv' => $content_statuses_csv,
 			'conversionBatchSize'          => $conversion_batch_size,
 			'patchingBatchSize'            => $patching_batch_size,
 			'queuedEntries'                => $queued_entries,
-		];
+		] );
 	}
 
 	/**
@@ -190,13 +190,13 @@ class ConverterController extends WP_REST_Controller {
 		$queued_batches        = $this->conversion_processor->get_conversion_queued_batches();
 		$max_batch             = $this->conversion_processor->get_conversion_max_batch();
 
-		return [
+		return rest_ensure_response( [
 			'isConversionOngoing' => $is_conversion_ongoing ? '1' : '0',
 			'queuedEntries'       => $queued_entries,
 			'conversionBatchSize' => $conversion_batch_size,
 			'queuedBatches'       => $queued_batches,
 			'maxBatch'            => $max_batch,
-		];
+		] );
 	}
 
 	/**
@@ -209,7 +209,7 @@ class ConverterController extends WP_REST_Controller {
 	public function api_conversion_initialize() {
 		$initialized = $this->conversion_processor->initialize_conversion();
 
-		return ( true === $initialized ) ? [ 'result' => 'queued' ] : null;
+		return ( true === $initialized ) ? rest_ensure_response( [ 'result' => 'queued' ] ) : null;
 	}
 
 	/**
@@ -223,11 +223,11 @@ class ConverterController extends WP_REST_Controller {
 		$this_batch = max( $this->conversion_processor->get_conversion_queued_batches() );
 		$max_batch  = $this->conversion_processor->get_conversion_max_batch();
 
-		return [
+		return rest_ensure_response( [
 			'ids'       => $ids,
 			'thisBatch' => $this_batch,
 			'maxBatch'  => $max_batch,
-		];
+		] );
 	}
 
 	/**
@@ -243,13 +243,13 @@ class ConverterController extends WP_REST_Controller {
 		$patching_batch_size     = $this->conversion_processor->get_patching_batch_size();
 		$queued_entries          = $this->conversion_processor->get_queued_entries_total_number();
 
-		return [
+		return rest_ensure_response( [
 			'isPatchingOngoing'        => $is_patching_ongoing,
 			'queuedBatchesPatching'    => $queued_batches_patching,
 			'maxBatchPatching'         => $max_batch_patching,
 			'patchingBatchSize'        => $patching_batch_size,
 			'queuedEntries'            => $queued_entries,
-		];
+		] );
 
 	}
 
@@ -263,7 +263,7 @@ class ConverterController extends WP_REST_Controller {
 	public function api_patching_initialize() {
 		$initialized = $this->conversion_processor->initialize_patching();
 
-		return ( true === $initialized ) ? [ 'result' => 'queued' ] : null;
+		return ( true === $initialized ) ? rest_ensure_response( [ 'result' => 'queued' ] ) : null;
 	}
 
 	/**
@@ -287,9 +287,9 @@ class ConverterController extends WP_REST_Controller {
 			return;
 		}
 
-		return [
+		return rest_ensure_response( [
 			'result' => 'patched',
-		];
+		] );
 	}
 
 	/**
@@ -307,7 +307,7 @@ class ConverterController extends WP_REST_Controller {
 			return;
 		}
 
-		return $this->conversion_processor->get_post_content_by_id( $post_id );
+		return rest_ensure_response( $this->conversion_processor->get_post_content_by_id( $post_id ) );
 	}
 
 	/**
