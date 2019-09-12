@@ -206,14 +206,7 @@ class ConverterController extends WP_REST_Controller {
 	 * @param WP_REST_Request $params JSON param, key 'request' with value 'initialize'.
 	 * @return array Formatted response.
 	 */
-	public function api_conversion_initialize( $params ) {
-		$json_params   = $params->get_json_params();
-		$request_param = isset( $json_params['request'] ) ? $json_params['request'] : null;
-
-		if ( ! $request_param || 'initialize' !== $request_param ) {
-			return;
-		}
-
+	public function api_conversion_initialize() {
 		$initialized = $this->conversion_processor->initialize_conversion();
 
 		return ( true === $initialized ) ? [ 'result' => 'queued' ] : null;
@@ -267,7 +260,7 @@ class ConverterController extends WP_REST_Controller {
 	 * @param WP_REST_Request $params JSON param, key 'request' with value 'initialize'.
 	 * @return array Formatted response.
 	 */
-	public function api_patching_initialize( $params ) {
+	public function api_patching_initialize() {
 		$initialized = $this->conversion_processor->initialize_patching();
 
 		return ( true === $initialized ) ? [ 'result' => 'queued' ] : null;
