@@ -52,17 +52,7 @@ class Conversion extends Component {
 	render() {
 		const { isConversionOngoing, queuedEntries, conversionBatchSize, queuedBatchesCsv, maxBatch } = this.state;
 
-		// Non loaded state.
-		if ( null == isConversionOngoing ) {
-
-			return (
-				<div className="ncc-page">
-					<h1>{ __( 'Run Conversion' ) }</h1>
-				</div>
-			);
-
-		// Conversion in progress.
-		} else if ( '1' == isConversionOngoing ) {
+		if ( '1' == isConversionOngoing ) {
 
 			return (
 				<div className="ncc-page">
@@ -87,7 +77,6 @@ class Conversion extends Component {
 				</div>
 			);
 
-		// Conversion not in progress.
 		} else {
 
 			return (

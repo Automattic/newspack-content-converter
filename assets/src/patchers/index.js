@@ -55,17 +55,7 @@ class Patchers extends Component {
 		const { isPatchingOngoing, queuedBatchesPatching, maxBatchPatching, patchingBatchSize, queuedEntries } = this.state;
 		const queuedBatchesPatchingCsv = queuedBatchesPatching ? queuedBatchesPatching.join( ', ' ) : '';
 
-		// Non loaded state.
-		if ( null == isPatchingOngoing ) {
-
-			return (
-				<div className="ncc-page">
-					<h1>{ __( 'Re-apply Patchers' ) }</h1>
-				</div>
-			);
-
-		// Patching in progress.
-		} else if ( '1' == isPatchingOngoing ) {
+		if ( '1' == isPatchingOngoing ) {
 
 			return (
 				<div className="ncc-page">
@@ -90,7 +80,6 @@ class Patchers extends Component {
 				</div>
 			);
 
-		// Patching not in progress.
 		} else {
 
 			return (
