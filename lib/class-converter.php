@@ -159,7 +159,9 @@ class Converter {
 		wp_enqueue_style(
 			'newspack-content-converter-script',
 			plugins_url( '../assets/dist/main.css', __FILE__ ),
-			[],
+			[
+				'wp-components',
+			],
 			filemtime( plugin_dir_path( __FILE__ ) . '../assets/dist/main.css' )
 		);
 	}
