@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name: Newspack Content Converter
- * Description:
+ * Description: Mass converts pre-Gutenberg HTML content to Gutenberg Blocks.
  * Version: 0.0.1-alpha
  * Author: Automattic
  * Author URI: https://newspack.blog/
@@ -14,28 +14,31 @@
 
 defined( 'ABSPATH' ) || exit;
 
-
-// TODO: remove manual including, and switch to Composer autoloading.
-if ( ! class_exists( '\NewspackContentConverter\Converter' ) ) {
-	include_once dirname( __FILE__ ) . '/lib/class-converter.php';
-}
-if ( ! class_exists( '\NewspackContentConverter\ContentPatcher\PatchHandlerInterface' ) ) {
-	include_once dirname( __FILE__ ) . '/lib/content-patcher/interface-patch-handler.php';
-}
-if ( ! class_exists( '\NewspackContentConverter\ContentPatcher\PatchHandler' ) ) {
-	include_once dirname( __FILE__ ) . '/lib/content-patcher/class-patchhandler.php';
-}
-if ( ! class_exists( '\NewspackContentConverter\ContentPatcher\PatcherInterface' ) ) {
-	include_once dirname( __FILE__ ) . '/lib/content-patcher/interface-patcher.php';
-}
-if ( ! class_exists( '\NewspackContentConverter\ContentPatcher\Patchers\PatcherAbstract' ) ) {
-	include_once dirname( __FILE__ ) . '/lib/content-patcher/patchers/class-patcherabstract.php';
-}
-if ( ! class_exists( '\NewspackContentConverter\ContentPatcher\Patchers\ImgPatcher' ) ) {
-	include_once dirname( __FILE__ ) . '/lib/content-patcher/patchers/class-imgpatcher.php';
+// TODO, Warning, __FILE__ might not play well with symlinks in dev env.
+if ( ! defined( 'NCC_PLUGIN_FILE' ) ) {
+	define( 'NCC_PLUGIN_FILE', __FILE__ );
 }
 
 
+// TODO: Switch to Composer autoloading.
+require_once dirname( __FILE__ ) . '/dependency-includer-script.php';
+
+
+// Construct the app with a dependency graph, without the use of a service container.
 new \NewspackContentConverter\Converter(
-	new \NewspackContentConverter\ContentPatcher\PatchHandler()
+	new \NewspackContentConverter\Installer(),
+	new \NewspackContentConverter\ConverterController(
+		new \NewspackContentConverter\ConversionProcessor(
+			new \NewspackContentConverter\ContentPatcher\PatchHandler(
+				array(
+					new \NewspackContentConverter\ContentPatcher\Patchers\ImgPatcher(),
+					new \NewspackContentConverter\ContentPatcher\Patchers\CaptionImgPatcher(),
+					new \NewspackContentConverter\ContentPatcher\Patchers\ParagraphPatcher(),
+					new \NewspackContentConverter\ContentPatcher\Patchers\BlockquotePatcher(),
+					new \NewspackContentConverter\ContentPatcher\Patchers\VideoPatcher(),
+					new \NewspackContentConverter\ContentPatcher\Patchers\AudioPatcher(),
+				)
+			)
+		)
+	)
 );

@@ -1,14 +1,14 @@
 <?xml version="1.0"?>
 <phpunit
-	bootstrap="tests/bootstrap.php"
-	backupGlobals="false"
-	colors="true"
-	convertErrorsToExceptions="true"
-	convertNoticesToExceptions="true"
-	convertWarningsToExceptions="true"
-	>
+		bootstrap="tests/bootstrap.php"
+		backupGlobals="false"
+		colors="true"
+		convertErrorsToExceptions="true"
+		convertNoticesToExceptions="true"
+		convertWarningsToExceptions="true"
+>
 	<testsuites>
-		<testsuite>
+		<testsuite name="allTests">
 			<directory prefix="test-" suffix=".php">./tests/unit/content-patcher/patchers/</directory>
 		</testsuite>
 	</testsuites>

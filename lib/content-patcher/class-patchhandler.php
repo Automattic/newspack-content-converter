@@ -7,6 +7,7 @@
 
 namespace NewspackContentConverter\ContentPatcher;
 
+use NewspackContentConverter\ContentPatcher\Patchers\PatcherInterface;
 /**
  * Class PatchHandler.
  * Registers specific content patchers and runs them.
@@ -16,16 +17,7 @@ namespace NewspackContentConverter\ContentPatcher;
 class PatchHandler implements PatchHandlerInterface {
 
 	/**
-	 * List of active content patchers.
-	 *
-	 * @var array
-	 */
-	private $classes = [
-		'\NewspackContentConverter\ContentPatcher\Patchers\ImgPatcher',
-	];
-
-	/**
-	 * Instantiated patcher objects.
+	 * Patcher objects, have interface
 	 *
 	 * @var array
 	 */
@@ -33,17 +25,16 @@ class PatchHandler implements PatchHandlerInterface {
 
 	/**
 	 * PatchHandler constructor.
+	 *
+	 * @param array $patchers An array of PatcherInterface objects.
 	 */
-	public function __construct() {
-		$this->register_patchers();
-	}
-
-	/**
-	 * Registers patchers.
-	 */
-	private function register_patchers() {
-		foreach ( $this->classes as $class ) {
-			$this->patchers[] = new $class();
+	public function __construct( $patchers ) {
+		if ( $patchers && is_array( $patchers ) ) {
+			foreach ( $patchers as $patcher ) {
+				if ( $patcher instanceof PatcherInterface ) {
+					$this->patchers[] = $patcher;
+				}
+			}
 		}
 	}
 

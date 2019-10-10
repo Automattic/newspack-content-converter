@@ -1,226 +1,131 @@
 <?php
 /**
- * Convert pre-Gutenberg post content to Gutenberg Blocks
+ * Main plugin class.
  *
  * @package Newspack
  */
 
 namespace NewspackContentConverter;
 
-use \NewspackContentConverter\ContentPatcher\PatchHandler;
+use \NewspackContentConverter\ConverterController;
+use \NewspackContentConverter\Installer;
 
 /**
- * Gutenberg Converter Class
+ * Content Converter.
  */
 class Converter {
 
 	/**
-	 * Path to the temporary log file.
+	 * The installer service.
 	 *
-	 * @var string
+	 * @var Installer
 	 */
-	private $temp_log_file;
+	private $installer;
 
 	/**
-	 * The PatchHandler.
+	 * Converter constructor.
 	 *
-	 * @var PatchHandler
+	 * @param Installer           $installer The installer service.
+	 * @param ConverterController $controller The main Controller.
 	 */
-	private $patcher_handler;
+	public function __construct( Installer $installer, ConverterController $controller ) {
+		$this->installer  = $installer;
+		$this->controller = $controller;
 
-	/**
-	 * Constructor.
-	 *
-	 * @param PatchHandler $patcher_handler The PatchHandler.
-	 */
-	public function __construct( PatchHandler $patcher_handler ) {
-
-		$this->temp_log_file   = dirname( __FILE__ ) . '/../convert.log';
-		$this->patcher_handler = $patcher_handler;
-
+		$this->register_installation_hook();
 		$this->add_admin_menu();
-		$this->redirect_page_to_editor();
-		$this->enqueue_newspack_block_editor_assets();
-		$this->register_api_routes();
+		add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_scripts' ] );
+		add_action( 'rest_api_init', [ $this->controller, 'register_routes' ] );
+		$this->disable_autosave_posts();
 	}
 
 	/**
-	 * Checks if Newspack Content Converter page is currently accessed.
-	 *
-	 * @return bool
+	 * Registers installation hook.
 	 */
-	private function is_content_converter_page() {
-		return isset( $_GET['newspack-content-converter'] );
+	public function register_installation_hook() {
+		register_activation_hook( NCC_PLUGIN_FILE, [ '\NewspackContentConverter\Installer', 'install_plugin' ] );
+		// uninstall.php is used instead of the uninstall hook, since 'WP_UNINSTALL_PLUGIN' is defined there.
 	}
 
 	/**
-	 * Plugin tab & page -- currently automatically redirected by $this->newspack_content_converter_redirect().
+	 * Disables the auto-saving on the Plugin's conversion app.
+	 * The Converter plugin app piggy-backs on top of the Block Editor (loads on the page
+	 * /wp-admin/post-new.php?newspack-content-converter), so turning off Autosave is necessary not to have new Drafts generated
+	 * while converting.
+	 */
+	private function disable_autosave_posts() {
+		if ( ! $this->is_current_page_the_converter_app_page() ) {
+			return;
+		}
+
+		if ( false === defined( 'AUTOSAVE_INTERVAL' ) ) {
+			define( 'AUTOSAVE_INTERVAL', 60 * 60 * 24 * 5 ); // Seconds.
+		}
+	}
+
+	/**
+	 * Adds admin menu.
 	 */
 	private function add_admin_menu() {
+
+		// Remember to refresh $this->is_current_page_a_plugin_page() when adding pages here.
 		add_action(
 			'admin_menu',
-			function() {
-				add_menu_page( 'newspack-content-converter', __( 'Newspack Content Converter' ), 'manage_options', 'newspack-content-converter', 'converter_plugin_page' );
-			}
-		);
-	}
+			function () {
 
-	/**
-	 * Blank content for the plugin tab/page.
-	 */
-	private function converter_plugin_page() {
-		?>
-		blank_redirect:::
-		<?php
-	}
-
-	/**
-	 * Routes' registration.
-	 */
-	private function register_api_routes() {
-		// Endpoint to update converted Post content.
-		add_action(
-			'rest_api_init',
-			function() {
-				register_rest_route(
+				add_menu_page(
+					__( 'Newspack Content Converter' ),
+					__( 'Newspack Content Converter' ),
+					'manage_options',
 					'newspack-content-converter',
-					'/update-post',
-					[
-						'methods'             => 'POST',
-						'callback'            => [ $this, 'update_converted_post_content' ],
-						'permission_callback' => [ $this, 'newspack_content_converter_rest_permission' ],
-					]
+					function () {
+						echo '<div id="ncc-settings"></div>';
+					}
 				);
+
+				add_submenu_page(
+					'newspack-content-converter',
+					__( 'Run Conversion' ),
+					__( 'Run Conversion' ),
+					'manage_options',
+					'ncc-conversion',
+					function () {
+						echo '<div id="ncc-conversion"></div>';
+					}
+				);
+
+				add_submenu_page(
+					'newspack-content-converter',
+					__( 'Re-apply Patchers *dev*' ),
+					__( 'Re-apply Patchers *dev*' ),
+					'manage_options',
+					'ncc-patchers',
+					function () {
+						echo '<div id="ncc-patchers"></div>';
+					}
+				);
+
+				// The 'ncc-content-repatching' page is not added to the menu (parent slug == null).
+				add_submenu_page(
+					null,
+					__( 'Re-apply Patchers React app *dev*' ),
+					__( 'Re-apply Patchers React app *dev*' ),
+					'manage_options',
+					'ncc-content-repatching',
+					function () {
+						echo '<div id="ncc-content-repatcher">!!! :)</div>';
+					}
+				);
+
 			}
 		);
-	}
-
-	/**
-	 * Callable for /update-post API endpoint.
-	 *
-	 * @param WP_REST_Request $params Params: 'id' Post ID, 'content' Post content.
-	 */
-	public function update_converted_post_content( $params ) {
-		$post_id        = $params->get_param( 'postId' );
-		$content_html   = $params->get_param( 'content_html' );
-		$content_blocks = $params->get_param( 'content_blocks' );
-
-		$content_blocks_patched = $this->patch_converted_blocks_content( $content_html, $content_blocks );
-
-		// TODO: actually update post content.
-		$this->write_to_log_file(
-			'================= START post_id=' . $post_id . "\n" .
-			$post_id . "\n" .
-			$content_blocks_patched . "\n" .
-			// print_r($params, true) . "\n" .
-			// $content_html . "\n" .
-			// $content_blocks . "\n" .
-			'================= END post_id=' . $post_id . "\n\n"
-		);
-	}
-
-	/**
-	 * Runs patches on converted blocks content.
-	 *
-	 * @param string $content_html   HTML content.
-	 * @param string $content_blocks Blocks content.
-	 *
-	 * @return string|null Patched blocks content.
-	 */
-	private function patch_converted_blocks_content( $content_html, $content_blocks ) {
-		return $this->patcher_handler->run_all_patches( $content_html, $content_blocks );
-	}
-
-	/**
-	 * Write a message to log file
-	 *
-	 * @param string $msg The message to write.
-	 */
-	private function write_to_log_file( $msg ) {
-		/*
-		// TODO: remove -- temporarily available for temp debugging purposes.
-		$fh = fopen( $this->temp_log_file, 'a' ) or die( "Can't open file" );
-		fwrite( $fh, $msg );
-		fclose( $fh );
-		 */
-	}
-
-	/**
-	 * Permission check, common to basic Converter endpoints.
-	 *
-	 * @return bool|WP_Error
-	 */
-	public function newspack_content_converter_rest_permission() {
-		$is_user_authorized = current_user_can( 'edit_posts' );
-
-		if ( ! $is_user_authorized ) {
-			return new WP_Error( 'newspack_content_converter_rest_invalid_permission', __( 'Unauthorized access.' ) );
-		}
-
-		return true;
-	}
-
-	/**
-	 * Add a redirect.
-	 */
-	private function redirect_page_to_editor() {
-		add_action( 'admin_init', [ $this, 'newspack_content_converter_redirect' ] );
-	}
-
-	/**
-	 * Temporarily redirects the plugin page to the extended Block Editor.
-	 */
-	public function newspack_content_converter_redirect() {
-		global $pagenow;
-
-		if (
-			'admin.php' === $pagenow &&
-			isset( $_GET['page'] ) &&
-			'newspack-content-converter' === $_GET['page']
-		) {
-			wp_safe_redirect( admin_url( 'post-new.php?newspack-content-converter' ) );
-			exit;
-		}
-	}
-
-	/**
-	 * Gets all files in directory. Can filter results by extension.
-	 *
-	 * @param string      $dir_path         Full path to scan for files.
-	 * @param string|null $extension_filter If provided, only returns files with this extension.
-	 *
-	 * @return array Files found in the directory.
-	 */
-	private function get_all_files_in_dir( $dir_path, $extension_filter = null ) {
-		$files = scandir( $dir_path );
-		$files = array_diff( scandir( $dir_path ), [ '.', '..' ] );
-
-		if ( $extension_filter ) {
-			foreach ( $files as $key => $file ) {
-				$file_extension = substr( $file, -1 * strlen( $extension_filter ) );
-				if ( strtolower( $extension_filter ) !== strtolower( $file_extension ) ) {
-					unset( $files[ $key ] );
-				}
-			}
-			$files = array_values( $files );
-		}
-
-		return isset( $files ) ? $files : [];
-	}
-
-
-	/**
-	 * Enqueues Block Editor assets for NCC.
-	 */
-	private function enqueue_newspack_block_editor_assets() {
-		add_action( 'enqueue_block_editor_assets', [ $this, 'newspack_content_converter_enqueue_script' ] );
 	}
 
 	/**
 	 * Enqueues script assets.
 	 */
-	public function newspack_content_converter_enqueue_script() {
-		if ( ! $this->is_content_converter_page() ) {
+	public function enqueue_scripts() {
+		if ( ! $this->is_current_page_a_plugin_page() && ! $this->is_current_page_the_converter_app_page() ) {
 			return;
 		}
 
@@ -235,7 +140,6 @@ class Converter {
 				'wp-annotations',
 				'wp-block-editor',
 				'wp-blocks',
-				'wp-components',
 				'wp-compose',
 				'wp-data',
 				'wp-dom-ready',
@@ -255,9 +159,39 @@ class Converter {
 		wp_enqueue_style(
 			'newspack-content-converter-script',
 			plugins_url( '../assets/dist/main.css', __FILE__ ),
-			[],
+			[
+				'wp-components',
+			],
 			filemtime( plugin_dir_path( __FILE__ ) . '../assets/dist/main.css' )
 		);
 	}
 
+	/**
+	 * Checks if a plugin page is being accessed.
+	 *
+	 * @return bool
+	 */
+	private function is_current_page_a_plugin_page() {
+		$current_screen = get_current_screen();
+
+		return isset( $current_screen ) && (
+			false !== strpos( $current_screen->id, 'newspack-content-converter' ) ||
+			'admin_page_ncc-content-repatching' === $current_screen->id
+		);
+	}
+
+	/**
+	 * Checks if the Gutenberg mass converter app is currently accessed, which is at
+	 * /wp-admin/post-new.php?newspack-content-converter .
+	 *
+	 * @return bool
+	 */
+	private function is_current_page_the_converter_app_page() {
+		global $pagenow;
+
+		return (
+			'post-new.php' === $pagenow &&
+			isset( $_GET['newspack-content-converter'] )
+		);
+	}
 }

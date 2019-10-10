@@ -5,7 +5,7 @@
  * @package Newspack
  */
 
-namespace NewspackContentConverter\ContentPatcher;
+namespace NewspackContentConverter\ContentPatcher\Patchers;
 
 /**
  * Interface PatcherInterface
