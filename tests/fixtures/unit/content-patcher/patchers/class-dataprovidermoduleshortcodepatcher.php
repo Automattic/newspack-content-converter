@@ -46,7 +46,7 @@ CONTENT;
 	public static function get_unpatched_block_right() {
 		return <<<CONTENT
 <!-- wp:shortcode -->
-[module align=right width=”full” type=”aside”]”The Board will add this to the ongoing investigation.” —New Beginnings attorney Michelle Craig[/module]
+[module align="right" width=”full” type=”aside”]”The Board will add this to the ongoing investigation.” —New Beginnings attorney Michelle Craig[/module]
 <!-- /wp:shortcode -->
 CONTENT;
 	}
@@ -89,7 +89,11 @@ CONTENT;
 	public static function get_patched_blocks_center_expected() {
 		return <<<CONTENT
 <!-- wp:pullquote -->
-<figure class="wp-block-pullquote"><blockquote><p>"The Board will add this to the ongoing investigation." —New Beginnings attorney Michelle Craig</p></blockquote></figure>
+<figure class="wp-block-pullquote"><blockquote><p>Test content</p></blockquote></figure>
+<!-- /wp:pullquote -->
+
+<!-- wp:pullquote -->
+<figure class="wp-block-pullquote"><blockquote><p>Test content</p></blockquote></figure>
 <!-- /wp:pullquote -->
 CONTENT;
 	}
@@ -116,8 +120,8 @@ CONTENT;
 	 */
 	public static function get_patched_block_unsupported_tags_expected() {
 		return <<<CONTENT
-<!-- wp:pullquote -->
-<figure class="wp-block-pullquote"><blockquote><p>Previous coverage: <a href="https://thelensnola.org/2019/03/22/f-to-d-grade-changes-at-kennedy-high-school-are-suspicious-former-administrator-says/">F to D grade changes at Kennedy High School are suspicious, former administrator says</a></p></blockquote></figure>
+<!-- wp:pullquote {"align":"right"} -->
+<figure class="wp-block-pullquote alignright"><blockquote><p>Previous coverage: <a href="https://thelensnola.org/2019/03/22/f-to-d-grade-changes-at-kennedy-high-school-are-suspicious-former-administrator-says/">F to D grade changes at Kennedy High School are suspicious, former administrator says</a></p></blockquote></figure>
 <!-- /wp:pullquote -->
 CONTENT;
 	}
