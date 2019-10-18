@@ -18,7 +18,7 @@ use NewspackContentConverter\ContentPatcher\ElementManipulators\HtmlElementManip
  *
  * @package NewspackContentConverter\ContentPatcher\Patchers
  */
-class ModuleShortcodePatcher extends PatcherAbstract implements PatcherInterface {
+class ShortcodeModulePatcher extends PatcherAbstract implements PatcherInterface {
 
 	/**
 	 * SquareBracketsElementManipulator service.
@@ -70,7 +70,7 @@ class ModuleShortcodePatcher extends PatcherAbstract implements PatcherInterface
 				continue;
 			}
 
-			$converted_block = $this->convert_block( $block );
+			$converted_block = $this->convert_shortcode_block_to_pullquote( $block );
 			$source_blocks   = str_replace( $block, $converted_block, $source_blocks );
 		}
 
@@ -83,7 +83,7 @@ class ModuleShortcodePatcher extends PatcherAbstract implements PatcherInterface
 	 * @param string $block Raw block content.
 	 * @return string New block content.
 	 */
-	protected function convert_block( $block ) {
+	protected function convert_shortcode_block_to_pullquote( $block ) {
 		// Strip any fancy quotes that may be breaking shortcode attributes.
 		// @see https://github.com/Automattic/newspack-content-converter/issues/11.
 		$block = str_replace( '”', '"', $block );

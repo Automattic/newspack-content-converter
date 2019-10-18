@@ -1,29 +1,29 @@
 <?php
 /**
- * Test class for the NewspackContentConverter\ContentPatcher\Patchers\ModuleShortcodePatcher.
+ * Test class for the NewspackContentConverter\ContentPatcher\Patchers\ShortcodeModulePatcher.
  *
  * @package Newspack
  */
 
 use NewspackContentConverter\ContentPatcher\Patchers\PatcherAbstract;
-use NewspackContentConverter\ContentPatcher\Patchers\ModuleShortcodePatcher;
+use NewspackContentConverter\ContentPatcher\Patchers\ShortcodeModulePatcher;
 
 /**
- * Class ModuleShortcodePatcher
+ * Class ShortcodeModulePatcher
  */
 class TestModuleShortcodePatcher extends WP_UnitTestCase {
 
 	/**
-	 * ModuleShortcodePatcher.
+	 * ShortcodeModulePatcher.
 	 *
 	 * @var PatcherAbstract
 	 */
 	private $patcher;
 
 	/**
-	 * DataProviderModuleShortcodePatcher.
+	 * DataProviderShortcodeModulePatcher.
 	 *
-	 * @var DataProviderModuleShortcodePatcher
+	 * @var DataProviderShortcodeModulePatcher
 	 */
 	private $data_provider;
 
@@ -33,10 +33,10 @@ class TestModuleShortcodePatcher extends WP_UnitTestCase {
 	public function setUp() {
 		$this->fixtures_dir = dirname( __FILE__ ) . '/../../../fixtures/unit/content-patcher/patchers/';
 
-		require_once $this->fixtures_dir . 'class-dataprovidermoduleshortcodepatcher.php';
+		require_once $this->fixtures_dir . 'class-dataprovidershortcodemodulepatcher.php';
 
-		$this->patcher       = new ModuleShortcodePatcher();
-		$this->data_provider = new DataProviderModuleShortcodePatcher();
+		$this->patcher       = new ShortcodeModulePatcher();
+		$this->data_provider = new DataProviderShortcodeModulePatcher();
 	}
 
 	/**

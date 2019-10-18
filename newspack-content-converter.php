@@ -37,7 +37,7 @@ new \NewspackContentConverter\Converter(
 					new \NewspackContentConverter\ContentPatcher\Patchers\BlockquotePatcher(),
 					new \NewspackContentConverter\ContentPatcher\Patchers\VideoPatcher(),
 					new \NewspackContentConverter\ContentPatcher\Patchers\AudioPatcher(),
-					new \NewspackContentConverter\ContentPatcher\Patchers\ModuleShortcodePatcher(),
+					new \NewspackContentConverter\ContentPatcher\Patchers\ShortcodeModulePatcher(),
 				)
 			)
 		)

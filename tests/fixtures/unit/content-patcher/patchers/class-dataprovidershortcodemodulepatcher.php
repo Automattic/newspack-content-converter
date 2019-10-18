@@ -8,9 +8,9 @@
 /**
  * Class DataProviderParagraphPatcher
  *
- * Data Provider for tests concerning unit/content-patcher/patchers/test-paragraph-patcher.php
+ * Data Provider for tests concerning unit/content-patcher/patchers/test-shortcodemodule-patcher.php
  */
-class DataProviderModuleShortcodePatcher {
+class DataProviderShortcodeModulePatcher {
 
 	/**
 	 * Get an unpatched left-aligned module shortcode.
