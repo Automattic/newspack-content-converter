@@ -35,19 +35,11 @@ class ShortcodeModulePatcher extends PatcherAbstract implements PatcherInterface
 	private $wp_block_manipulator;
 
 	/**
-	 * HtmlElementManipulator service.
-	 *
-	 * @var HtmlElementManipulator
-	 */
-	private $html_element_manipulator;
-
-	/**
 	 * VideoPatcher constructor.
 	 */
 	public function __construct() {
 		$this->square_brackets_element_manipulator = new SquareBracketsElementManipulator();
 		$this->wp_block_manipulator                = new WpBlockManipulator();
-		$this->html_element_manipulator            = new HtmlElementManipulator();
 	}
 
 	/**
@@ -88,21 +80,22 @@ class ShortcodeModulePatcher extends PatcherAbstract implements PatcherInterface
 		// @see https://github.com/Automattic/newspack-content-converter/issues/11.
 		$block = str_replace( '”', '"', $block );
 
-		// Determine alignment.
-		preg_match( '#\[module[^\]]*\]#', $block, $attributes_matches );
-		$shortcode_atts = shortcode_parse_atts( $attributes_matches[0] );
-		$alignment      = ( ! empty( $shortcode_atts['align'] ) && ( 'left' === $shortcode_atts['align'] || 'right' === $shortcode_atts['align'] ) ) ? sanitize_title( $shortcode_atts['align'] ) : '';
+		// Remove newlines because they confuse the matchers.
+		$block = str_replace( "\n", '', $block );
 
-		// Determine content.
-		preg_match( '#\[module[^\]]*\](.*)\[\/module\]#s', $block, $content_matches );
-		$content = $content_matches[1];
+		$shortcode_matches = $this->square_brackets_element_manipulator->match_elements_with_closing_tags( 'module', $block );
+		$shortcode         = $shortcode_matches[0][0][0];
 
-		// Sanitize content.
+		$alignment = $this->square_brackets_element_manipulator->get_attribute_value( 'align', $shortcode );
+		$alignment = ( $alignment && 'left' === $alignment || 'right' === $alignment ) ? $alignment : '';
+
+		// Get content.
 		$allowed_tags = array(
 			'a' => array(
 				'href' => array(),
 			),
 		);
+		$content      = $this->square_brackets_element_manipulator->get_inner_text( 'module', $shortcode );
 		$content      = trim( wp_kses( $content, $allowed_tags ) );
 
 		$alignment_object = $alignment ? '{"align":"' . $alignment . '"} ' : '';
