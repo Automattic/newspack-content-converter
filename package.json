@@ -17,5 +17,12 @@
     "eslint": "^5.16.0",
     "prettier": "https://github.com/Automattic/wp-prettier/releases/download/wp-1.16.4/wp-prettier-1.16.4.tgz",
     "webpack": "^4.29.6"
+  },
+  "scripts": {
+    "build:webpack": "calypso-build --config='./webpack.config.js'",
+    "clean": "rm -rf assets/dist/ assets/release/",
+    "release:build-all": "composer install --no-dev && run-p \"build:webpack\"",
+    "release:archive": "mkdir -p assets/release && zip -r assets/release/newspack-content-converter.zip . -x assets/release/\\* bin/\\* tests/\\* node_modules/\\* .git/\\* .github/\\* .gitignore .editorconfig .prettierrc phpcs.xml phpunit.xml.dist .DS_Store",
+    "release": "run-p \"clean\" && run-p \"release:build-all\" && run-p \"release:archive\""
   }
 }
