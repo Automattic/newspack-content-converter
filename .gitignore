@@ -1,6 +1,7 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 /assets/dist
+/assets/release
 
 # dependencies
 /node_modules

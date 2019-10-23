@@ -2,10 +2,15 @@
   "name": "newspack-content-converter",
   "version": "0.1.0",
   "private": true,
-  "dependencies": {},
+  "dependencies": {
+    "npm-run-all": "^4.1.5"
+  },
   "scripts": {
     "build:webpack": "calypso-build --config='./webpack.config.js'",
-    "clean": "rm -rf assets/dist/"
+    "clean": "rm -rf assets/dist/ assets/release/",
+    "release:build-all": "composer install --no-dev && NODE_ENV=production run-p \"build:webpack\"",
+    "release:archive": "mkdir -p assets/release && zip -r assets/release/newspack-content-converter.zip . -x assets/release/\\* bin/\\* tests/\\* node_modules/\\* .git/\\* .github/\\* .gitignore .editorconfig .prettierrc phpcs.xml phpunit.xml.dist .DS_Store",
+    "release": "run-p \"clean\" && run-p \"release:build-all\" && run-p \"release:archive\""
   },
   "devDependencies": {
     "@automattic/calypso-build": "^2.0.0",
