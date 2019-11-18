@@ -22,6 +22,7 @@ require_once dirname( __FILE__ ) . '/lib/content-patcher/patchers/class-videopat
 require_once dirname( __FILE__ ) . '/lib/content-patcher/patchers/class-audiopatcher.php';
 require_once dirname( __FILE__ ) . '/lib/content-patcher/patchers/class-captionimgpatcher.php';
 require_once dirname( __FILE__ ) . '/lib/content-patcher/patchers/class-shortcodemodulepatcher.php';
+require_once dirname( __FILE__ ) . '/lib/content-patcher/patchers/class-shortcodepullquotepatcher.php';
 require_once dirname( __FILE__ ) . '/lib/content-patcher/elementManipulators/class-htmlelementmanipulator.php';
 require_once dirname( __FILE__ ) . '/lib/content-patcher/elementManipulators/class-squarebracketselementmanipulator.php';
 require_once dirname( __FILE__ ) . '/lib/content-patcher/elementManipulators/class-wpblockmanipulator.php';
