@@ -289,6 +289,7 @@ class ConverterController extends WP_REST_Controller {
 	 * Updates the converted Post content.
 	 *
 	 * @param WP_REST_Request $params Params: 'id' Post ID, 'content' Post content.
+	 * @return bool Success.
 	 */
 	public function update_converted_post_content( $params ) {
 		$json_params    = $params->get_json_params();
@@ -301,5 +302,7 @@ class ConverterController extends WP_REST_Controller {
 		}
 
 		$this->conversion_processor->save_converted_post_content( $post_id, $content_html, $content_blocks );
+
+		return true;
 	}
 }
