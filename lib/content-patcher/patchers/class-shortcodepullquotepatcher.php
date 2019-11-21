@@ -71,6 +71,20 @@ class ShortcodePullquotePatcher extends PatcherAbstract implements PatcherInterf
 	/**
 	 * Convert a shortcode block with the pullquote shortcode into a pullquote block.
 	 *
+	 * The pullquote's 'author' attribute gets converted to a <cite> element, e.g.
+	 *      <!-- wp:shortcode -->
+	 *          [pullquote author"Arthur Author"]pulled text[\pullquote]
+	 *      <!-- /wp:shortcode -->
+	 * gets converted to
+	 *      <!-- wp:pullquote {"align":"left"} -->
+	 *          <figure>
+	 *              <blockquote>
+	 *                  <p>pulled text</p>
+	 *                  <cite>Arthur Author</cite>
+	 *              </blockquote>
+	 *          </figure>
+	 *      <!-- /wp:pullquote -->
+	 *
 	 * @param string $block Raw block content.
 	 * @return string New block content.
 	 */
