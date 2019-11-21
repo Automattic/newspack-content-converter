@@ -11,7 +11,6 @@ use NewspackContentConverter\ContentPatcher\Patchers\PatcherInterface;
 use NewspackContentConverter\ContentPatcher\Patchers\PatcherAbstract;
 use NewspackContentConverter\ContentPatcher\ElementManipulators\SquareBracketsElementManipulator;
 use NewspackContentConverter\ContentPatcher\ElementManipulators\WpBlockManipulator;
-use NewspackContentConverter\ContentPatcher\ElementManipulators\HtmlElementManipulator;
 
 /**
  * Patcher class for the [pullquote][/pullquote] elements.
