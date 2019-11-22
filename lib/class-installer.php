@@ -170,7 +170,8 @@ class Installer {
 									  SELECT {$wp_posts_columns_csv}
 									  FROM {$wp_posts_table}
 									  WHERE post_status IN ({$statuses_placeholders_csv})
-									  AND post_type IN ({$type_placeholders_csv}) ;";
+									  AND post_type IN ({$type_placeholders_csv}) 
+									  AND post_content <> '' ;";
 		$wpdb->get_results( $wpdb->prepare( $sql_placeholders, array_merge( $post_statuses, $post_types ) ) );
 
 		// Insert specified content into plugin's table.
