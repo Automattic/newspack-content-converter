@@ -13,6 +13,36 @@ import Conversion from './conversion';
 import Patchers from './patchers';
 import './style.css';
 
+function nccHideElement(element) {
+	element.style.display = 'none';
+}
+
+function nccInsertRootAdjacentToElement(element) {
+	element.insertAdjacentHTML('afterend', '<div id="root"></div>');
+}
+
+// Wrapper function which enables retrying a callback after a timeout interval and for a defined maxAttempts (useful to retry
+// actions for elements which haven't yet been injected into DOM).
+function nccCallbackWithRetry( callback, maxAttempts = 5, timeout = 1000 ) {
+	return new Promise(function(resolve, reject) {
+		var doCallback = function(attempt) {
+			try {
+				callback();
+				Promise(resolve, reject);
+			} catch (e) {
+				if (0 == attempt) {
+					reject(e);
+				} else {
+					setTimeout(function() {
+						doCallback(attempt - 1);
+					}, timeout);
+				}
+			}
+		};
+		doCallback(maxAttempts);
+	});
+}
+
 window.onload = function() {
 	const div_settings = document.getElementById('ncc-settings');
 	const div_conversion = document.getElementById('ncc-conversion');
@@ -29,12 +59,10 @@ window.onload = function() {
 		render(<ContentRepatcher />, div_content_repatcher);
 	} else {
 		// Converter app sits on top of the Gutenberg Block Editor.
-		document.getElementsByClassName('edit-post-header')[0].style.display = 'none';
-		document.getElementsByClassName('edit-post-layout__content')[0].style.display = 'none';
-		// document.getElementsByClassName( 'edit-post-sidebar' )[ 0 ].style.display = 'none';
-		document
-			.getElementsByClassName('edit-post-header')[0]
-			.insertAdjacentHTML('afterend', '<div id="root"></div>');
+		nccCallbackWithRetry( nccHideElement( document.getElementsByClassName( 'edit-post-header' )[ 0 ] ) );
+		nccCallbackWithRetry( nccHideElement( document.getElementsByClassName( 'edit-post-layout__content' )[ 0 ] ) );
+		nccCallbackWithRetry( nccHideElement( document.getElementsByClassName( 'edit-post-sidebar' )[ 0 ] ) );
+		nccCallbackWithRetry( nccInsertRootAdjacentToElement( document.getElementsByClassName( 'edit-post-header' )[ 0 ] ) );
 
 		window.onbeforeunload = function() {};
 
