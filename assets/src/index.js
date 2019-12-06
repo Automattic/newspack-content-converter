@@ -30,7 +30,7 @@ var nccInsertRootAdjacentToElementByClass = function(className) {
 
 // Wrapper function which enables retrying a callback after a timeout interval and for a defined maxAttempts (useful to retry
 // actions for elements which haven't yet been injected into DOM).
-function nccCallbackWithRetry(callback, callbackParam, maxAttempts = 5, timeout = 1000) {
+function nccCallbackWithRetry(callback, callbackParam, maxAttempts = 10, timeout = 1000) {
 	return new Promise(function(resolve, reject) {
 		var doCallback = function(attempt) {
 			try {
