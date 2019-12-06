@@ -13,29 +13,37 @@ import Conversion from './conversion';
 import Patchers from './patchers';
 import './style.css';
 
-function nccHideElement(element) {
-	element.style.display = 'none';
+var nccGetElementByClassName = function (className) {
+	var elements = document.getElementsByClassName(className);
+	if ('undefined' == typeof elements || !elements.length)
+		throw 'Not found element by class name ' + className;
+	return elements[0];
 }
 
-function nccInsertRootAdjacentToElement(element) {
-	element.insertAdjacentHTML('afterend', '<div id="root"></div>');
-}
+var nccHideElementByClass = function(className) {
+	nccGetElementByClassName(className).style.display = 'none';
+};
+
+var nccInsertRootAdjacentToElementByClass = function(className) {
+	nccGetElementByClassName(className).insertAdjacentHTML('afterend', '<div id="root"></div>');
+};
 
 // Wrapper function which enables retrying a callback after a timeout interval and for a defined maxAttempts (useful to retry
 // actions for elements which haven't yet been injected into DOM).
-function nccCallbackWithRetry( callback, maxAttempts = 5, timeout = 1000 ) {
+function nccCallbackWithRetry(callback, callbackParam, maxAttempts = 5, timeout = 1000) {
 	return new Promise(function(resolve, reject) {
 		var doCallback = function(attempt) {
 			try {
-				callback();
-				Promise(resolve, reject);
+				callback(callbackParam);
+				resolve();
 			} catch (e) {
 				if (0 == attempt) {
-					reject(e);
+					console.log('Final error: ' + e);
 				} else {
 					setTimeout(function() {
 						doCallback(attempt - 1);
 					}, timeout);
+					console.log(e);
 				}
 			}
 		};
@@ -59,10 +67,10 @@ window.onload = function() {
 		render(<ContentRepatcher />, div_content_repatcher);
 	} else {
 		// Converter app sits on top of the Gutenberg Block Editor.
-		nccCallbackWithRetry( nccHideElement( document.getElementsByClassName( 'edit-post-header' )[ 0 ] ) );
-		nccCallbackWithRetry( nccHideElement( document.getElementsByClassName( 'edit-post-layout__content' )[ 0 ] ) );
-		nccCallbackWithRetry( nccHideElement( document.getElementsByClassName( 'edit-post-sidebar' )[ 0 ] ) );
-		nccCallbackWithRetry( nccInsertRootAdjacentToElement( document.getElementsByClassName( 'edit-post-header' )[ 0 ] ) );
+		nccCallbackWithRetry(nccHideElementByClass, 'edit-post-header');
+		nccCallbackWithRetry(nccHideElementByClass, 'edit-post-layout__content');
+		nccCallbackWithRetry(nccHideElementByClass, 'edit-post-sidebar');
+		nccCallbackWithRetry(nccInsertRootAdjacentToElementByClass, 'edit-post-header');
 
 		window.onbeforeunload = function() {};
 
