@@ -39,7 +39,12 @@ export function runSinglePost(postId) {
 		.then(html => insertClassicBlockWithContent(html))
 		.then(html => dispatchConvertClassicToBlocks(html))
 		.then(html => getAllBlocksContents(postId, html))
-		.then(([blocks, html]) => updatePost(postId, blocks, html));
+		.then(([blocks, html]) => updatePost(postId, blocks, html))
+		.catch(function(error) {
+			console.error('An error occured:');
+			console.error(error);
+			console.error('Continuing with next Post ID.');
+		});
 }
 
 /**
