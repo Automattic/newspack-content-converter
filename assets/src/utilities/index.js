@@ -43,7 +43,6 @@ export function runSinglePost(postId) {
 		.catch(function(error) {
 			console.error('An error occured:');
 			console.error(error);
-			console.error('Continuing with next Post ID.');
 		});
 }
 
