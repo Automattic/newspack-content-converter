@@ -7,10 +7,9 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies.
  */
-import { fetchPatchingInfo, postPatchingInitialize } from "../utilities";
+import { fetchPatchingInfo, postPatchingInitialize } from '../utilities';
 
 class Patchers extends Component {
-
 	constructor( props ) {
 		super( props );
 
@@ -24,39 +23,56 @@ class Patchers extends Component {
 	}
 
 	componentDidMount() {
-		return fetchPatchingInfo()
-			.then( response => {
-				if ( response ) {
-					const { isPatchingOngoing, queuedBatchesPatching, maxBatchPatching, patchingBatchSize, queuedEntries } = response;
-					this.setState( { isPatchingOngoing , queuedBatchesPatching, maxBatchPatching, patchingBatchSize, queuedEntries } );
-				}
-				return new Promise( ( resolve, reject ) => resolve() );
-			} );
+		return fetchPatchingInfo().then( response => {
+			if ( response ) {
+				const {
+					isPatchingOngoing,
+					queuedBatchesPatching,
+					maxBatchPatching,
+					patchingBatchSize,
+					queuedEntries,
+				} = response;
+				this.setState( {
+					isPatchingOngoing,
+					queuedBatchesPatching,
+					maxBatchPatching,
+					patchingBatchSize,
+					queuedEntries,
+				} );
+			}
+			return new Promise( ( resolve, reject ) => resolve() );
+		} );
 	}
 
 	handleOnClickInitializePatching = () => {
-		return postPatchingInitialize()
-			.then( response => {
-				console.log(response)
+		return postPatchingInitialize().then( response => {
+			console.log( response );
 
-				if ( ! response || ! response.result || 'queued' != response.result ) {
-					return new Promise( ( resolve, reject ) => resolve() );
-				}
+			if ( ! response || ! response.result || 'queued' != response.result ) {
+				return new Promise( ( resolve, reject ) => resolve() );
+			}
 
-				// Redirect to Converter app to begin conversion.
-				window.parent.location = '/wp-admin/admin.php?page=ncc-content-repatching';
-			} );
+			// Redirect to Converter app to begin conversion.
+			window.parent.location = '/wp-admin/admin.php?page=ncc-content-repatching';
+		} );
 	};
 
 	/*
 	 * render().
 	 */
 	render() {
-		const { isPatchingOngoing, queuedBatchesPatching, maxBatchPatching, patchingBatchSize, queuedEntries } = this.state;
-		const queuedBatchesPatchingCsv = queuedBatchesPatching ? queuedBatchesPatching.join( ', ' ) : '';
+		const {
+			isPatchingOngoing,
+			queuedBatchesPatching,
+			maxBatchPatching,
+			patchingBatchSize,
+			queuedEntries,
+		} = this.state;
+		const queuedBatchesPatchingCsv = queuedBatchesPatching
+			? queuedBatchesPatching.join( ', ' )
+			: '';
 
 		if ( '1' == isPatchingOngoing ) {
-
 			return (
 				<div className="ncc-page">
 					<h1>{ __( 'Re-apply Patchers' ) }</h1>
@@ -65,48 +81,69 @@ class Patchers extends Component {
 					<h3>{ __( 'Patching is currently in progress...' ) }</h3>
 					<ul>
 						<li>
-							{ __( 'patching batches processed so far:' ) } <b><u>{ queuedBatchesPatchingCsv }</u></b>
+							{ __( 'patching batches processed so far:' ) }{' '}
+							<b>
+								<u>{ queuedBatchesPatchingCsv }</u>
+							</b>
 						</li>
 						<li>
-							{ __( 'total batches queued:' ) } <b><u>{ maxBatchPatching }</u></b>
+							{ __( 'total batches queued:' ) }{' '}
+							<b>
+								<u>{ maxBatchPatching }</u>
+							</b>
 						</li>
 						<li>
-							{ __( 'conversion batch size (posts per batch):' ) } <b><u>{ patchingBatchSize }</u></b>
+							{ __( 'conversion batch size (posts per batch):' ) }{' '}
+							<b>
+								<u>{ patchingBatchSize }</u>
+							</b>
 						</li>
 					</ul>
 					<p>
-						<i>* { __( 'note: keep an eye on your active browser tabs currently performing the conversion' ) }</i>
+						<i>
+							*{' '}
+							{ __(
+								'note: keep an eye on your active browser tabs currently performing the conversion'
+							) }
+						</i>
 					</p>
 				</div>
 			);
-
 		} else {
-
 			return (
 				<div className="ncc-page">
 					<h1>{ __( 'Re-apply Patchers' ) }</h1>
 					<br />
 
 					<p>
-						<i>{ __( 'This is a *dev* feature, automatically performed as a part of the conversion.' ) }</i>
+						<i>
+							{ __(
+								'This is a *dev* feature, automatically performed as a part of the conversion.'
+							) }
+						</i>
 					</p>
 
 					<h3>{ __( 'Planned patching' ) }</h3>
 					<ul>
+						<li>{ __( 'patching will be applied on the entire queued content' ) }</li>
+						<li>{ __( 'this page will automatically reload for every batch' ) }</li>
 						<li>
-							{ __( 'patching will be applied on the entire queued content') }
+							{ __( 'number of posts/entries to be patched:' ) }{' '}
+							<b>
+								<u>{ queuedEntries }</u>
+							</b>
 						</li>
 						<li>
-							{ __( 'this page will automatically reload for every batch') }
+							{ __( 'content grouped in total patching batches:' ) }:{' '}
+							<b>
+								<u>{ maxBatchPatching }</u>
+							</b>
 						</li>
 						<li>
-							{ __( 'number of posts/entries to be patched:') } <b><u>{ queuedEntries }</u></b>
-						</li>
-						<li>
-							{ __( 'content grouped in total patching batches:') }: <b><u>{ maxBatchPatching }</u></b>
-						</li>
-						<li>
-							{ __( 'batch size (posts per batch):' ) } <b><u>{ patchingBatchSize }</u></b>
+							{ __( 'batch size (posts per batch):' ) }{' '}
+							<b>
+								<u>{ patchingBatchSize }</u>
+							</b>
 						</li>
 					</ul>
 					<br />
@@ -124,11 +161,15 @@ class Patchers extends Component {
 					/>
 
 					<p>
-						<i>* { __( 'note carefully -- once started, patching should not be interrupted! Your browser page needs to remain active until patching is complete. You may, however, manually open multiple browser tabs once the patching starts, and each of them will fetch and patch another batch of content in parallel. Running multiple tabs speeds up the patching. Recommended max number of tabs is 4.' ) }</i>
+						<i>
+							*{' '}
+							{ __(
+								'note carefully -- once started, patching should not be interrupted! Your browser page needs to remain active until patching is complete. You may, however, manually open multiple browser tabs once the patching starts, and each of them will fetch and patch another batch of content in parallel. Running multiple tabs speeds up the patching. Recommended max number of tabs is 4.'
+							) }
+						</i>
 					</p>
 				</div>
 			);
-
 		}
 	}
 }
