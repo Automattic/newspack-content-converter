@@ -115,7 +115,9 @@ class ConversionProcessor {
 
 		$table_name = Config::get_instance()->get( 'table_name' );
 		$table_name = esc_sql( $table_name );
-		$results    = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM {$table_name} WHERE ID = %d;", $post_id ) );
+
+		// phpcs:ignore -- the following is a false positive; this SQL is safe, and the table name is escaped above.
+		$results = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM {$table_name} WHERE ID = %d;", $post_id ) );
 		if ( ! $results ) {
 			return null;
 		}
@@ -143,7 +145,8 @@ class ConversionProcessor {
 		$table_name = Config::get_instance()->get( 'table_name' );
 		$table_name = esc_sql( $table_name );
 
-		$results = $wpdb->get_results( "SELECT * FROM {$table_name} WHERE ID = $post_id;" );
+		// phpcs:ignore -- the following is a false positive; this SQL is safe, and the table name is escaped above.
+		$results = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM {$table_name} WHERE ID = %d;", $post_id ) );
 		if ( ! $results ) {
 			return null;
 		}
@@ -213,6 +216,7 @@ class ConversionProcessor {
 			'post_modified_gmt' => $time_gmt_ts,
 		];
 
+		// phpcs:ignore -- OK to query DB directly.
 		$wpdb->update( $table_name, array_merge( $data, $timestamps ), [ 'ID' => $post_id ] );
 	}
 
@@ -233,6 +237,7 @@ class ConversionProcessor {
 			'post_modified_gmt' => $time_gmt_ts,
 		];
 
+		// phpcs:ignore -- OK to query DB directly.
 		$wpdb->update( $wpdb->posts, array_merge( $data, $timestamps ), [ 'ID' => $post_id ] );
 	}
 
@@ -367,7 +372,8 @@ class ConversionProcessor {
 		$table_name = Config::get_instance()->get( 'table_name' );
 		$table_name = esc_sql( $table_name );
 
-		$results = $wpdb->get_results( "SELECT COUNT(*) as total FROM {$table_name} ;" );
+		// phpcs:ignore -- the following is a false positive; this SQL is safe, and the table name is escaped above.
+		$results = $wpdb->get_results( "SELECT COUNT(*) as total FROM `$table_name` ;" );
 
 		return isset( $results[0]->total ) ? (int) $results[0]->total : false;
 	}
@@ -426,10 +432,13 @@ class ConversionProcessor {
 
 		$table_name = Config::get_instance()->get( 'table_name' );
 		$table_name = esc_sql( $table_name );
+		$this_batch = esc_sql( $this_batch );
 		$batch_size = esc_sql( $batch_size );
 
-		$offset  = ( $this_batch - 1 ) * $batch_size;
-		$results = $wpdb->get_results( "SELECT ID FROM {$table_name} ORDER BY ID ASC LIMIT $batch_size OFFSET $offset ;" );
+		$offset        = ( $this_batch - 1 ) * $batch_size;
+		$query_prepare = "SELECT ID FROM $table_name ORDER BY ID ASC LIMIT %d OFFSET %d ;";
+		// phpcs:ignore -- the following is a false positive; this SQL is safe, and the table name is escaped above.
+		$results = $wpdb->get_results( $wpdb->prepare( $query_prepare, $batch_size, $offset ) );
 
 		$ids = [];
 		foreach ( $results as $result ) {
