@@ -1,11 +1,11 @@
 <?php
 /**
  * Dependency includer script.
- * TODO: use Composer autoloading instead of this.
  *
  * @package Newspack
  */
 
+// TODO: Switch to Composer autoloading and remove this file all together.
 require_once dirname( __FILE__ ) . '/lib/class-config.php';
 require_once dirname( __FILE__ ) . '/lib/class-converter.php';
 require_once dirname( __FILE__ ) . '/lib/class-convertercontroller.php';

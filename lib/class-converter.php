@@ -191,7 +191,7 @@ class Converter {
 
 		return (
 			'post-new.php' === $pagenow &&
-			isset( $_GET['newspack-content-converter'] )
+			isset( $_GET['newspack-content-converter'] ) // phpcs:ignore
 		);
 	}
 }

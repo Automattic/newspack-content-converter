@@ -101,6 +101,7 @@ class Installer {
 	) $charset_collate;";
 
 		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
+		// phpcs:ignore -- allow DB modification for custom table.
 		dbDelta( $sql );
 	}
 
@@ -113,6 +114,7 @@ class Installer {
 		global $wpdb;
 
 		$table_name_esc = esc_sql( $table_name );
+		// phpcs:ignore -- allow this direct DB call; the table name is escaped.
 		$wpdb->query( "DROP TABLE IF EXISTS {$table_name_esc};" );
 	}
 
@@ -125,6 +127,7 @@ class Installer {
 	private static function get_post_types_editable_by_block_editor() {
 		$post_types = get_post_types( array( 'public' => true ) );
 
+		// phpcsignore -- ignore warning, allow following comment with valid code.
 		// Attempt to use use_block_editor_for_post_type() function, or else default to 'post' and 'page'.
 		require_once ABSPATH . 'wp-admin/includes/post.php';
 		if ( function_exists( 'use_block_editor_for_post_type' ) ) {
@@ -170,11 +173,13 @@ class Installer {
 									  SELECT {$wp_posts_columns_csv}
 									  FROM {$wp_posts_table}
 									  WHERE post_status IN ({$statuses_placeholders_csv})
-									  AND post_type IN ({$type_placeholders_csv}) 
+									  AND post_type IN ({$type_placeholders_csv})
 									  AND post_content <> '' ;";
+		// phpcs:ignore -- false positive, all params are fully sanitized.
 		$wpdb->get_results( $wpdb->prepare( $sql_placeholders, array_merge( $post_statuses, $post_types ) ) );
 
 		// Insert specified content into plugin's table.
+		// phpcs:ignore -- the following is a false positive; this SQL is safe, and the table name is escaped above.
 		$results       = $wpdb->get_results( "SELECT COUNT(*) AS total FROM {$table_name} ; " );
 		$total_entries = isset( $results[0]->total ) ? (int) $results[0]->total : false;
 
@@ -259,12 +264,13 @@ class Installer {
 
 		$table_name = esc_sql( $table_name );
 
+		// phpcs:ignore -- OK to use a direct DB call here.
 		$results = $wpdb->get_results(
 			$wpdb->prepare(
-				'SELECT * 
-		         FROM INFORMATION_SCHEMA.TABLES 
-		         WHERE TABLE_SCHEMA = %s 
-		         AND  TABLE_NAME = %s;',
+				'SELECT *
+		         FROM INFORMATION_SCHEMA.TABLES
+		         WHERE TABLE_SCHEMA = %s
+		         AND TABLE_NAME = %s;',
 				$wpdb->dbname,
 				$table_name
 			)
