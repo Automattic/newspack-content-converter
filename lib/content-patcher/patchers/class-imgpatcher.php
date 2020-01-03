@@ -220,7 +220,7 @@ class ImgPatcher extends PatcherAbstract implements PatcherInterface {
 		// patch (replace) attribute value.
 		$attributes_json                    = json_decode( $attributes, true );
 		$attributes_json[ $attribute_name ] = $attribute_value;
-		$attributes_patched                 = json_encode( $attributes_json, JSON_NUMERIC_CHECK );
+		$attributes_patched                 = wp_json_encode( $attributes_json, JSON_NUMERIC_CHECK );
 
 		// put back patched attributes.
 		if ( isset( $existing_attributes ) ) {
