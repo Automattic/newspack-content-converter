@@ -21,17 +21,26 @@ class ContentConverter extends Component {
 			postIds: '',
 			thisBatch: '',
 			maxBatch: '',
+			hasIncompleteConversions: '',
 		};
 	}
 
 	componentDidMount() {
 		return fetchConversionBatch()
 			.then( response => {
-				if ( response && response.ids ) {
-					const { ids: postIds, thisBatch, maxBatch } = response;
-					this.setState( { postIds, thisBatch, maxBatch, isActive: true } );
-					console.log( ' ----------------------- ABOUT TO CONVERT IDS: ' + postIds );
-					return runMultiplePosts( postIds );
+				if ( response ) {
+					const { ids: postIds, thisBatch, maxBatch, hasIncompleteConversions } = response;
+					this.setState( {
+						postIds,
+						thisBatch,
+						maxBatch,
+						hasIncompleteConversions,
+						isActive: true,
+					} );
+					if ( this.state.postIds ) {
+						console.log( ' ----------------------- ABOUT TO CONVERT IDS: ' + postIds );
+						return runMultiplePosts( postIds );
+					}
 				}
 
 				return new Promise( ( resolve, reject ) => resolve() );
@@ -58,7 +67,7 @@ class ContentConverter extends Component {
 	 * render().
 	 */
 	render() {
-		const { isActive, thisBatch, maxBatch } = this.state;
+		const { isActive, thisBatch, maxBatch, hasIncompleteConversions } = this.state;
 
 		if ( null == isActive ) {
 			return (
@@ -95,6 +104,13 @@ class ContentConverter extends Component {
 				<div className="ncc-page">
 					<h1>{ __( 'Content Conversion Complete' ) }</h1>
 					<p>{ __( 'All queued content has been converted.' ) }</p>
+					{ true == hasIncompleteConversions && (
+						<p>
+							{ __(
+								"Warning: certain posts were not converted successfully. Go to the Converter Plugin's Run Conversion page where you can retry converting these."
+							) }
+						</p>
+					) }
 				</div>
 			);
 		}

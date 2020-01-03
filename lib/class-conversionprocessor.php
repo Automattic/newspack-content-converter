@@ -271,6 +271,24 @@ class ConversionProcessor {
 	}
 
 	/**
+	 * Checks whether there are any unconverted posts left.
+	 *
+	 * @return bool Are there incomplete conversions left.
+	 */
+	public function has_incomplete_conversions() {
+		global $wpdb;
+
+		$table_name = esc_sql( Config::get_instance()->get( 'table_name' ) );
+
+		$results = $wpdb->get_results( "SELECT COUNT(*) as count_incomplete FROM {$table_name} WHERE post_content_gutenberg_converted = '';" );
+		if ( ! $results ) {
+			return false;
+		}
+
+		return isset( $results[0]->count_incomplete ) && $results[0]->count_incomplete > 0 ? true : false;
+	}
+
+	/**
 	 * Gets max conversion batch.
 	 *
 	 * @return int|null Batch number.
