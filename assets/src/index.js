@@ -2,6 +2,7 @@
  * WordPress dependencies.
  */
 import { render } from '@wordpress/element';
+import queryString from 'query-string';
 
 /**
  * Internal dependencies.
@@ -74,6 +75,10 @@ window.onload = function() {
 
 		window.onbeforeunload = function() {};
 
-		render( <ContentConverter />, document.getElementById( 'root' ) );
+		const getParams = queryString.parse( window.location.search );
+		render(
+			<ContentConverter retryFailedConversions={ 'retry-failed' in getParams } />,
+			document.getElementById( 'root' )
+		);
 	}
 };
