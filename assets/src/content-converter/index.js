@@ -7,7 +7,11 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies.
  */
-import { runMultiplePosts, fetchConversionBatch } from '../utilities';
+import {
+	runMultiplePosts,
+	fetchConversionBatch,
+	fetchRetryFailedConversionsBatch,
+} from '../utilities';
 
 class ContentConverter extends Component {
 	/**
@@ -18,6 +22,7 @@ class ContentConverter extends Component {
 
 		this.state = {
 			isActive: null,
+			retryFailedConversions: props.retryFailedConversions,
 			postIds: '',
 			thisBatch: '',
 			maxBatch: '',
@@ -26,7 +31,14 @@ class ContentConverter extends Component {
 	}
 
 	componentDidMount() {
-		return fetchConversionBatch()
+		const { retryFailedConversions } = this.state;
+
+		// Get a batch of regular conversions, or retry the failed ones.
+		const fetchBatchPromise = ! retryFailedConversions
+			? fetchConversionBatch
+			: fetchRetryFailedConversionsBatch;
+
+		return fetchBatchPromise()
 			.then( response => {
 				if ( response ) {
 					const { ids: postIds, thisBatch, maxBatch, hasIncompleteConversions } = response;
@@ -104,10 +116,15 @@ class ContentConverter extends Component {
 				<div className="ncc-page">
 					<h1>{ __( 'Content Conversion Complete' ) }</h1>
 					<p>{ __( 'All queued content has been converted.' ) }</p>
+					<p>
+						<a href="/wp-admin/admin.php?page=ncc-conversion">
+							{ __( 'Back to Run Conversion page' ) }
+						</a>
+					</p>
 					{ true == hasIncompleteConversions && (
 						<p>
 							{ __(
-								"Warning: certain posts were not converted successfully. Go to the Converter Plugin's Run Conversion page where you can retry converting these."
+								'Warning: certain posts were not converted successfully. You may try converting those again on the Run Conversion page.'
 							) }
 						</p>
 					) }
