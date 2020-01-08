@@ -139,7 +139,7 @@ class ConversionProcessor {
 	 *
 	 * @return string|null Post content, or null.
 	 */
-	public function get_post_content_by_id( $post_id ) {
+	public function get_post_content( $post_id ) {
 		if ( ! $post_id ) {
 			return null;
 		}
