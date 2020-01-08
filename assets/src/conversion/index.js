@@ -7,7 +7,12 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies.
  */
-import { fetchConversionInfo, postConversionInitialize } from '../utilities';
+import {
+	fetchConversionInfo,
+	fetchInitializeConversion,
+	fetchInitializeRetryFailedConversion,
+	fetchResetConversion,
+} from '../utilities';
 
 class Conversion extends Component {
 	constructor( props ) {
@@ -19,6 +24,9 @@ class Conversion extends Component {
 			conversionBatchSize: '',
 			queuedBatchesCsv: '',
 			maxBatch: '',
+			hasConvertedPosts: '',
+			hasFailedConversions: '',
+			countFailedConverting: '',
 		};
 	}
 
@@ -31,14 +39,20 @@ class Conversion extends Component {
 					conversionBatchSize,
 					queuedBatches,
 					maxBatch,
+					hasConvertedPosts,
+					hasFailedConversions,
+					countFailedConverting,
 				} = response;
-				const queuedBatchesCsv = queuedBatches.join( ',' );
+				const queuedBatchesCsv = queuedBatches ? queuedBatches.join( ',' ) : null;
 				this.setState( {
 					isConversionOngoing,
 					queuedEntries,
 					conversionBatchSize,
 					queuedBatchesCsv,
 					maxBatch,
+					hasConvertedPosts,
+					hasFailedConversions,
+					countFailedConverting,
 				} );
 			}
 			return new Promise( ( resolve, reject ) => resolve() );
@@ -46,15 +60,32 @@ class Conversion extends Component {
 	}
 
 	handleOnClickInitializeConversion = () => {
-		return postConversionInitialize().then( response => {
-			console.log( response );
-
+		return fetchInitializeConversion().then( response => {
 			if ( ! response || ! response.result || 'queued' != response.result ) {
 				return new Promise( ( resolve, reject ) => resolve() );
 			}
 
 			// Redirect to Converter app to begin conversion.
 			window.parent.location = '/wp-admin/post-new.php?newspack-content-converter';
+		} );
+	};
+
+	handleOnClickInitializeRetryFailed = () => {
+		return fetchInitializeRetryFailedConversion().then( response => {
+			if ( ! response || ! response.result || 'queued' != response.result ) {
+				return new Promise( ( resolve, reject ) => resolve() );
+			}
+
+			// Redirect to Converter app to begin conversion.
+			window.parent.location = '/wp-admin/post-new.php?newspack-content-converter&retry-failed';
+		} );
+	};
+
+	handleOnClickResetConversion = () => {
+		return fetchResetConversion().then( response => {
+			if ( response ) {
+				location.reload();
+			}
 		} );
 	};
 
@@ -65,7 +96,11 @@ class Conversion extends Component {
 			conversionBatchSize,
 			queuedBatchesCsv,
 			maxBatch,
+			hasConvertedPosts,
+			hasFailedConversions,
+			countFailedConverting,
 		} = this.state;
+		const someConversionsFailed = true === hasConvertedPosts && true === hasFailedConversions;
 
 		if ( '1' == isConversionOngoing ) {
 			return (
@@ -73,7 +108,12 @@ class Conversion extends Component {
 					<h1>{ __( 'Run Conversion' ) }</h1>
 					<br />
 
-					<h3>{ __( 'Converson is currently in progress...' ) }</h3>
+					<h3>{ __( 'A Converson is Currently in Progress' ) }</h3>
+					<p>
+						{ __(
+							'A designated browser tab has already started to convert your content. Conversion progress:'
+						) }
+					</p>
 					<ul>
 						<li>
 							{ __( 'conversion batches processed so far:' ) }{' '}
@@ -94,23 +134,40 @@ class Conversion extends Component {
 							</b>
 						</li>
 					</ul>
+
+					<br />
+
+					<h3>{ __( 'Reset Ongoing Conversion to Start Again' ) }</h3>
 					<p>
-						<i>
-							*{' '}
-							{ __(
-								'note: keep an eye on your active browser tabs currently performing the conversion'
-							) }
-						</i>
+						{ __(
+							'In case that your active conversion browser tab has been closed by accident, or it has been interrupted and closed unexpectedly, you may reset the conversion status here, and start converting all over again. Note that this will enable you to restart the conversion, but any previous results may be lost.'
+						) }
 					</p>
+					<input
+						type="submit"
+						className="large"
+						id="reset_conversion"
+						value={ __( 'Reset Conversion' ) }
+						onClick={ event => this.handleOnClickResetConversion( event ) }
+					/>
 				</div>
 			);
 		} else {
 			return (
 				<div className="ncc-page">
 					<h1>{ __( 'Run Conversion' ) }</h1>
-					<br />
 
-					<h3>{ __( 'Planned conversion' ) }</h3>
+					<p>
+						<b>
+							<u>{ __( 'Note carefully' ) }</u>
+						</b>
+						{ ' -- ' }
+						{ __(
+							'once started, the conversion should not be interrupted! Your browser page needs to remain active until conversion is complete. You may, however, manually open multiple browser tabs once the conversion starts, and each of them will fetch and convert another batch of posts in parallel. Running multiple tabs speeds up the conversion. Recommended max number of tabs is 4.'
+						) }
+					</p>
+
+					<h3>{ __( 'Planned Conversion' ) }</h3>
 					<ul>
 						<li>{ __( 'the entire queued content will be converted to Gutenberg Blocks' ) }</li>
 						<li>{ __( 'this page will automatically reload for every batch' ) }</li>
@@ -133,23 +190,46 @@ class Conversion extends Component {
 							</b>
 						</li>
 					</ul>
+
 					<br />
 
 					<input
 						type="submit"
 						className="large"
 						id="convert_button"
-						value={ __( 'Start Conversion Now' ) }
+						value={ __( 'Start Conversion' ) }
 						onClick={ event => this.handleOnClickInitializeConversion( event ) }
 					/>
-					<p>
-						<i>
-							*{' '}
-							{ __(
-								'note carefully -- once started, the conversion should not be interrupted! Your browser page needs to remain active until conversion is complete. You may, however, manually open multiple browser tabs once the conversion starts, and each of them will fetch and convert another batch of posts in parallel. Running multiple tabs speeds up the conversion. Recommended max number of tabs is 4.'
-							) }
-						</i>
-					</p>
+
+					<br />
+					<br />
+
+					{ !! someConversionsFailed && (
+						<div>
+							<h3>{ __( 'Retry Converting Failed Posts' ) }</h3>
+							<p>
+								{ __(
+									"Looks like some posts weren't converted properly. This could have happened due to unexpected/unsupported Post content (valid HTML source is expected as Post content), or due to technical reasons (e.g. your server experiencing difficulties). You may retry converting these posts now."
+								) }
+							</p>
+							<ul>
+								<li>
+									{ __( 'number of posts which failed getting converted:' ) }{' '}
+									<b>
+										<u>{ countFailedConverting }</u>
+									</b>
+								</li>
+							</ul>
+
+							<input
+								type="submit"
+								className="large"
+								id="retry_failed_button"
+								value={ __( 'Retry Failed' ) }
+								onClick={ event => this.handleOnClickInitializeRetryFailed( event ) }
+							/>
+						</div>
+					) }
 				</div>
 			);
 		}
