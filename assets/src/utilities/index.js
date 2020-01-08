@@ -137,7 +137,7 @@ export function getAllBlocksContents( postId, html ) {
  */
 export function updatePost( postId, blocks, html ) {
 	if ( ! blocks ) {
-		throw new Error( 'No blocks content.' );
+		throw new Error( 'No resulting blocks content.' );
 	}
 
 	return apiFetch( {
