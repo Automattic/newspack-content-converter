@@ -93,6 +93,7 @@ class Installer {
 	  `post_mime_type` varchar(100) NOT NULL DEFAULT '',
 	  `comment_count` bigint(20) NOT NULL DEFAULT 0,
 	  `post_content_gutenberg_converted` longtext DEFAULT '',
+	  `retry_conversion` tinyint(1) DEFAULT NULL,
 	  PRIMARY KEY (`ID`),
 	  KEY `post_name` (`post_name`(191)),
 	  KEY `type_status_date` (`post_type`,`post_status`,`post_date`,`ID`),
