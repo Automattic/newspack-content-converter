@@ -7,7 +7,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies.
  */
-import { fetchPatchingInfo, postPatchingInitialize } from '../utilities';
+import { fetchPatchingInfo, fetchInitializePatching } from '../utilities';
 
 class Patchers extends Component {
 	constructor( props ) {
@@ -45,7 +45,7 @@ class Patchers extends Component {
 	}
 
 	handleOnClickInitializePatching = () => {
-		return postPatchingInitialize().then( response => {
+		return fetchInitializePatching().then( response => {
 			console.log( response );
 
 			if ( ! response || ! response.result || 'queued' != response.result ) {
