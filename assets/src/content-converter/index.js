@@ -7,7 +7,11 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies.
  */
-import { runMultiplePosts, fetchConversionBatch } from '../utilities';
+import {
+	runMultiplePosts,
+	fetchConversionBatch,
+	fetchRetryFailedConversionsBatch,
+} from '../utilities';
 
 class ContentConverter extends Component {
 	/**
@@ -18,20 +22,37 @@ class ContentConverter extends Component {
 
 		this.state = {
 			isActive: null,
-			postIds: '',
-			thisBatch: '',
-			maxBatch: '',
+			retryFailedConversions: props.retryFailedConversions,
+			postIds: null,
+			thisBatch: null,
+			maxBatch: null,
+			hasIncompleteConversions: false,
 		};
 	}
 
 	componentDidMount() {
-		return fetchConversionBatch()
+		const { retryFailedConversions } = this.state;
+
+		// Get a batch of regular conversions, or retry the failed ones.
+		const fetchBatchPromise = retryFailedConversions
+			? fetchRetryFailedConversionsBatch
+			: fetchConversionBatch;
+
+		return fetchBatchPromise()
 			.then( response => {
-				if ( response && response.ids ) {
-					const { ids: postIds, thisBatch, maxBatch } = response;
-					this.setState( { postIds, thisBatch, maxBatch, isActive: true } );
-					console.log( ' ----------------------- ABOUT TO CONVERT IDS: ' + postIds );
-					return runMultiplePosts( postIds );
+				if ( response ) {
+					const { ids: postIds, thisBatch, maxBatch, hasIncompleteConversions } = response;
+					this.setState( {
+						postIds,
+						thisBatch,
+						maxBatch,
+						hasIncompleteConversions,
+						isActive: true,
+					} );
+					if ( postIds ) {
+						console.log( ' ----------------------- ABOUT TO CONVERT IDS: ' + postIds );
+						return runMultiplePosts( postIds );
+					}
 				}
 
 				return new Promise( ( resolve, reject ) => resolve() );
@@ -58,7 +79,7 @@ class ContentConverter extends Component {
 	 * render().
 	 */
 	render() {
-		const { isActive, thisBatch, maxBatch } = this.state;
+		const { isActive, thisBatch, maxBatch, hasIncompleteConversions } = this.state;
 
 		if ( null == isActive ) {
 			return (
@@ -95,6 +116,18 @@ class ContentConverter extends Component {
 				<div className="ncc-page">
 					<h1>{ __( 'Content Conversion Complete' ) }</h1>
 					<p>{ __( 'All queued content has been converted.' ) }</p>
+					<p>
+						<a href="/wp-admin/admin.php?page=ncc-conversion">
+							{ __( 'Back to Run Conversion page' ) }
+						</a>
+					</p>
+					{ true == hasIncompleteConversions && (
+						<p>
+							{ __(
+								'Warning: certain posts were not converted successfully. You may try converting those again on the Run Conversion page.'
+							) }
+						</p>
+					) }
 				</div>
 			);
 		}

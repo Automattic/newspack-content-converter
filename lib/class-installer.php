@@ -93,6 +93,7 @@ class Installer {
 	  `post_mime_type` varchar(100) NOT NULL DEFAULT '',
 	  `comment_count` bigint(20) NOT NULL DEFAULT 0,
 	  `post_content_gutenberg_converted` longtext DEFAULT '',
+	  `retry_conversion` tinyint(1) DEFAULT NULL,
 	  PRIMARY KEY (`ID`),
 	  KEY `post_name` (`post_name`(191)),
 	  KEY `type_status_date` (`post_type`,`post_status`,`post_date`,`ID`),
@@ -237,15 +238,15 @@ class Installer {
 	 * Deletes all plugin's options.
 	 */
 	private static function delete_all_options() {
-		// General options.
 		delete_option( Config::get_instance()->get( 'option_conversion_post_types_csv' ) );
 		delete_option( Config::get_instance()->get( 'option_conversion_post_statuses_csv' ) );
-		// Conversion options.
 		delete_option( Config::get_instance()->get( 'option_conversion_batch_size' ) );
 		delete_option( Config::get_instance()->get( 'option_conversion_max_batches' ) );
-		delete_option( Config::get_instance()->get( 'option_conversion_is_queued' ) );
+		delete_option( Config::get_instance()->get( 'option_retry_conversion_failed_max_batches' ) );
+		delete_option( Config::get_instance()->get( 'option_is_queued_conversion' ) );
+		delete_option( Config::get_instance()->get( 'option_is_queued_retry_failed_conversion' ) );
 		delete_option( Config::get_instance()->get( 'option_conversion_queued_batches' ) );
-		// Patching options.
+		delete_option( Config::get_instance()->get( 'option_retry_conversion_failed_queued_batches' ) );
 		delete_option( Config::get_instance()->get( 'option_patching_batch_size' ) );
 		delete_option( Config::get_instance()->get( 'option_patching_max_batches' ) );
 		delete_option( Config::get_instance()->get( 'option_patching_is_queued' ) );

@@ -7,7 +7,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies.
  */
-import { fetchPatchingInfo, callPatchingProcessNextBatch } from '../utilities';
+import { fetchPatchingInfo, fetchPatchingProcessNextBatch } from '../utilities';
 
 class ContentRepatcher extends Component {
 	/**
@@ -19,9 +19,9 @@ class ContentRepatcher extends Component {
 		this.state = {
 			isActive: null,
 			isPatchingOngoing: null,
-			queuedBatchesPatching: '',
-			maxBatchPatching: '',
-			patchingBatchSize: '',
+			queuedBatchesPatching: null,
+			maxBatchPatching: '...',
+			patchingBatchSize: '...',
 		};
 	}
 
@@ -55,7 +55,7 @@ class ContentRepatcher extends Component {
 				console.log( ' ----------------------- ABOUT TO PATCH NEXT BATCH.' );
 				return new Promise( ( resolve, reject ) => resolve() );
 			} )
-			.then( () => callPatchingProcessNextBatch() )
+			.then( () => fetchPatchingProcessNextBatch() )
 			.then( response => {
 				if ( null == response ) {
 					this.setState( { isActive: false } );

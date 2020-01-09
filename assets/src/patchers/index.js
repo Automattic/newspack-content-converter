@@ -7,18 +7,18 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies.
  */
-import { fetchPatchingInfo, postPatchingInitialize } from '../utilities';
+import { fetchPatchingInfo, fetchInitializePatching } from '../utilities';
 
 class Patchers extends Component {
 	constructor( props ) {
 		super( props );
 
 		this.state = {
-			isPatchingOngoing: null,
-			queuedBatchesPatching: '',
-			maxBatchPatching: '',
-			patchingBatchSize: '',
-			queuedEntries: '',
+			isPatchingOngoing: '0',
+			queuedBatchesPatching: null,
+			maxBatchPatching: '...',
+			patchingBatchSize: '...',
+			queuedEntries: '...',
 		};
 	}
 
@@ -45,7 +45,7 @@ class Patchers extends Component {
 	}
 
 	handleOnClickInitializePatching = () => {
-		return postPatchingInitialize().then( response => {
+		return fetchInitializePatching().then( response => {
 			console.log( response );
 
 			if ( ! response || ! response.result || 'queued' != response.result ) {
@@ -155,7 +155,6 @@ class Patchers extends Component {
 					<input
 						type="submit"
 						className="large"
-						id="convert_button"
 						value={ __( 'Patch Content Now' ) }
 						onClick={ event => this.handleOnClickInitializePatching( event ) }
 					/>

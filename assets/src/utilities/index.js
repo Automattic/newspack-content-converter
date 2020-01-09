@@ -41,7 +41,7 @@ export function runSinglePost( postId ) {
 		.then( html => getAllBlocksContents( postId, html ) )
 		.then( ( [ blocks, html ] ) => updatePost( postId, blocks, html ) )
 		.catch( error => {
-			console.error( 'An error occured:' );
+			console.error( 'A conversion error occured:' );
 			console.error( error );
 		} );
 }
@@ -65,7 +65,7 @@ export function removeAllBlocks() {
  */
 export function getPostContentById( id ) {
 	return apiFetch( {
-		path: NEWSPACK_CONVERTER_API_BASE_URL + `/get-post-content-by-id/${ id }`,
+		path: NEWSPACK_CONVERTER_API_BASE_URL + `/get-post-content/${ id }`,
 	} ).then( response => {
 		return Promise.resolve( response );
 	} );
@@ -136,6 +136,10 @@ export function getAllBlocksContents( postId, html ) {
  * @returns {*}
  */
 export function updatePost( postId, blocks, html ) {
+	if ( ! blocks ) {
+		throw new Error( 'No resulting blocks content.' );
+	}
+
 	return apiFetch( {
 		path: NEWSPACK_CONVERTER_API_BASE_URL + '/conversion/update-post',
 		method: 'POST',
@@ -153,6 +157,12 @@ export function fetchConversionBatch() {
 	} ).then( response => Promise.resolve( response ) );
 }
 
+export function fetchRetryFailedConversionsBatch() {
+	return apiFetch( {
+		path: NEWSPACK_CONVERTER_API_BASE_URL + '/conversion-retry-failed/get-batch-data',
+	} ).then( response => Promise.resolve( response ) );
+}
+
 export function fetchSettingsInfo() {
 	return apiFetch( {
 		path: NEWSPACK_CONVERTER_API_BASE_URL + '/settings/get-info',
@@ -165,9 +175,21 @@ export function fetchConversionInfo() {
 	} ).then( response => Promise.resolve( response ) );
 }
 
-export function postConversionInitialize() {
+export function fetchInitializeConversion() {
 	return apiFetch( {
 		path: NEWSPACK_CONVERTER_API_BASE_URL + '/conversion/initialize',
+	} ).then( response => Promise.resolve( response ) );
+}
+
+export function fetchInitializeRetryFailedConversion() {
+	return apiFetch( {
+		path: NEWSPACK_CONVERTER_API_BASE_URL + '/conversion-retry-failed/initialize',
+	} ).then( response => Promise.resolve( response ) );
+}
+
+export function fetchResetConversion() {
+	return apiFetch( {
+		path: NEWSPACK_CONVERTER_API_BASE_URL + '/conversion/reset',
 	} ).then( response => Promise.resolve( response ) );
 }
 
@@ -177,13 +199,13 @@ export function fetchPatchingInfo() {
 	} ).then( response => Promise.resolve( response ) );
 }
 
-export function postPatchingInitialize() {
+export function fetchInitializePatching() {
 	return apiFetch( {
 		path: NEWSPACK_CONVERTER_API_BASE_URL + '/patching/initialize',
 	} ).then( response => Promise.resolve( response ) );
 }
 
-export function callPatchingProcessNextBatch() {
+export function fetchPatchingProcessNextBatch() {
 	return apiFetch( {
 		path: NEWSPACK_CONVERTER_API_BASE_URL + '/patching/process-next-batch',
 	} ).then( response => Promise.resolve( response ) );
@@ -193,9 +215,13 @@ export default {
 	runSinglePost,
 	runMultiplePosts,
 	fetchConversionBatch,
+	fetchRetryFailedConversionsBatch,
 	fetchSettingsInfo,
 	fetchConversionInfo,
+	fetchInitializeConversion,
+	fetchInitializeRetryFailedConversion,
+	fetchResetConversion,
 	fetchPatchingInfo,
-	postPatchingInitialize,
-	callPatchingProcessNextBatch,
+	fetchInitializePatching,
+	fetchPatchingProcessNextBatch,
 };
