@@ -34,9 +34,9 @@ class ContentConverter extends Component {
 		const { retryFailedConversions } = this.state;
 
 		// Get a batch of regular conversions, or retry the failed ones.
-		const fetchBatchPromise = ! retryFailedConversions
-			? fetchConversionBatch
-			: fetchRetryFailedConversionsBatch;
+		const fetchBatchPromise = retryFailedConversions
+			? fetchRetryFailedConversionsBatch
+			: fetchConversionBatch;
 
 		return fetchBatchPromise()
 			.then( response => {
