@@ -148,7 +148,7 @@ class Conversion extends Component {
 						className="large"
 						id="reset_conversion"
 						value={ __( 'Reset Conversion' ) }
-						onClick={ event => this.handleOnClickResetConversion( event ) }
+						onClick={ this.handleOnClickResetConversion }
 					/>
 				</div>
 			);
@@ -198,7 +198,7 @@ class Conversion extends Component {
 						className="large"
 						id="convert_button"
 						value={ __( 'Start Conversion' ) }
-						onClick={ event => this.handleOnClickInitializeConversion( event ) }
+						onClick={ this.handleOnClickInitializeConversion }
 					/>
 
 					<br />
@@ -226,7 +226,7 @@ class Conversion extends Component {
 								className="large"
 								id="retry_failed_button"
 								value={ __( 'Retry Failed' ) }
-								onClick={ event => this.handleOnClickInitializeRetryFailed( event ) }
+								onClick={ this.handleOnClickInitializeRetryFailed }
 							/>
 						</div>
 					) }
