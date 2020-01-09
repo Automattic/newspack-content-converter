@@ -269,11 +269,12 @@ class ConverterController extends WP_REST_Controller {
 	 * @return array Conversion batch data.
 	 */
 	public function get_conversion_batch_data() {
+		$ids                        = $this->conversion_processor->set_next_conversion_batch_to_queue();
 		$has_incomplete_conversions = ! $this->conversion_processor->is_queued_conversion() && $this->conversion_processor->has_incomplete_conversions();
 
 		return rest_ensure_response(
 			[
-				'ids'                      => $this->conversion_processor->set_next_conversion_batch_to_queue(),
+				'ids'                      => $ids,
 				'thisBatch'                => max( $this->conversion_processor->get_conversion_queued_batches() ),
 				'maxBatch'                 => $this->conversion_processor->get_conversion_max_batch(),
 				'hasIncompleteConversions' => $has_incomplete_conversions,
