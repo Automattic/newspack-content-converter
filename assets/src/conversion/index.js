@@ -62,7 +62,7 @@ class Conversion extends Component {
 	handleOnClickInitializeConversion = () => {
 		return fetchInitializeConversion().then( response => {
 			if ( ! response || ! response.result || 'queued' != response.result ) {
-				return new Promise( ( resolve, reject ) => resolve() );
+				return;
 			}
 
 			// Redirect to Converter app to begin conversion.
@@ -73,7 +73,7 @@ class Conversion extends Component {
 	handleOnClickInitializeRetryFailed = () => {
 		return fetchInitializeRetryFailedConversion().then( response => {
 			if ( ! response || ! response.result || 'queued' != response.result ) {
-				return new Promise( ( resolve, reject ) => resolve() );
+				return;
 			}
 
 			// Redirect to Converter app to begin conversion.
