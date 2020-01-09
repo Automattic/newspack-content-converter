@@ -49,7 +49,7 @@ class ContentConverter extends Component {
 						hasIncompleteConversions,
 						isActive: true,
 					} );
-					if ( this.state.postIds ) {
+					if ( postIds ) {
 						console.log( ' ----------------------- ABOUT TO CONVERT IDS: ' + postIds );
 						return runMultiplePosts( postIds );
 					}
