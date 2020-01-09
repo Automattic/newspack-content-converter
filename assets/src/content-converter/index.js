@@ -23,10 +23,10 @@ class ContentConverter extends Component {
 		this.state = {
 			isActive: null,
 			retryFailedConversions: props.retryFailedConversions,
-			postIds: '',
-			thisBatch: '',
-			maxBatch: '',
-			hasIncompleteConversions: '',
+			postIds: null,
+			thisBatch: null,
+			maxBatch: null,
+			hasIncompleteConversions: false,
 		};
 	}
 

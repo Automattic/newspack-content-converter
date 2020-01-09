@@ -19,9 +19,9 @@ class ContentRepatcher extends Component {
 		this.state = {
 			isActive: null,
 			isPatchingOngoing: null,
-			queuedBatchesPatching: '',
-			maxBatchPatching: '',
-			patchingBatchSize: '',
+			queuedBatchesPatching: null,
+			maxBatchPatching: '...',
+			patchingBatchSize: '...',
 		};
 	}
 

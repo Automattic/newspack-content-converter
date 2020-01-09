@@ -14,11 +14,11 @@ class Patchers extends Component {
 		super( props );
 
 		this.state = {
-			isPatchingOngoing: null,
-			queuedBatchesPatching: '',
-			maxBatchPatching: '',
-			patchingBatchSize: '',
-			queuedEntries: '',
+			isPatchingOngoing: '0',
+			queuedBatchesPatching: null,
+			maxBatchPatching: '...',
+			patchingBatchSize: '...',
+			queuedEntries: '...',
 		};
 	}
 

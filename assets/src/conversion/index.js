@@ -19,14 +19,14 @@ class Conversion extends Component {
 		super( props );
 
 		this.state = {
-			isConversionOngoing: null,
-			queuedEntries: '',
-			conversionBatchSize: '',
-			queuedBatchesCsv: '',
-			maxBatch: '',
-			hasConvertedPosts: '',
-			hasFailedConversions: '',
-			countFailedConverting: '',
+			isConversionOngoing: false,
+			queuedEntries: '...',
+			conversionBatchSize: '...',
+			queuedBatchesCsv: '...',
+			maxBatch: '...',
+			hasConvertedPosts: false,
+			hasFailedConversions: false,
+			countFailedConverting: '...',
 		};
 	}
 
