@@ -227,7 +227,7 @@ class ConverterController extends WP_REST_Controller {
 			$max_batch      = $this->conversion_processor->get_conversion_retry_failed_max_batch();
 		} else {
 			$queued_batches = null;
-			$max_batch      = null;
+			$max_batch      = $this->conversion_processor->get_conversion_max_batch();
 		}
 		$posts_converted_count   = $this->conversion_processor->get_posts_converted_count();
 		$has_converted_posts     = ! is_null( $posts_converted_count ) && $posts_converted_count > 0 ? true : false;
