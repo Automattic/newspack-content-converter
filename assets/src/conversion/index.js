@@ -146,7 +146,6 @@ class Conversion extends Component {
 					<input
 						type="submit"
 						className="large"
-						id="reset_conversion"
 						value={ __( 'Reset Conversion' ) }
 						onClick={ this.handleOnClickResetConversion }
 					/>
@@ -196,7 +195,6 @@ class Conversion extends Component {
 					<input
 						type="submit"
 						className="large"
-						id="convert_button"
 						value={ __( 'Start Conversion' ) }
 						onClick={ this.handleOnClickInitializeConversion }
 					/>
@@ -224,7 +222,6 @@ class Conversion extends Component {
 							<input
 								type="submit"
 								className="large"
-								id="retry_failed_button"
 								value={ __( 'Retry Failed' ) }
 								onClick={ this.handleOnClickInitializeRetryFailed }
 							/>

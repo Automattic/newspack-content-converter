@@ -155,7 +155,6 @@ class Patchers extends Component {
 					<input
 						type="submit"
 						className="large"
-						id="convert_button"
 						value={ __( 'Patch Content Now' ) }
 						onClick={ event => this.handleOnClickInitializePatching( event ) }
 					/>
