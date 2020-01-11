@@ -117,39 +117,6 @@ class ConverterController extends WP_REST_Controller {
 			]
 		);
 
-		// Fetches info for the patching page.
-		register_rest_route(
-			$namespace,
-			'/patching/get-info',
-			[
-				'methods'             => WP_REST_Server::READABLE,
-				'callback'            => [ $this, 'get_patching_info' ],
-				'permission_callback' => [ $this, 'rest_permission' ],
-			]
-		);
-
-		// Initializes patching.
-		register_rest_route(
-			$namespace,
-			'/patching/initialize',
-			[
-				'methods'             => WP_REST_Server::READABLE,
-				'callback'            => [ $this, 'initialize_patching' ],
-				'permission_callback' => [ $this, 'rest_permission' ],
-			]
-		);
-
-		// Processes the next patching batch.
-		register_rest_route(
-			$namespace,
-			'/patching/process-next-batch',
-			[
-				'methods'             => WP_REST_Server::READABLE,
-				'callback'            => [ $this, 'process_next_patching_batch' ],
-				'permission_callback' => [ $this, 'rest_permission' ],
-			]
-		);
-
 		// Fetches post_content.
 		register_rest_route(
 			$namespace,
@@ -201,7 +168,6 @@ class ConverterController extends WP_REST_Controller {
 				'conversionContentTypesCsv'    => $this->conversion_processor->get_conversion_content_types(),
 				'conversionContentStatusesCsv' => $this->conversion_processor->get_conversion_content_statuses(),
 				'conversionBatchSize'          => $this->conversion_processor->get_conversion_batch_size(),
-				'patchingBatchSize'            => $this->conversion_processor->get_patching_batch_size(),
 				'queuedEntries'                => $this->conversion_processor->get_queued_entries_total_number(),
 			]
 		);
@@ -324,65 +290,6 @@ class ConverterController extends WP_REST_Controller {
 		$this->conversion_processor->reset_ongoing_conversion();
 
 		return true;
-	}
-
-	/**
-	 * Callback for the /patching/get-info route.
-	 * Fetches info for the patching page.
-	 *
-	 * @return array Info for the patching page.
-	 */
-	public function get_patching_info() {
-		return rest_ensure_response(
-			[
-				'isPatchingOngoing'     => $this->conversion_processor->is_patching_queued(),
-				'queuedBatchesPatching' => $this->conversion_processor->get_patching_queued_batches(),
-				'maxBatchPatching'      => $this->conversion_processor->get_patching_max_batch(),
-				'patchingBatchSize'     => $this->conversion_processor->get_patching_batch_size(),
-				'queuedEntries'         => $this->conversion_processor->get_queued_entries_total_number(),
-			]
-		);
-
-	}
-
-	/**
-	 * Callback for the /patching/initialize route.
-	 * Initializes patching.
-	 *
-	 * @return array Null or formatted response -- key 'result', value 'queued'.
-	 */
-	public function initialize_patching() {
-		$initialized = $this->conversion_processor->initialize_patching();
-
-		return ( true === $initialized ) ? rest_ensure_response( [ 'result' => 'queued' ] ) : null;
-	}
-
-	/**
-	 * Callback for the /patching/process-next-batch route.
-	 * /patching/process-next-batch
-	 *
-	 * @return array Formatted response.
-	 */
-	public function process_next_patching_batch() {
-		if ( ! $this->conversion_processor->is_patching_queued() ) {
-			return;
-		}
-
-		$current_batch = $this->conversion_processor->move_next_patching_batch_to_queue();
-		if ( false === $current_batch ) {
-			return;
-		}
-
-		$patched = $this->conversion_processor->apply_patches_to_batch( $current_batch );
-		if ( false == $patched ) {
-			return;
-		}
-
-		return rest_ensure_response(
-			[
-				'result' => 'patched',
-			]
-		);
 	}
 
 	/**

@@ -102,37 +102,6 @@ class ConversionProcessor {
 	}
 
 	/**
-	 * Sets the next patching batch in motion. It fetches the current patching queue, finds the next queue number, and adds it
-	 * to the queue. If returns that queue number.
-	 *
-	 * If queue maxed out (all processed), or patching not ongoing, returns false.
-	 *
-	 * @return int|bool Current batch (which was just added to the queue), false if patching not queued, or max batches reached.
-	 */
-	public function move_next_patching_batch_to_queue() {
-		if ( false === $this->is_patching_queued() ) {
-			return false;
-		}
-
-		// Get queued batches.
-		$queued_batches = $this->get_patching_queued_batches();
-		$max_batches    = $this->get_patching_max_batch();
-
-		// If the whole queue is processed, clear it.
-		$this_batch = empty( $queued_batches ) ? 1 : max( $queued_batches ) + 1;
-		if ( $this_batch > $max_batches ) {
-			$this->clear_patching_queue();
-
-			return false;
-		}
-
-		// Immediately add this batch to the queue.
-		$this->add_batch_to_patching_queue( $this_batch, $queued_batches );
-
-		return $this_batch;
-	}
-
-	/**
 	 * Gets the original pre-conversion `post_content` (with the applied filter 'the_content') from the Plugin's queue table.
 	 *
 	 * @param int $post_id Post ID.
@@ -185,33 +154,6 @@ class ConversionProcessor {
 		}
 
 		return $results[0];
-	}
-
-	/**
-	 * Applies patchers to all posts in specified batch.
-	 *
-	 * @param int $batch_number Batch number.
-	 *
-	 * @return bool Success.
-	 */
-	public function apply_patches_to_batch( $batch_number ) {
-		$batch_size = $this->get_patching_batch_size();
-		$post_ids   = $this->select_ids_for_batch( $batch_number, $batch_size );
-
-		foreach ( $post_ids as $post_id ) {
-			$ncc_post = $this->get_ncc_post( $post_id );
-			if ( ! $ncc_post ) {
-				return false;
-			}
-
-			$html_content           = apply_filters( 'the_content', $ncc_post->post_content );
-			$blocks_content         = $ncc_post->post_content_gutenberg_converted;
-			$blocks_content_patched = $this->patcher_handler->run_all_patches( $html_content, $blocks_content );
-
-			$this->update_posts_table( $post_id, [ 'post_content' => $blocks_content_patched ] );
-		}
-
-		return true;
 	}
 
 	/**
@@ -441,58 +383,7 @@ class ConversionProcessor {
 	}
 
 	/**
-	 * Checks whether patching is queued/active.
-	 *
-	 * @return bool Is queued or not.
-	 */
-	public function is_patching_queued() {
-		$patching_queued = get_option( Config::get_instance()->get( 'option_patching_is_queued' ), false );
-		if ( '1' === $patching_queued ) {
-			return true;
-		}
-
-		return false;
-	}
-
-	/**
-	 * Fetches patching batches in queue.
-	 *
-	 * @return array Array of integers, queued batches.
-	 */
-	public function get_patching_queued_batches() {
-		$queued_batches = get_option( Config::get_instance()->get( 'option_patching_queued_batches' ), [] );
-		if ( ! empty( $queued_batches ) ) {
-			// Option field contains CSV of integers.
-			$queued_batches = array_map( 'intval', explode( ',', $queued_batches ) );
-		}
-
-		return $queued_batches;
-	}
-
-	/**
-	 * Gets max patching batch.
-	 *
-	 * @return int|null Batch number.
-	 */
-	public function get_patching_max_batch() {
-		$max_batches = get_option( Config::get_instance()->get( 'option_patching_max_batches' ), null );
-
-		return null == $max_batches ? null : (int) $max_batches;
-	}
-
-	/**
-	 * Gets the number of posts/content processed by a patching batch.
-	 *
-	 * @return int|null Number of posts/content processed by a patching batch.
-	 */
-	public function get_patching_batch_size() {
-		$batch_size = get_option( Config::get_instance()->get( 'option_patching_batch_size' ), null );
-
-		return null == $batch_size ? null : (int) $batch_size;
-	}
-
-	/**
-	 * Gets total number of entries (posts) configured for conversion/patching.
+	 * Gets total number of entries (posts) configured for conversion.
 	 *
 	 * @return int|false Total number of entries.
 	 */
@@ -709,18 +600,6 @@ class ConversionProcessor {
 	}
 
 	/**
-	 * Initialize patching.
-	 *
-	 * @return bool Initialized.
-	 */
-	public function initialize_patching() {
-		$this->clear_patching_queue();
-		$set = $this->set_patching_queue();
-
-		return $set;
-	}
-
-	/**
 	 * Resets any ongoing conversions.
 	 */
 	public function reset_ongoing_conversion() {
@@ -743,34 +622,5 @@ class ConversionProcessor {
 		delete_option( Config::get_instance()->get( 'option_is_queued_retry_failed_conversion' ) );
 		delete_option( Config::get_instance()->get( 'option_retry_conversion_failed_queued_batches' ) );
 		delete_option( Config::get_instance()->get( 'option_retry_conversion_failed_max_batches' ) );
-	}
-
-	/**
-	 * Clear patching queue.
-	 */
-	private function clear_patching_queue() {
-		update_option( Config::get_instance()->get( 'option_patching_is_queued' ), 0 );
-		delete_option( Config::get_instance()->get( 'option_patching_queued_batches' ) );
-	}
-
-	/**
-	 * Set patching flag up.
-	 *
-	 * @return bool Success.
-	 */
-	private function set_patching_queue() {
-		return update_option( Config::get_instance()->get( 'option_patching_is_queued' ), 1 );
-	}
-
-	/**
-	 * Adds a batch to the processing queue.
-	 *
-	 * @param int   $this_batch Batch to be added to the queue.
-	 * @param array $queued_batches Batches currently in queue.
-	 */
-	private function add_batch_to_patching_queue( $this_batch, $queued_batches ) {
-		$new_queued_batches     = array_merge( $queued_batches, [ $this_batch ] );
-		$new_queued_batches_csv = implode( ',', $new_queued_batches );
-		update_option( Config::get_instance()->get( 'option_patching_queued_batches' ), $new_queued_batches_csv );
 	}
 }

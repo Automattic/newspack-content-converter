@@ -20,7 +20,6 @@ class Settings extends Component {
 			conversionContentTypesCsv: '...',
 			conversionContentStatusesCsv: '...',
 			conversionBatchSize: '...',
-			patchingBatchSize: '...',
 			queuedEntries: '...',
 		};
 	}
@@ -32,14 +31,12 @@ class Settings extends Component {
 					conversionContentTypesCsv,
 					conversionContentStatusesCsv,
 					conversionBatchSize,
-					patchingBatchSize,
 					queuedEntries,
 				} = response;
 				this.setState( {
 					conversionContentTypesCsv,
 					conversionContentStatusesCsv,
 					conversionBatchSize,
-					patchingBatchSize,
 					queuedEntries,
 				} );
 			}
@@ -55,7 +52,6 @@ class Settings extends Component {
 			conversionContentTypesCsv,
 			conversionContentStatusesCsv,
 			conversionBatchSize,
-			patchingBatchSize,
 			queuedEntries,
 		} = this.state;
 
@@ -66,7 +62,7 @@ class Settings extends Component {
 
 				<p>
 					{ __(
-						'Adding content to the queue, enables it to be converted to Gutenberg Blocks. The queue is also a backup point for possible reverting, or re-applying the content patchers (which is one of *dev* functionalities).'
+						'Adding content to the queue, enables it to be converted to Gutenberg Blocks. The queue is also a backup point for possible reverting.'
 					) }
 				</p>
 				<p>
@@ -91,13 +87,6 @@ class Settings extends Component {
 					<li>
 						conversion batch size:{' '}
 						<input type="text" disabled={ true } value={ conversionBatchSize } />
-					</li>
-				</ul>
-
-				<h3>{ __( 'Re-patching params' ) }</h3>
-				<ul>
-					<li>
-						patching batch size: <input type="text" disabled={ true } value={ patchingBatchSize } />
 					</li>
 				</ul>
 
