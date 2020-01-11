@@ -21,6 +21,8 @@ class Installer {
 	 * Creates a table, sets plugin options.
 	 */
 	public static function install_plugin() {
+		set_time_limit( 0 );
+
 		$table_name            = Config::get_instance()->get( 'table_name' );
 		$post_statuses         = Config::get_instance()->get( 'post_statuses' );
 		$conversion_batch_size = Config::get_instance()->get( 'conversion_batch_size' );
@@ -152,6 +154,9 @@ class Installer {
 	/**
 	 * Inserts posts/entries into the table.
 	 *
+	 * It takes and queues for conversion entries from the `wp_posts` table, but leaves out those with blank content, or which
+	 * already contain Gutenberg Blocks.
+	 *
 	 * @param string $table_name Table name.
 	 * @param array  $post_types Post Types.
 	 * @param array  $post_statuses Post Statuses.
@@ -170,17 +175,23 @@ class Installer {
 		$type_placeholders_csv     = implode( ',', $type_placeholders );
 		$statuses_placeholders     = array_fill( 0, count( $post_statuses ), '%s' );
 		$statuses_placeholders_csv = implode( ',', $statuses_placeholders );
-		$sql_placeholders          = "INSERT INTO {$table_name} ( {$wp_posts_columns_csv} )
+
+		// SQL `NOT REGEXP` part explanation: it excludes empty Posts, i.e. where NOT matched one or more of following:
+		// [:space:] -- any blank space,
+		// (&nbsp;)  -- this literal group of characters,
+		// (\r\n)    -- line break (being in a string, here escaped with extra `\`).
+		$sql_placeholders = "INSERT INTO {$table_name} ( {$wp_posts_columns_csv} )
 									  SELECT {$wp_posts_columns_csv}
 									  FROM {$wp_posts_table}
 									  WHERE post_status IN ({$statuses_placeholders_csv})
 									  AND post_type IN ({$type_placeholders_csv})
-									  AND post_content <> '' ;";
+									  AND post_content <> ''
+									  AND post_content NOT LIKE '<!-- wp:%'
+									  AND post_content NOT REGEXP '^[[:space:]|(&nbsp;)|(\\r\\n)]+$' ;";
 		// phpcs:ignore -- false positive, all params are fully sanitized.
 		$wpdb->get_results( $wpdb->prepare( $sql_placeholders, array_merge( $post_statuses, $post_types ) ) );
 
-		// Insert specified content into plugin's table.
-		// phpcs:ignore -- the following is a false positive; this SQL is safe, and the table name is escaped above.
+		// phpcs:ignore -- a false positive, this SQL is safe.
 		$results       = $wpdb->get_results( "SELECT COUNT(*) AS total FROM {$table_name} ; " );
 		$total_entries = isset( $results[0]->total ) ? (int) $results[0]->total : false;
 
