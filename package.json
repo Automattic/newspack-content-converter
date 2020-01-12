@@ -14,7 +14,7 @@
     "release": "run-p \"clean\" && run-p \"release:build-all\" && run-p \"release:archive\""
   },
   "devDependencies": {
-    "@automattic/calypso-build": "^2.0.0",
+    "@automattic/calypso-build": "^5.1.0",
     "@babel/core": "^7.4.0",
     "@wordpress/blocks": "^6.2.0",
     "@wordpress/browserslist-config": "^2.2.2",
