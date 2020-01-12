@@ -39,7 +39,7 @@ function nccCallbackWithRetry( callback, callbackParam, maxAttempts = 10, timeou
 				resolve();
 			} catch ( e ) {
 				if ( 0 == attempt ) {
-					console.log( 'Final error: ' + e );
+					console.log( 'Final CSS warning: ' + e );
 				} else {
 					setTimeout( function() {
 						doCallback( attempt - 1 );
