@@ -8,10 +8,8 @@ import queryString from 'query-string';
  * Internal dependencies.
  */
 import ContentConverter from './content-converter';
-import ContentRepatcher from './content-repatcher';
 import Settings from './settings';
 import Conversion from './conversion';
-import Patchers from './patchers';
 import './style.css';
 
 const nccGetElementByClassName = function( className ) {
@@ -55,17 +53,11 @@ function nccCallbackWithRetry( callback, callbackParam, maxAttempts = 10, timeou
 window.onload = function() {
 	const div_settings = document.getElementById( 'ncc-settings' );
 	const div_conversion = document.getElementById( 'ncc-conversion' );
-	const div_patchers = document.getElementById( 'ncc-patchers' );
-	const div_content_repatcher = document.getElementById( 'ncc-content-repatcher' );
 
 	if ( typeof div_settings != 'undefined' && div_settings != null ) {
 		render( <Settings />, div_settings );
 	} else if ( typeof div_conversion != 'undefined' && div_conversion != null ) {
 		render( <Conversion />, div_conversion );
-	} else if ( typeof div_patchers != 'undefined' && div_patchers != null ) {
-		render( <Patchers />, div_patchers );
-	} else if ( typeof div_content_repatcher != 'undefined' && div_content_repatcher != null ) {
-		render( <ContentRepatcher />, div_content_repatcher );
 	} else {
 		// Converter app sits on top of the Gutenberg Block Editor.
 		nccCallbackWithRetry( nccHideElementByClass, 'edit-post-header' );

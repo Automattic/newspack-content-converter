@@ -193,24 +193,6 @@ export function fetchResetConversion() {
 	} ).then( response => Promise.resolve( response ) );
 }
 
-export function fetchPatchingInfo() {
-	return apiFetch( {
-		path: NEWSPACK_CONVERTER_API_BASE_URL + '/patching/get-info',
-	} ).then( response => Promise.resolve( response ) );
-}
-
-export function fetchInitializePatching() {
-	return apiFetch( {
-		path: NEWSPACK_CONVERTER_API_BASE_URL + '/patching/initialize',
-	} ).then( response => Promise.resolve( response ) );
-}
-
-export function fetchPatchingProcessNextBatch() {
-	return apiFetch( {
-		path: NEWSPACK_CONVERTER_API_BASE_URL + '/patching/process-next-batch',
-	} ).then( response => Promise.resolve( response ) );
-}
-
 export default {
 	runSinglePost,
 	runMultiplePosts,
@@ -221,7 +203,4 @@ export default {
 	fetchInitializeConversion,
 	fetchInitializeRetryFailedConversion,
 	fetchResetConversion,
-	fetchPatchingInfo,
-	fetchInitializePatching,
-	fetchPatchingProcessNextBatch,
 };

@@ -94,29 +94,6 @@ class Converter {
 					}
 				);
 
-				add_submenu_page(
-					'newspack-content-converter',
-					__( 'Re-apply Patchers *dev*' ),
-					__( 'Re-apply Patchers *dev*' ),
-					'manage_options',
-					'ncc-patchers',
-					function () {
-						echo '<div id="ncc-patchers"></div>';
-					}
-				);
-
-				// The 'ncc-content-repatching' page is not added to the menu (parent slug == null).
-				add_submenu_page(
-					null,
-					__( 'Re-apply Patchers React app *dev*' ),
-					__( 'Re-apply Patchers React app *dev*' ),
-					'manage_options',
-					'ncc-content-repatching',
-					function () {
-						echo '<div id="ncc-content-repatcher">!!! :)</div>';
-					}
-				);
-
 			}
 		);
 	}
@@ -174,10 +151,7 @@ class Converter {
 	private function is_current_page_a_plugin_page() {
 		$current_screen = get_current_screen();
 
-		return isset( $current_screen ) && (
-			false !== strpos( $current_screen->id, 'newspack-content-converter' ) ||
-			'admin_page_ncc-content-repatching' === $current_screen->id
-		);
+		return isset( $current_screen ) && ( false !== strpos( $current_screen->id, 'newspack-content-converter' ) );
 	}
 
 	/**

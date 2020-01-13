@@ -26,7 +26,6 @@ class Installer {
 		$table_name            = Config::get_instance()->get( 'table_name' );
 		$post_statuses         = Config::get_instance()->get( 'post_statuses' );
 		$conversion_batch_size = Config::get_instance()->get( 'conversion_batch_size' );
-		$patching_batch_size   = Config::get_instance()->get( 'patching_batch_size' );
 		$post_types            = self::get_post_types_editable_by_block_editor();
 
 		self::create_table( $table_name );
@@ -35,8 +34,7 @@ class Installer {
 			$post_types,
 			$post_statuses,
 			$total_entries,
-			$conversion_batch_size,
-			$patching_batch_size
+			$conversion_batch_size
 		);
 	}
 
@@ -205,25 +203,20 @@ class Installer {
 	 * @param array $post_statuses_for_conversion Post statuses configured for conversion.
 	 * @param int   $queued_entries_total Total number of posts/entries queued for conversion.
 	 * @param int   $conversion_batch_size Size of the conversion batch (number of posts/entries per batch).
-	 * @param int   $patching_batch_size Size of the patching batch (number of posts/entries per batch).
 	 */
 	private static function set_initial_options(
 		$post_types_for_conversion,
 		$post_statuses_for_conversion,
 		$queued_entries_total,
-		$conversion_batch_size,
-		$patching_batch_size
+		$conversion_batch_size
 	) {
 		$post_types_csv                      = implode( ',', $post_types_for_conversion );
 		$post_statuses_csv                   = implode( ',', $post_statuses_for_conversion );
 		$conversion_max_batches              = (int) ceil( $queued_entries_total / $conversion_batch_size );
-		$patching_max_batches                = (int) ceil( $queued_entries_total / $patching_batch_size );
 		$option_conversion_post_types_csv    = Config::get_instance()->get( 'option_conversion_post_types_csv' );
 		$option_conversion_post_statuses_csv = Config::get_instance()->get( 'option_conversion_post_statuses_csv' );
 		$option_conversion_batch_size        = Config::get_instance()->get( 'option_conversion_batch_size' );
-		$option_patching_batch_size          = Config::get_instance()->get( 'option_patching_batch_size' );
 		$option_conversion_max_batches       = Config::get_instance()->get( 'option_conversion_max_batches' );
-		$option_patching_max_batches         = Config::get_instance()->get( 'option_patching_max_batches' );
 
 		if ( null === get_option( $option_conversion_post_types_csv, null ) ) {
 			update_option( $option_conversion_post_types_csv, $post_types_csv );
@@ -234,14 +227,8 @@ class Installer {
 		if ( null === get_option( $option_conversion_batch_size, null ) ) {
 			update_option( $option_conversion_batch_size, $conversion_batch_size );
 		}
-		if ( null === get_option( $option_patching_batch_size, null ) ) {
-			update_option( $option_patching_batch_size, $patching_batch_size );
-		}
 		if ( null === get_option( $option_conversion_max_batches, null ) ) {
 			update_option( $option_conversion_max_batches, $conversion_max_batches );
-		}
-		if ( null === get_option( $option_patching_max_batches, null ) ) {
-			update_option( $option_patching_max_batches, $patching_max_batches );
 		}
 	}
 
@@ -258,10 +245,6 @@ class Installer {
 		delete_option( Config::get_instance()->get( 'option_is_queued_retry_failed_conversion' ) );
 		delete_option( Config::get_instance()->get( 'option_conversion_queued_batches' ) );
 		delete_option( Config::get_instance()->get( 'option_retry_conversion_failed_queued_batches' ) );
-		delete_option( Config::get_instance()->get( 'option_patching_batch_size' ) );
-		delete_option( Config::get_instance()->get( 'option_patching_max_batches' ) );
-		delete_option( Config::get_instance()->get( 'option_patching_is_queued' ) );
-		delete_option( Config::get_instance()->get( 'option_patching_queued_batches' ) );
 	}
 
 	/**
