@@ -557,15 +557,28 @@ class ConversionProcessor {
 		$this_batch = esc_sql( $this_batch );
 		$batch_size = esc_sql( $batch_size );
 
-		$offset        = ( $this_batch - 1 ) * $batch_size;
-		$query_prepare = "SELECT ID FROM $table_name ORDER BY ID ASC LIMIT %d OFFSET %d ;";
+		// Retrieve the highest ID in ncc_wp_posts.
+		$highest_converted_post_sql     = "SELECT ID FROM {$table_name} ORDER BY ID DESC LIMIT 1";
+		$highest_converted_post_results = $wpdb->get_results( $highest_converted_post_sql ); // phpcs:ignore
+
+		$last_converted_post = $highest_converted_post_results ? $highest_converted_post_results[0]['ID'] : 1;
+
+		$wp_posts_table = $wpdb->posts;
+		$query_prepare  = "SELECT ID FROM {$wp_posts_table} WHERE ID > %d ORDER BY ID ASC LIMIT %d;";
 		// phpcs:ignore -- the following is a false positive; this SQL is safe, and the table name is escaped above.
-		$results = $wpdb->get_results( $wpdb->prepare( $query_prepare, $batch_size, $offset ) );
+		$results = $wpdb->get_results( $wpdb->prepare( $query_prepare, $last_converted_post, $batch_size ) );
 
 		$ids = [];
 		foreach ( $results as $result ) {
 			$ids[] = $result->ID;
 		}
+
+		$wp_posts_columns_csv = 'ID,post_author,post_date,post_date_gmt,post_content,post_title,post_excerpt,post_status,comment_status,ping_status,post_password,post_name,to_ping,pinged,post_modified,post_modified_gmt,post_content_filtered,post_parent,guid,menu_order,post_type,post_mime_type,comment_count';
+
+		$imploded_ids = implode( ',', $ids );
+		$insert_sql   = "INSERT INTO {$table_name} ( {$wp_posts_columns_csv} ) SELECT {$wp_posts_columns_csv} FROM {$wp_posts_table} WHERE ID IN ( {$imploded_ids} );";
+
+		$insert_results = $wpdb->get_results( $insert_sql ); //phpcs:ignore
 
 		return $ids;
 	}

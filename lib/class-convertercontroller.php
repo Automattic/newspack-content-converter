@@ -223,6 +223,8 @@ class ConverterController extends WP_REST_Controller {
 	 * @return array Null or formatted response -- key 'result', value 'queued'.
 	 */
 	public function initialize_conversion() {
+		Installer::create_table_if_needed();
+
 		$initialized = $this->conversion_processor->initialize_conversion();
 
 		return ( true === $initialized ) ? rest_ensure_response( [ 'result' => 'queued' ] ) : null;

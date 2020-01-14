@@ -28,8 +28,6 @@ class Installer {
 		$conversion_batch_size = Config::get_instance()->get( 'conversion_batch_size' );
 		$post_types            = self::get_post_types_editable_by_block_editor();
 
-		self::create_table( $table_name );
-		$total_entries = self::insert_entries( $table_name, $post_types, $post_statuses );
 		self::set_initial_options(
 			$post_types,
 			$post_statuses,
@@ -51,6 +49,14 @@ class Installer {
 
 		self::drop_table( $table_name );
 		self::delete_all_options();
+	}
+
+	/**
+	 * Create the table if needed.
+	 */
+	public static function create_table_if_needed() {
+		$table_name = Config::get_instance()->get( 'table_name' );
+		self::create_table( $table_name );
 	}
 
 	/**
