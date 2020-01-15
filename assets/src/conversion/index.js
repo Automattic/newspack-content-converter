@@ -7,7 +7,15 @@ import { __ } from '@wordpress/i18n';
 /**
  * Newspack dependencies.
  */
-import { Button, Card, FormattedHeader, Grid, NewspackLogo, Notice, TextControl } from 'newspack-components';
+import {
+	Button,
+	Card,
+	FormattedHeader,
+	Grid,
+	NewspackLogo,
+	Notice,
+	TextControl,
+} from 'newspack-components';
 
 /**
  * Material UI dependencies.
@@ -45,7 +53,6 @@ class Conversion extends Component {
 				const {
 					isConversionOngoing,
 					queuedEntries,
-					queuedBatches,
 					maxBatch,
 					hasConvertedPosts,
 					hasFailedConversions,
@@ -118,7 +125,12 @@ class Conversion extends Component {
 							subHeaderText={ __( 'Start conversion to Gutenberg blocks.' ) }
 						/>
 						<Card>
-							<Notice noticeText={ __( 'A designated browser tab has already started to convert your content.' ) } isPrimary />
+							<Notice
+								noticeText={ __(
+									'A designated browser tab has already started to convert your content.'
+								) }
+								isPrimary
+							/>
 							<hr />
 							<h2>{ __( 'Reset ongoing conversion' ) }</h2>
 							<p>
@@ -126,12 +138,14 @@ class Conversion extends Component {
 									'In case that your active conversion browser tab has been closed by accident, or it has been interrupted and closed unexpectedly, you may reset the conversion status here, and start converting all over again.'
 								) }
 							</p>
-							<Notice noticeText={ __( 'This will enable you to restart the conversion, but any previous results may be lost.' ) } isWarning />
+							<Notice
+								noticeText={ __(
+									'This will enable you to restart the conversion, but any previous results may be lost.'
+								) }
+								isWarning
+							/>
 							<Card noBackground className="newspack-card__buttons-card">
-								<Button
-									isPrimary
-									onClick={ this.handleOnClickResetConversion }
-								>
+								<Button isPrimary onClick={ this.handleOnClickResetConversion }>
 									{ __( 'Reset conversion' ) }
 								</Button>
 							</Card>
@@ -154,24 +168,29 @@ class Conversion extends Component {
 						<Card>
 							{ !! someConversionsFailed && (
 								<Fragment>
-									<Notice noticeText={ __( 'Looks like some entries weren\'t converted properly. You may retry converting these.' ) } isError />
+									<Notice
+										noticeText={ __(
+											"Looks like some entries weren't converted properly. You may retry converting these."
+										) }
+										isError
+									/>
 									<TextControl
 										label={ __( 'Number of failed entries' ) }
 										disabled={ true }
 										value={ countFailedConverting }
 									/>
 									<Card noBackground className="newspack-card__buttons-card">
-										<Button
-											isPrimary
-											onClick={ this.handleOnClickInitializeRetryFailed }
-										>
+										<Button isPrimary onClick={ this.handleOnClickInitializeRetryFailed }>
 											{ __( 'Retry conversion' ) }
 										</Button>
 									</Card>
 									<hr />
 								</Fragment>
 							) }
-							<Notice noticeText={ __( 'This page will automatically reload for every batch.' ) } isPrimary />
+							<Notice
+								noticeText={ __( 'This page will automatically reload for every batch.' ) }
+								isPrimary
+							/>
 							<Card noBackground className="newspack-card__editable">
 								<TextControl
 									label={ __( 'Number of entries to be converted' ) }
@@ -191,12 +210,14 @@ class Conversion extends Component {
 								disabled={ true }
 								value={ maxBatch }
 							/>
-							<Notice noticeText={ __( 'Once started, the conversion should not be interrupted! Your browser page needs to remain active until conversion is complete.' ) } isWarning />
+							<Notice
+								noticeText={ __(
+									'Once started, the conversion should not be interrupted! Your browser page needs to remain active until conversion is complete.'
+								) }
+								isWarning
+							/>
 							<Card noBackground className="newspack-card__buttons-card">
-								<Button
-									isPrimary
-									onClick={ this.handleOnClickInitializeConversion }
-								>
+								<Button isPrimary onClick={ this.handleOnClickInitializeConversion }>
 									{ __( 'Start conversion' ) }
 								</Button>
 							</Card>
