@@ -29,8 +29,6 @@ class Settings extends Component {
 		this.state = {
 			conversionContentTypesCsv: '...',
 			conversionContentStatusesCsv: '...',
-			conversionBatchSize: '...',
-			queuedEntries: '...',
 		};
 	}
 
@@ -40,14 +38,10 @@ class Settings extends Component {
 				const {
 					conversionContentTypesCsv,
 					conversionContentStatusesCsv,
-					conversionBatchSize,
-					queuedEntries,
 				} = response;
 				this.setState( {
 					conversionContentTypesCsv,
 					conversionContentStatusesCsv,
-					conversionBatchSize,
-					queuedEntries,
 				} );
 			}
 			return new Promise( ( resolve, reject ) => resolve() );
@@ -61,8 +55,6 @@ class Settings extends Component {
 		const {
 			conversionContentTypesCsv,
 			conversionContentStatusesCsv,
-			conversionBatchSize,
-			queuedEntries,
 		} = this.state;
 
 		return (
@@ -73,25 +65,11 @@ class Settings extends Component {
 				<Grid>
 					<FormattedHeader
 						headerIcon={ <SettingsIcon /> }
-						headerText={ __( 'Content conversion settings' ) }
+						headerText={ __( 'Conversion settings' ) }
 						subHeaderText={ __( 'Adding content to the queue to convert it to Gutenberg blocks.' ) }
 					/>
 					<Card>
-						<p>
-							{ __( 'The type of HTML content to be converted to Gutenberg blocks is specified here.' ) }
-							<br />
-							{ __( 'This content is then added to a conversion queue.' ) }
-							<br />
-							{ __( 'The queue is also a backup point for possible reverting.' ) }
-						</p>
-						<p>
-							<Button
-								isPrimary
-								href="/wp-admin/admin.php?page=ncc-conversion"
-							>
-								{ __( 'Run conversion' ) }
-							</Button>
-						</p>
+						<p>{ __( 'The type of HTML content to be converted to Gutenberg blocks is specified here.' ) }</p>
 						<hr />
 						<h2 id="content-type">{ __( 'Content type' ) }</h2>
 						<TextControl
@@ -104,20 +82,14 @@ class Settings extends Component {
 							disabled={ true }
 							value={ conversionContentStatusesCsv }
 						/>
-						<hr />
-						<h2>{ __( 'Conversion params' ) }</h2>
-						<TextControl
-							label={ __( 'Conversion batch size (entries per batch)' ) }
-							disabled={ true }
-							value={ conversionBatchSize }
-						/>
-						<hr />
-						<h2>{ __( 'Queued stats' ) }</h2>
-						<TextControl
-							label={ __( 'Number of entries to be converted' ) }
-							disabled={ true }
-							value={ queuedEntries }
-						/>
+						<p>
+							<Button
+								isPrimary
+								href="/wp-admin/admin.php?page=ncc-conversion"
+							>
+								{ __( 'Run conversion' ) }
+							</Button>
+						</p>
 					</Card>
 				</Grid>
 			</Fragment>
