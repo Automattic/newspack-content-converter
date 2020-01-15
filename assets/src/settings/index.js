@@ -7,7 +7,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Newspack dependencies.
  */
-import { Card, FormattedHeader, Grid, NewspackLogo, TextControl } from 'newspack-components';
+import { Button, Card, FormattedHeader, Grid, NewspackLogo, TextControl } from 'newspack-components';
 
 /**
  * Material UI dependencies.
@@ -74,16 +74,26 @@ class Settings extends Component {
 					<FormattedHeader
 						headerIcon={ <SettingsIcon /> }
 						headerText={ __( 'Content conversion settings' ) }
-						subHeaderText={ __( 'Adding content to the queue to convert it to Gutenberg Blocks.' ) }
+						subHeaderText={ __( 'Adding content to the queue to convert it to Gutenberg blocks.' ) }
 					/>
 					<Card>
 						<p>
-							{ __(
-								'Existing HTML content is first selected by type, and added to a conversion queue. Queued content is then converted. The queue is also a backup point for possible reverting.'
-							) }
+							{ __( 'The type of HTML content to be converted to Gutenberg blocks is specified here.' ) }
+							<br />
+							{ __( 'This content is then added to a conversion queue.' ) }
+							<br />
+							{ __( 'The queue is also a backup point for possible reverting.' ) }
+						</p>
+						<p>
+							<Button
+								isPrimary
+								href="/wp-admin/admin.php?page=ncc-conversion"
+							>
+								{ __( 'Run conversion' ) }
+							</Button>
 						</p>
 						<hr />
-						<h2>{ __( 'Specify content type' ) }</h2>
+						<h2>{ __( 'Content type' ) }</h2>
 						<TextControl
 							label={ __( 'Content types' ) }
 							disabled={ true }
