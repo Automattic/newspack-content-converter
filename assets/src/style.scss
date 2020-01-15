@@ -26,3 +26,23 @@ body[class*="newspack-content-converter_"] {
 		}
 	}
 }
+
+// Editable Card
+.newspack-card__editable {
+	align-items: flex-end;
+	display: flex;
+
+	> * {
+		flex: 1;
+		margin: 0;
+	}
+
+	.newspack-button__edit {
+		color: inherit;
+		flex: 0 0 48px;
+		height: 48px;
+		justify-content: center;
+		margin-left: 8px;
+		padding: 0;
+	}
+}

@@ -93,7 +93,7 @@ class Settings extends Component {
 							</Button>
 						</p>
 						<hr />
-						<h2>{ __( 'Content type' ) }</h2>
+						<h2 id="content-type">{ __( 'Content type' ) }</h2>
 						<TextControl
 							label={ __( 'Content types' ) }
 							disabled={ true }
