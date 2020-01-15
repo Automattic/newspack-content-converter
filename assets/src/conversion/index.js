@@ -127,23 +127,6 @@ class Conversion extends Component {
 						<Card>
 							<Notice noticeText={ __( 'A designated browser tab has already started to convert your content.' ) } isPrimary />
 							<hr />
-							<h2>{ __( 'Conversion progress' ) }</h2>
-							<TextControl
-								label={ __( 'Conversion batches processed' ) }
-								disabled={ true }
-								value={ queuedBatchesCsv }
-							/>
-							<TextControl
-								label={ __( 'Total conversion batches queued' ) }
-								disabled={ true }
-								value={ maxBatch }
-							/>
-							<TextControl
-								label={ __( 'Conversion batch size (entries per batch)' ) }
-								disabled={ true }
-								value={ conversionBatchSize }
-							/>
-							<hr />
 							<h2>{ __( 'Reset ongoing conversion' ) }</h2>
 							<p>
 								{ __(
