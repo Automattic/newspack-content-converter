@@ -1,8 +1,18 @@
 /**
  * WordPress dependencies.
  */
-import { Component } from '@wordpress/element';
+import { Component, Fragment } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
+
+/**
+ * Newspack dependencies.
+ */
+import { Card, FormattedHeader, Grid, NewspackLogo, TextControl } from 'newspack-components';
+
+/**
+ * Material UI dependencies.
+ */
+import SettingsIcon from '@material-ui/icons/Settings';
 
 /**
  * Internal dependencies.
@@ -56,50 +66,51 @@ class Settings extends Component {
 		} = this.state;
 
 		return (
-			<div className="ncc-page">
-				<h1>{ __( 'Content Conversion Settings' ) }</h1>
-				<br />
-
-				<p>
-					{ __(
-						'Adding content to the queue, enables it to be converted to Gutenberg Blocks. The queue is also a backup point for possible reverting.'
-					) }
-				</p>
-				<p>
-					{ __(
-						'Existing HTML content is first selected by type, and added to a conversion queue. Queued content is then converted.'
-					) }
-				</p>
-				<h3>{ __( 'Specify content type' ) }</h3>
-				<ul>
-					<li>
-						content types:{' '}
-						<input type="text" disabled={ true } value={ conversionContentTypesCsv } />
-					</li>
-					<li>
-						content statuses:{' '}
-						<input type="text" disabled={ true } value={ conversionContentStatusesCsv } />
-					</li>
-				</ul>
-
-				<h3>{ __( 'Conversion params' ) }</h3>
-				<ul>
-					<li>
-						conversion batch size:{' '}
-						<input type="text" disabled={ true } value={ conversionBatchSize } />
-					</li>
-				</ul>
-
-				<h3>{ __( 'Queued stats' ) }</h3>
-				<ul>
-					<li>
-						<b>
-							<u>{ queuedEntries }</u>
-						</b>{' '}
-						posts are currently selected and queued for conversion
-					</li>
-				</ul>
-			</div>
+			<Fragment>
+				<div className="newspack-logo-wrapper">
+					<NewspackLogo />
+				</div>
+				<Grid>
+					<FormattedHeader
+						headerIcon={ <SettingsIcon /> }
+						headerText={ __( 'Content conversion settings' ) }
+						subHeaderText={ __( 'Adding content to the queue to convert it to Gutenberg Blocks.' ) }
+					/>
+					<Card>
+						<p>
+							{ __(
+								'Existing HTML content is first selected by type, and added to a conversion queue. Queued content is then converted. The queue is also a backup point for possible reverting.'
+							) }
+						</p>
+						<hr />
+						<h2>{ __( 'Specify content type' ) }</h2>
+						<TextControl
+							label={ __( 'Content types' ) }
+							disabled={ true }
+							value={ conversionContentTypesCsv }
+						/>
+						<TextControl
+							label={ __( 'Content statuses' ) }
+							disabled={ true }
+							value={ conversionContentStatusesCsv }
+						/>
+						<hr />
+						<h2>{ __( 'Conversion params' ) }</h2>
+						<TextControl
+							label={ __( 'Conversion batch size (entries per batch)' ) }
+							disabled={ true }
+							value={ conversionBatchSize }
+						/>
+						<hr />
+						<h2>{ __( 'Queued stats' ) }</h2>
+						<TextControl
+							label={ __( 'Number of entries to be converted' ) }
+							disabled={ true }
+							value={ queuedEntries }
+						/>
+					</Card>
+				</Grid>
+			</Fragment>
 		);
 	}
 }
