@@ -1,0 +1,28 @@
+.toplevel_page_newspack-content-converter,
+body[class*="newspack-content-converter_"] {
+	#wpcontent {
+		padding-left: 0;
+	}
+
+ 	#wpfooter {
+		&:before {
+			background-image: url("data:image/svg+xml,%3Csvg width='32' height='32' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M32 16c0 8.836-7.164 16-16 16-8.837 0-16-7.164-16-16S7.164 0 16 0s16 7.164 16 16zm-10.732.623h1.72v-1.125h-2.823l1.103 1.125zm-3.249-3.31h4.97v-1.125h-6.072l1.102 1.124v.001zm-3.248-3.311h8.217V8.878h-9.32l1.103 1.124zM9.01 8.878l13.977 14.245h-4.66l-5.866-5.98v5.98h-3.45V8.878H9.01z' fill='%23d7dade' fill-rule='evenodd'/%3E%3C/svg%3E%0A");
+			background-size: 24px 24px;
+			bottom: 10px;
+			content: "";
+			display: block;
+			height: 24px;
+			left: 50%;
+			margin: 0;
+			margin-left: -12px;
+			position: absolute;
+			width: 24px;
+		}
+	}
+
+	.newspack-card.newspack-card__buttons-card {
+		& + hr {
+			margin-top: 56px;
+		}
+	}
+}
