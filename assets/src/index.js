@@ -10,7 +10,7 @@ import queryString from 'query-string';
 import ContentConverter from './content-converter';
 import Settings from './settings';
 import Conversion from './conversion';
-import './style.css';
+import './style.scss';
 
 const nccGetElementByClassName = function( className ) {
 	const elements = document.getElementsByClassName( className );
