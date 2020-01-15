@@ -31,8 +31,6 @@ class Conversion extends Component {
 		this.state = {
 			isConversionOngoing: false,
 			queuedEntries: '...',
-			conversionBatchSize: '...',
-			queuedBatchesCsv: '...',
 			maxBatch: '...',
 			hasConvertedPosts: false,
 			hasFailedConversions: false,
@@ -46,19 +44,15 @@ class Conversion extends Component {
 				const {
 					isConversionOngoing,
 					queuedEntries,
-					conversionBatchSize,
 					queuedBatches,
 					maxBatch,
 					hasConvertedPosts,
 					hasFailedConversions,
 					countFailedConverting,
 				} = response;
-				const queuedBatchesCsv = queuedBatches ? queuedBatches.join( ',' ) : null;
 				this.setState( {
 					isConversionOngoing,
 					queuedEntries,
-					conversionBatchSize,
-					queuedBatchesCsv,
 					maxBatch,
 					hasConvertedPosts,
 					hasFailedConversions,
@@ -103,8 +97,6 @@ class Conversion extends Component {
 		const {
 			isConversionOngoing,
 			queuedEntries,
-			conversionBatchSize,
-			queuedBatchesCsv,
 			maxBatch,
 			hasConvertedPosts,
 			hasFailedConversions,
@@ -188,11 +180,6 @@ class Conversion extends Component {
 								label={ __( 'Total conversion batches' ) }
 								disabled={ true }
 								value={ maxBatch }
-							/>
-							<TextControl
-								label={ __( 'Conversion batch size (entries per batch)' ) }
-								disabled={ true }
-								value={ conversionBatchSize }
 							/>
 							<Notice noticeText={ __( 'Once started, the conversion should not be interrupted! Your browser page needs to remain active until conversion is complete.' ) } isWarning />
 							<Card noBackground className="newspack-card__buttons-card">
