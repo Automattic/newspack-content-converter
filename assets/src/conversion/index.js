@@ -122,7 +122,7 @@ class Conversion extends Component {
 						<FormattedHeader
 							headerIcon={ <UnarchiveIcon /> }
 							headerText={ __( 'Run conversion' ) }
-							subHeaderText={ __( 'A converson is currently in progress.' ) }
+							subHeaderText={ __( 'Start conversion to Gutenberg blocks.' ) }
 						/>
 						<Card>
 							<Notice noticeText={ __( 'A designated browser tab has already started to convert your content.' ) } isPrimary />
@@ -173,7 +173,7 @@ class Conversion extends Component {
 						<FormattedHeader
 							headerIcon={ <UnarchiveIcon /> }
 							headerText={ __( 'Run conversion' ) }
-							subHeaderText={ __( 'The queued content will be converted to Gutenberg Blocks.' ) }
+							subHeaderText={ __( 'Start conversion to Gutenberg blocks.' ) }
 						/>
 						<Card>
 							{ !! someConversionsFailed && (
@@ -202,7 +202,7 @@ class Conversion extends Component {
 								value={ queuedEntries }
 							/>
 							<TextControl
-								label={ __( 'Total conversion batches queued' ) }
+								label={ __( 'Total conversion batches' ) }
 								disabled={ true }
 								value={ maxBatch }
 							/>
