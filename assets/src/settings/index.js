@@ -7,7 +7,14 @@ import { __ } from '@wordpress/i18n';
 /**
  * Newspack dependencies.
  */
-import { Button, Card, FormattedHeader, Grid, NewspackLogo, TextControl } from 'newspack-components';
+import {
+	Button,
+	Card,
+	FormattedHeader,
+	Grid,
+	NewspackLogo,
+	TextControl,
+} from 'newspack-components';
 
 /**
  * Material UI dependencies.
@@ -35,10 +42,7 @@ class Settings extends Component {
 	componentDidMount() {
 		return fetchSettingsInfo().then( response => {
 			if ( response ) {
-				const {
-					conversionContentTypesCsv,
-					conversionContentStatusesCsv,
-				} = response;
+				const { conversionContentTypesCsv, conversionContentStatusesCsv } = response;
 				this.setState( {
 					conversionContentTypesCsv,
 					conversionContentStatusesCsv,
@@ -52,10 +56,7 @@ class Settings extends Component {
 	 * render().
 	 */
 	render() {
-		const {
-			conversionContentTypesCsv,
-			conversionContentStatusesCsv,
-		} = this.state;
+		const { conversionContentTypesCsv, conversionContentStatusesCsv } = this.state;
 
 		return (
 			<Fragment>
@@ -65,13 +66,15 @@ class Settings extends Component {
 				<Grid>
 					<FormattedHeader
 						headerIcon={ <SettingsIcon /> }
-						headerText={ __( 'Conversion settings' ) }
+						headerText={ __( 'Settings' ) }
 						subHeaderText={ __( 'Adding content to the queue to convert it to Gutenberg blocks.' ) }
 					/>
 					<Card>
-						<p>{ __( 'The type of HTML content to be converted to Gutenberg blocks is specified here.' ) }</p>
-						<hr />
-						<h2 id="content-type">{ __( 'Content type' ) }</h2>
+						<p>
+							{ __(
+								'The type of HTML content to be converted to Gutenberg blocks is specified here.'
+							) }
+						</p>
 						<TextControl
 							label={ __( 'Content types' ) }
 							disabled={ true }
@@ -82,14 +85,11 @@ class Settings extends Component {
 							disabled={ true }
 							value={ conversionContentStatusesCsv }
 						/>
-						<p>
-							<Button
-								isPrimary
-								href="/wp-admin/admin.php?page=ncc-conversion"
-							>
+						<div className="newspack-buttons-card">
+							<Button isPrimary href="/wp-admin/admin.php?page=newspack-content-converter">
 								{ __( 'Run conversion' ) }
 							</Button>
-						</p>
+						</div>
 					</Card>
 				</Grid>
 			</Fragment>

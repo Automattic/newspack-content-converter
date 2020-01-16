@@ -74,12 +74,12 @@ class Converter {
 			function () {
 
 				add_menu_page(
-					__( 'Newspack Content Converter' ),
+					__( 'Run conversion' ),
 					__( 'Newspack Content Converter' ),
 					'manage_options',
 					'newspack-content-converter',
 					function () {
-						echo '<div id="ncc-settings"></div>';
+						echo '<div id="ncc-conversion"></div>';
 					},
 					'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiBkPSJNMjAuNTUgNS4yMmwtMS4zOS0xLjY4QzE4Ljg4IDMuMjEgMTguNDcgMyAxOCAzSDZjLS40NyAwLS44OC4yMS0xLjE1LjU1TDMuNDYgNS4yMkMzLjE3IDUuNTcgMyA2LjAxIDMgNi41VjE5YzAgMS4xLjg5IDIgMiAyaDE0YzEuMSAwIDItLjkgMi0yVjYuNWMwLS40OS0uMTctLjkzLS40NS0xLjI4ek0xMiA5LjVsNS41IDUuNUgxNHYyaC00di0ySDYuNUwxMiA5LjV6TTUuMTIgNWwuODItMWgxMmwuOTMgMUg1LjEyeiIgZmlsbD0iY3VycmVudGNvbG9yIi8+PC9zdmc+Cg=='
 				);
@@ -89,9 +89,20 @@ class Converter {
 					__( 'Run conversion' ),
 					__( 'Run conversion' ),
 					'manage_options',
-					'ncc-conversion',
+					'newspack-content-converter',
 					function () {
 						echo '<div id="ncc-conversion"></div>';
+					}
+				);
+
+				add_submenu_page(
+					'newspack-content-converter',
+					__( 'Settings' ),
+					__( 'Settings' ),
+					'manage_options',
+					'newspack-content-converter-settings',
+					function () {
+						echo '<div id="ncc-settings"></div>';
 					}
 				);
 

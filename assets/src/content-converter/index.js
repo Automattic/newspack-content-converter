@@ -117,7 +117,7 @@ class ContentConverter extends Component {
 					<h1>{ __( 'Content Conversion Complete' ) }</h1>
 					<p>{ __( 'All queued content has been converted.' ) }</p>
 					<p>
-						<a href="/wp-admin/admin.php?page=ncc-conversion">
+						<a href="/wp-admin/admin.php?page=newspack-content-converter">
 							{ __( 'Back to Run Conversion page' ) }
 						</a>
 					</p>
