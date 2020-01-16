@@ -184,16 +184,12 @@ class ConverterController extends WP_REST_Controller {
 									|| $this->conversion_processor->is_queued_conversion_retry_failed()
 			? '1' : '0';
 		$queued_entries        = $this->conversion_processor->get_queued_entries_total_number();
-		$conversion_batch_size = $this->conversion_processor->get_conversion_batch_size();
 		if ( $this->conversion_processor->is_queued_conversion() ) {
-			$queued_batches = $this->conversion_processor->get_conversion_queued_batches();
-			$max_batch      = $this->conversion_processor->get_conversion_max_batch();
+			$max_batch = $this->conversion_processor->get_conversion_max_batch();
 		} elseif ( $this->conversion_processor->is_queued_conversion_retry_failed() ) {
-			$queued_batches = $this->conversion_processor->get_conversion_retry_failed_queued_batches();
-			$max_batch      = $this->conversion_processor->get_conversion_retry_failed_max_batch();
+			$max_batch = $this->conversion_processor->get_conversion_retry_failed_max_batch();
 		} else {
-			$queued_batches = null;
-			$max_batch      = $this->conversion_processor->get_conversion_max_batch();
+			$max_batch = $this->conversion_processor->get_conversion_max_batch();
 		}
 		$posts_converted_count   = $this->conversion_processor->get_posts_converted_count();
 		$has_converted_posts     = ! is_null( $posts_converted_count ) && $posts_converted_count > 0 ? true : false;
@@ -206,8 +202,6 @@ class ConverterController extends WP_REST_Controller {
 			[
 				'isConversionOngoing'   => $is_conversion_ongoing,
 				'queuedEntries'         => $queued_entries,
-				'conversionBatchSize'   => $conversion_batch_size,
-				'queuedBatches'         => $queued_batches,
 				'maxBatch'              => $max_batch,
 				'hasConvertedPosts'     => $has_converted_posts,
 				'hasFailedConversions'  => $has_failed_conversions,

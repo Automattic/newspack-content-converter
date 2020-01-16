@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "newspack-components": "^1.0.3",
     "npm-run-all": "^4.1.5",
     "query-string": "^6.9.0"
   },
