@@ -21,7 +21,6 @@ import {
  * Material UI dependencies.
  */
 import UnarchiveIcon from '@material-ui/icons/Unarchive';
-import EditIcon from '@material-ui/icons/Edit';
 
 /**
  * Internal dependencies.
@@ -191,20 +190,11 @@ class Conversion extends Component {
 								noticeText={ __( 'This page will automatically reload for every batch.' ) }
 								isPrimary
 							/>
-							<Card noBackground className="newspack-card__editable">
-								<TextControl
-									label={ __( 'Number of entries to be converted' ) }
-									disabled={ true }
-									value={ queuedEntries }
-								/>
-								<Button
-									className="newspack-button__edit"
-									href="/wp-admin/admin.php?page=newspack-content-converter#content-type"
-								>
-									<EditIcon />
-									<span className="screen-reader-text">{ __( 'Edit' ) }</span>
-								</Button>
-							</Card>
+							<TextControl
+								label={ __( 'Number of entries to be converted' ) }
+								disabled={ true }
+								value={ queuedEntries }
+							/>
 							<TextControl
 								label={ __( 'Total conversion batches' ) }
 								disabled={ true }
