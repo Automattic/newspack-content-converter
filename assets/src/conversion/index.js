@@ -143,11 +143,11 @@ class Conversion extends Component {
 								) }
 								isWarning
 							/>
-							<Card noBackground className="newspack-card__buttons-card">
+							<div className="newspack-buttons-card">
 								<Button isPrimary onClick={ this.handleOnClickResetConversion }>
 									{ __( 'Reset conversion' ) }
 								</Button>
-							</Card>
+							</div>
 						</Card>
 					</Grid>
 				</Fragment>
@@ -206,11 +206,14 @@ class Conversion extends Component {
 								) }
 								isWarning
 							/>
-							<Card noBackground className="newspack-card__buttons-card">
+							<div className="newspack-buttons-card">
 								<Button isPrimary onClick={ this.handleOnClickInitializeConversion }>
-									{ __( 'Start conversion' ) }
+									{ __( 'Run conversion' ) }
 								</Button>
-							</Card>
+								<Button isSecondary href="/wp-admin/admin.php?page=newspack-content-converter-settings">
+									{ __( 'Settings' ) }
+								</Button>
+							</div>
 						</Card>
 					</Grid>
 				</Fragment>
