@@ -1,8 +1,27 @@
 /**
  * WordPress dependencies.
  */
-import { Component } from '@wordpress/element';
+import { Component, Fragment } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
+
+/**
+ * Newspack dependencies.
+ */
+import {
+	Button,
+	Card,
+	FormattedHeader,
+	Grid,
+	NewspackLogo,
+	Notice,
+	Waiting,
+} from 'newspack-components';
+
+/**
+ * Material UI dependencies.
+ */
+import ArrowBackIcon from '@material-ui/icons/ArrowBack';
+import UnarchiveIcon from '@material-ui/icons/Unarchive';
 
 /**
  * Internal dependencies.
@@ -83,51 +102,92 @@ class ContentConverter extends Component {
 
 		if ( null == isActive ) {
 			return (
-				<div className="ncc-page">
-					<h1>{ __( 'Content Conversion' ) }</h1>
-					<img src="/wp-admin/images/wpspin_light.gif" /> Loading...
+				<div className="newspack-content-converter__wrapper">
+					<div className="newspack-logo-wrapper">
+						<NewspackLogo />
+					</div>
+					<Grid>
+						<FormattedHeader
+							headerIcon={ <UnarchiveIcon /> }
+							headerText={ __( 'Conversion' ) }
+							subHeaderText={ __( 'Conversion to Gutenberg blocks is in progress.' ) }
+						/>
+						<Card>
+							<div className="newspack-content-converter__status">
+								<Waiting isLeft />
+								{ __( 'Loading...' ) }
+							</div>
+						</Card>
+					</Grid>
 				</div>
 			);
 		} else if ( true == isActive ) {
 			return (
-				<div className="ncc-page">
-					<h1>{ __( 'Content Conversion...' ) }</h1>
-					<img src="/wp-admin/images/wpspin_light.gif" />
-					&nbsp; { __( 'Now processing batch' ) } { thisBatch }/{ maxBatch } ...
-					<br />
-					<h3>{ __( 'Do not close this page!' ) }</h3>
-					<ul>
-						<li>
-							{ __(
-								'This page will occasionally automatically reload, and notify you when the conversion is complete.'
-							) }
-						</li>
-						<li>{ __( 'If asked to Reload, chose yes.' ) }</li>
-						<li>
-							{ __(
-								'You may also carefully open an additional tab to convert another batch in parallel.'
-							) }
-						</li>
-					</ul>
+				<div className="newspack-content-converter__wrapper newspack-content-converter__is-active">
+					<div className="newspack-logo-wrapper">
+						<NewspackLogo />
+					</div>
+					<Grid>
+						<FormattedHeader
+							headerIcon={ <UnarchiveIcon /> }
+							headerText={ __( 'Conversion' ) }
+							subHeaderText={ __( 'Conversion to Gutenberg blocks is in progress.' ) }
+						/>
+						<Card>
+							<h2>{ __( 'Do not close this page!' ) }</h2>
+							<div className="newspack-content-converter__status">
+								<Waiting isLeft />
+								{ __( 'Now processing batch' ) } { thisBatch }/{ maxBatch }...
+							</div>
+							<p>
+								{ __(
+									'This page will occasionally automatically reload, and notify you when the conversion is complete.'
+								) }
+							</p>
+							<p>{ __( 'If asked to Reload, chose yes.' ) }</p>
+							<Notice
+								noticeText={ __(
+									'You may also carefully open an additional tab to convert another batch in parallel.'
+								) }
+								isPrimary
+							/>
+						</Card>
+					</Grid>
 				</div>
 			);
 		} else if ( false == isActive ) {
 			return (
-				<div className="ncc-page">
-					<h1>{ __( 'Content Conversion Complete' ) }</h1>
-					<p>{ __( 'All queued content has been converted.' ) }</p>
-					<p>
-						<a href="/wp-admin/admin.php?page=newspack-content-converter">
-							{ __( 'Back to Run Conversion page' ) }
-						</a>
-					</p>
-					{ true == hasIncompleteConversions && (
-						<p>
-							{ __(
-								'Warning: certain posts were not converted successfully. You may try converting those again on the Run Conversion page.'
+				<div className="newspack-content-converter__wrapper">
+					<div className="newspack-logo-wrapper">
+						<NewspackLogo />
+					</div>
+					<Grid>
+						<FormattedHeader
+							headerIcon={ <UnarchiveIcon /> }
+							headerText={ __( 'Conversion' ) }
+							subHeaderText={ __( 'Conversion to Gutenberg blocks is complete.' ) }
+						/>
+						<Card>
+							{ true == hasIncompleteConversions ? (
+								<Notice
+									noticeText={ __(
+										'Certain entries were not converted successfully. You may try converting those again on the Run conversion page.'
+									) }
+									isError
+								/>
+							) : (
+								<Notice
+									noticeText={ __( 'All queued content has been converted successfully.' ) }
+									isSuccess
+								/>
 							) }
-						</p>
-					) }
+							<div className="newspack-buttons-card">
+								<Button href="/wp-admin/admin.php?page=newspack-content-converter" isPrimary>
+									{ __( 'Back to Run conversion' ) }
+								</Button>
+							</div>
+						</Card>
+					</Grid>
 				</div>
 			);
 		}
