@@ -210,7 +210,10 @@ class Conversion extends Component {
 								<Button isPrimary onClick={ this.handleOnClickInitializeConversion }>
 									{ __( 'Run conversion' ) }
 								</Button>
-								<Button isSecondary href="/wp-admin/admin.php?page=newspack-content-converter-settings">
+								<Button
+									isSecondary
+									href="/wp-admin/admin.php?page=newspack-content-converter-settings"
+								>
 									{ __( 'Settings' ) }
 								</Button>
 							</div>
