@@ -65,13 +65,11 @@ class Settings extends Component {
 				<Grid>
 					<FormattedHeader
 						headerIcon={ <SettingsIcon /> }
-						headerText={ __( 'Conversion settings' ) }
+						headerText={ __( 'Settings' ) }
 						subHeaderText={ __( 'Adding content to the queue to convert it to Gutenberg blocks.' ) }
 					/>
 					<Card>
 						<p>{ __( 'The type of HTML content to be converted to Gutenberg blocks is specified here.' ) }</p>
-						<hr />
-						<h2 id="content-type">{ __( 'Content type' ) }</h2>
 						<TextControl
 							label={ __( 'Content types' ) }
 							disabled={ true }
@@ -82,14 +80,11 @@ class Settings extends Component {
 							disabled={ true }
 							value={ conversionContentStatusesCsv }
 						/>
-						<p>
-							<Button
-								isPrimary
-								href="/wp-admin/admin.php?page=ncc-conversion"
-							>
+						<div className="newspack-buttons-card">
+							<Button isPrimary href="/wp-admin/admin.php?page=newspack-content-converter">
 								{ __( 'Run conversion' ) }
 							</Button>
-						</p>
+						</div>
 					</Card>
 				</Grid>
 			</Fragment>
