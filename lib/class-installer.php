@@ -126,9 +126,10 @@ class Installer {
 	 * @return array Post types.
 	 */
 	private static function get_post_types_editable_by_block_editor() {
-		$post_types = get_post_types( array( 'public' => true ) );
+		$post_types        = get_post_types( array( 'public' => true ) );
+		$post_types_for_be = [];
 
-		// phpcsignore -- ignore warning, allow following comment with valid code.
+		// phpcsignore -- allow following comment containing valid code.
 		// Attempt to use use_block_editor_for_post_type() function, or else default to 'post' and 'page'.
 		require_once ABSPATH . 'wp-admin/includes/post.php';
 		if ( function_exists( 'use_block_editor_for_post_type' ) ) {
@@ -137,7 +138,9 @@ class Installer {
 					$post_types_for_be[] = $post_type;
 				}
 			}
-		} else {
+		}
+
+		if ( empty( $post_types_for_be ) ) {
 			if ( in_array( 'post', $post_types ) ) {
 				$post_types_for_be[] = 'post';
 			}
