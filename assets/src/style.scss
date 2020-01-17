@@ -51,6 +51,16 @@ body[class*="newspack-content-converter_"] {
 
 // Wrapper
 .newspack-content-converter__wrapper {
+	bottom: 0;
+	display: flex;
+	flex-direction: column;
+	left: 0;
+	overflow-y: auto;
+	position: absolute;
+	right: 0;
+	top: 0;
+	z-index: 9999;
+
 	&:before {
 		background: $primary-500;
 		bottom: 0;
@@ -58,9 +68,20 @@ body[class*="newspack-content-converter_"] {
 		display: block;
 		left: 0;
 		min-height: 100vh;
-		position: absolute;
+		position: fixed;
 		right: 0;
 		top: 0;
+		z-index: -1;
+	}
+
+	.newspack-logo-wrapper {
+		margin-bottom: 32px;
+	}
+
+	.newspack-grid {
+		flex: 1 1 100%;
+		padding-bottom: 32px;
+		width: 100%;
 	}
 
 	&.newspack-content-converter__is-active {
