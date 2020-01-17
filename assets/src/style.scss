@@ -1,3 +1,5 @@
+@import '~newspack-components/shared/scss/colors';
+
 .toplevel_page_newspack-content-converter,
 body[class*="newspack-content-converter_"] {
 	#wpcontent {
@@ -44,5 +46,100 @@ body[class*="newspack-content-converter_"] {
 		justify-content: center;
 		margin-left: 8px;
 		padding: 0;
+	}
+}
+
+// Wrapper
+.newspack-content-converter__wrapper {
+	bottom: 0;
+	display: flex;
+	flex-direction: column;
+	left: 0;
+	overflow-y: auto;
+	position: absolute;
+	right: 0;
+	top: 0;
+	z-index: 9999;
+
+	&:before {
+		background: $primary-500;
+		bottom: 0;
+		content: "";
+		display: block;
+		left: 0;
+		min-height: 100vh;
+		position: fixed;
+		right: 0;
+		top: 0;
+		z-index: -1;
+	}
+
+	.newspack-logo-wrapper {
+		margin-bottom: 32px;
+	}
+
+	.newspack-grid {
+		flex: 1 1 100%;
+		padding-bottom: 32px;
+		width: 100%;
+	}
+
+	&.newspack-content-converter__is-active {
+		cursor: wait;
+
+		.newspack-card {
+			position: relative;
+
+			&:before {
+				animation: newspack-content-converter__is-active-animation 2s ease-in-out infinite;
+				background: $primary-800;
+				content: "";
+				display: block;
+				height: 4px;
+				left: 0;
+				position: absolute;
+				right: 100%;
+				top: 0;
+				z-index: 1;
+			}
+		}
+	}
+
+	> * {
+		position: relative;
+	}
+
+	.newspack-formatted-header {
+		.newspack-formatted-header__title,
+		.newspack-formatted-header__subtitle {
+			color: white;
+		}
+
+		.newspack-formatted-header__icon svg {
+			fill: white;
+		}
+	}
+}
+
+// Status
+.newspack-content-converter__status {
+	align-items: center;
+	display: flex;
+}
+
+@keyframes newspack-content-converter__is-active-animation {
+	from {
+		left: 0;
+		right: 100%;
+	}
+
+	50% {
+		left: 0;
+		right: 0;
+	}
+
+	to {
+		left: 100%;
+		right: 0;
 	}
 }
