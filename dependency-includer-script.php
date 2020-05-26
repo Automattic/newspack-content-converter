@@ -26,3 +26,6 @@ require_once dirname( __FILE__ ) . '/lib/content-patcher/patchers/class-shortcod
 require_once dirname( __FILE__ ) . '/lib/content-patcher/elementManipulators/class-htmlelementmanipulator.php';
 require_once dirname( __FILE__ ) . '/lib/content-patcher/elementManipulators/class-squarebracketselementmanipulator.php';
 require_once dirname( __FILE__ ) . '/lib/content-patcher/elementManipulators/class-wpblockmanipulator.php';
+if ( defined( 'WP_CLI' ) && WP_CLI ) {
+	require_once dirname( __FILE__ ) . '/lib/class-cli.php';
+}

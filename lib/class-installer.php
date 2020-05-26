@@ -42,8 +42,8 @@ class Installer {
 	 * Plugin uninstallation.
 	 * Drops the plugin table, deleted plugin options.
 	 */
-	public static function uninstall_plugin() {
-		if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
+	public static function uninstall_plugin( $override = false ) {
+		if ( ! $override && ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 			exit();
 		}
 
