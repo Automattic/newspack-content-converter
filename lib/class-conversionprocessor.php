@@ -124,7 +124,11 @@ class ConversionProcessor {
 			return null;
 		}
 
-		$post                  = $results[0];
+		$post = $results[0];
+
+		// Do not run the `do_shortcode` function which substitutes shortcodes with rendered HTML -- let Gutenberg convert those.
+		remove_filter( 'the_content', 'do_shortcode', 11 );
+
 		$post_content_filtered = apply_filters( 'the_content', $post->post_content );
 
 		return $post_content_filtered;
