@@ -128,8 +128,10 @@ class ConversionProcessor {
 
 		// Do not run the `do_shortcode` function which substitutes shortcodes with rendered HTML -- let Gutenberg convert those.
 		remove_filter( 'the_content', 'do_shortcode', 11 );
-
 		$post_content_filtered = apply_filters( 'the_content', $post->post_content );
+
+		// Run registered pre-conversion Patchers, which get to modify the HTML source before it gets converted to Blocks.
+		$post_content_filtered = $this->patcher_handler->run_all_preconversion_patches( $post_content_filtered );
 
 		return $post_content_filtered;
 	}
