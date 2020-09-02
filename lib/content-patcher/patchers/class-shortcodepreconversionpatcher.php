@@ -16,7 +16,7 @@ use NewspackContentConverter\ContentPatcher\Patchers\PreconversionPatcherAbstrac
  */
 class ShortcodePreconversionPatcher extends PreconversionPatcherAbstract {
 	/**
-	 * See the \NewspackContentConverter\ContentPatcher\Patchers\PatcherInterface::patch_blocks_contents for description.
+	 * See the \NewspackContentConverter\ContentPatcher\Patchers\PreconversionPatcherInterface::patch_html_source for description.
 	 *
 	 * @param string $html HTML source before conversion to blocks.
 	 *
