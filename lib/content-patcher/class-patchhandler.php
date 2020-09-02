@@ -61,7 +61,7 @@ class PatchHandler implements PatchHandlerInterface {
 		}
 
 		foreach ( $this->preconversion_patchers as $patcher ) {
-			$html_content = $patcher->patch_blocks_contents( $html_content );
+			$html_content = $patcher->patch_html_source( $html_content );
 		}
 
 		return $html_content;
