@@ -31,6 +31,9 @@ new \NewspackContentConverter\Converter(
 		new \NewspackContentConverter\ConversionProcessor(
 			new \NewspackContentConverter\ContentPatcher\PatchHandler(
 				array(
+					// Pre-conversion Patchers.
+					new \NewspackContentConverter\ContentPatcher\Patchers\ShortcodePreconversionPatcher(),
+					// Patchers.
 					new \NewspackContentConverter\ContentPatcher\Patchers\ImgPatcher(),
 					new \NewspackContentConverter\ContentPatcher\Patchers\CaptionImgPatcher(),
 					new \NewspackContentConverter\ContentPatcher\Patchers\ParagraphPatcher(),
