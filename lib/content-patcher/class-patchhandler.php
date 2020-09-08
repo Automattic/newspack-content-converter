@@ -7,7 +7,8 @@
 
 namespace NewspackContentConverter\ContentPatcher;
 
-use NewspackContentConverter\ContentPatcher\Patchers\PatcherInterface;
+use NewspackContentConverter\ContentPatcher\Patchers\PatcherAbstract;
+use NewspackContentConverter\ContentPatcher\Patchers\PreconversionPatcherAbstract;
 /**
  * Class PatchHandler.
  * Registers specific content patchers and runs them.
@@ -17,11 +18,18 @@ use NewspackContentConverter\ContentPatcher\Patchers\PatcherInterface;
 class PatchHandler implements PatchHandlerInterface {
 
 	/**
-	 * Patcher objects, have interface
+	 * PatcherInterface objects, have interface
 	 *
 	 * @var array
 	 */
 	private $patchers = [];
+
+	/**
+	 * PreconversionPatcherInterface objects, have interface
+	 *
+	 * @var array
+	 */
+	private $preconversion_patchers = [];
 
 	/**
 	 * PatchHandler constructor.
@@ -31,11 +39,32 @@ class PatchHandler implements PatchHandlerInterface {
 	public function __construct( $patchers ) {
 		if ( $patchers && is_array( $patchers ) ) {
 			foreach ( $patchers as $patcher ) {
-				if ( $patcher instanceof PatcherInterface ) {
+				if ( $patcher instanceof PreconversionPatcherAbstract ) {
+					$this->preconversion_patchers[] = $patcher;
+				} elseif ( $patcher instanceof PatcherAbstract ) {
 					$this->patchers[] = $patcher;
 				}
 			}
 		}
+	}
+
+	/**
+	 * See the \NewspackContentConverter\ContentPatcher\PatchHandlerInterface::run_all_preconversion_patches.
+	 *
+	 * @param string $html_content HTML content.
+	 *
+	 * @return string|null Patched HTML content.
+	 */
+	public function run_all_preconversion_patches( $html_content ) {
+		if ( empty( $this->preconversion_patchers ) ) {
+			return $html_content;
+		}
+
+		foreach ( $this->preconversion_patchers as $patcher ) {
+			$html_content = $patcher->patch_html_source( $html_content );
+		}
+
+		return $html_content;
 	}
 
 	/**
@@ -44,9 +73,13 @@ class PatchHandler implements PatchHandlerInterface {
 	 * @param string $html_content  HTML content.
 	 * @param string $block_content Blocks content.
 	 *
-	 * @return string|null
+	 * @return string|null Patched Blocks content.
 	 */
 	public function run_all_patches( $html_content, $block_content ) {
+		if ( empty( $this->patchers ) ) {
+			return $block_content;
+		}
+
 		foreach ( $this->patchers as $patcher ) {
 			$block_content = $patcher->patch_blocks_contents( $html_content, $block_content );
 		}
