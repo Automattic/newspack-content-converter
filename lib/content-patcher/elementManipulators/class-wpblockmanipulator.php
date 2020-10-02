@@ -74,7 +74,7 @@ class WpBlockManipulator {
 	 */
 	public function match_wp_block_selfclosing( $block_name, $subject ) {
 
-		$pattern = sprintf( self::PATTERN_WP_BLOCK_ELEMENT_SELFCLOSING, $block_name );
+		$pattern               = sprintf( self::PATTERN_WP_BLOCK_ELEMENT_SELFCLOSING, $block_name );
 		$preg_match_all_result = preg_match_all( $pattern, $subject, $matches, PREG_OFFSET_CAPTURE );
 
 		return ( false === $preg_match_all_result || 0 === $preg_match_all_result ) ? null : $matches;
