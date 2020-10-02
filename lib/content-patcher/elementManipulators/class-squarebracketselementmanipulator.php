@@ -74,6 +74,22 @@ class SquareBracketsElementManipulator {
 	}
 
 	/**
+	 * Returns the content inside shortcodes.
+	 *
+	 * @param string      $shortcode Shortcode name.
+	 * @param null|string $tagnames  Optional array of shortcode names, as defined by the get_shortcode_contents() function.
+	 *
+	 * @return string|null
+	 */
+	public function get_shortcode_contents( $shortcode, $tagnames = null ) {
+		$pattern = get_shortcode_regex( $tagnames );
+		$matches = [];
+		preg_match( "/$pattern/s", $shortcode, $matches );
+
+		return isset( $matches[5] ) ? $matches[5] : null;
+	}
+
+	/**
 	 * Gets the element's inner text.
 	 *
 	 * @param string $element_name Name of the square bracket element, e.g. "caption", for the [caption]...[/caption] element.
@@ -85,6 +101,34 @@ class SquareBracketsElementManipulator {
 		$inner_text_matches = $this->match_inner_text( $element_name, $subject );
 
 		return isset( $inner_text_matches[1][0][0] ) ? $inner_text_matches[1][0][0] : null;
+	}
+
+	/**
+	 * Extracts a shortcode attribute.
+	 *
+	 * @param string $attribute_name Attribute name.
+	 * @param string $shortcode      Shortcode element.
+	 *
+	 * @return string|null
+	 */
+	public function get_shortcode_attribute( $attribute_name, $shortcode ) {
+		$attributes_values = shortcode_parse_atts( $shortcode );
+		if ( empty( $attributes_values ) || ! $attributes_values ) {
+			return null;
+		}
+
+		// The WP's shortcode_parse_atts() explodes the attributes' values using spaces as delimiters, so let's combine the whole attribute values from the result.
+		$previous_key = null;
+		foreach ( $attributes_values as $key => $value ) {
+			if ( $previous_key && is_numeric( $key ) ) {
+				$attributes_values[ $previous_key ] .= ' ' . $value;
+				unset( $attributes_values[ $key ] );
+				continue;
+			}
+			$previous_key = $key;
+		}
+
+		return isset( $attributes_values[ $attribute_name ] ) ? $attributes_values[ $attribute_name ] : null;
 	}
 
 	/**
@@ -139,5 +183,25 @@ class SquareBracketsElementManipulator {
 		}
 
 		return false;
+	}
+
+	/**
+	 * Matches all shortcodes.
+	 *
+	 * @param string $content Content.
+	 *
+	 * @return array `preg_match_all`'s $match array with all shortcode designations.
+	 */
+	public function match_all_shortcode_designations( $content ) {
+		$matches                       = [];
+		$pattern_shortcode_designation = '|
+			\[          # shortcode opening bracket
+			([^\s/\]]+) # match the shortcode designation string (which is anything except space, forward slash, and closing bracket)
+			[^\]]+      # zero or more of any char except closing bracket
+			\]          # closing bracket
+		|xim';
+		preg_match_all( $pattern_shortcode_designation, $content, $matches );
+
+		return $matches;
 	}
 }
