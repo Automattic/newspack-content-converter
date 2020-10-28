@@ -73,8 +73,7 @@ class CLI {
 		\WP_CLI::line( sprintf( 'Restoring original %s content to Posts...', $restore_blocks ? 'blocks' : 'HTML' ) );
 
 		global $wpdb;
-		$ncc_table_name     = Config::get_instance()->get( 'table_name' );
-		$ncc_table_name_esc = esc_sql( $ncc_table_name );
+		$ncc_table_name_esc = esc_sql( Config::get_instance()->get( 'table_name' ) );
 		$posts_table_name   = $wpdb->prefix . 'posts';
 		$restore_column     = $restore_blocks ? 'post_content_gutenberg_converted' : 'post_content';
 
