@@ -7,7 +7,9 @@
 
 namespace NewspackContentConverter;
 
+use WP_CLI;
 use NewspackContentConverter\Config;
+use \NewspackContentConverter\Installer;
 
 /**
  * Class Config
@@ -26,15 +28,15 @@ class CLI {
 	/**
 	 * Config constructor.
 	 */
-	public function __construct() {
-		\WP_CLI::add_command(
+	public function register_commands() {
+		WP_CLI::add_command(
 			'newspack-content-converter reset',
 			[ $this, 'cli_reset' ],
 			[
 				'shortdesc' => 'Resets the conversion queue: clears the current `ncc_wp_posts` table from previously added Posts, and adds new Posts which need conversion.',
 			]
 		);
-		\WP_CLI::add_command(
+		WP_CLI::add_command(
 			'newspack-content-converter restore-content',
 			[ $this, 'cli_restore_content' ],
 			[
@@ -53,12 +55,12 @@ class CLI {
 	/**
 	 * Reset the Newspack Content Converter tables. This action is equivalent to uninstalling, deleting, and reinstaalling the plugin.
 	 */
-	public static function cli_reset() {
-		\NewspackContentConverter\Installer::uninstall_plugin( true );
-		\WP_CLI::line( __( 'Uninstallation complete.', 'newspack-content-converter' ) );
-		\NewspackContentConverter\Installer::install_plugin( true );
-		\WP_CLI::line( __( 'Installation complete.', 'newspack-content-converter' ) );
-		\WP_CLI::success( 'Reset complete.' );
+	public function cli_reset() {
+		Installer::uninstall_plugin( true );
+		WP_CLI::line( __( 'Uninstallation complete.', 'newspack-content-converter' ) );
+		Installer::install_plugin( true );
+		WP_CLI::line( __( 'Installation complete.', 'newspack-content-converter' ) );
+		WP_CLI::success( 'Reset complete.' );
 	}
 
 	/**
@@ -70,7 +72,7 @@ class CLI {
 	public function cli_restore_content( $args, $assoc_args ) {
 		$restore_blocks = isset( $assoc_args['blocks'] ) ? true : false;
 
-		\WP_CLI::line( sprintf( 'Restoring original %s content to Posts...', $restore_blocks ? 'blocks' : 'HTML' ) );
+		WP_CLI::line( sprintf( 'Restoring original %s content to Posts...', $restore_blocks ? 'blocks' : 'HTML' ) );
 
 		global $wpdb;
 		$ncc_table_name_esc = esc_sql( Config::get_instance()->get( 'table_name' ) );
@@ -81,4 +83,3 @@ class CLI {
 		$wpdb->query( "UPDATE {$posts_table_name} wp JOIN {$ncc_table_name_esc} nwp ON nwp.ID = wp.ID SET wp.post_content = nwp.{$restore_column} ;" );
 	}
 }
-new \NewspackContentConverter\CLI();

@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Newspack Content Converter
  * Description: Mass converts pre-Gutenberg HTML content to Gutenberg Blocks.
- * Version: 0.0.8-alpha
+ * Version: 0.0.9-alpha
  * Author: Automattic
  * Author URI: https://newspack.blog/
  * License: GPL2
@@ -12,36 +12,39 @@
  * @package Newspack
  */
 
+namespace NewspackContentConverter;
+
+require __DIR__ . '/vendor/autoload.php';
+
 defined( 'ABSPATH' ) || exit;
 
-// TODO, Warning, __FILE__ might not play well with symlinks in dev env.
 if ( ! defined( 'NCC_PLUGIN_FILE' ) ) {
+	// Warning, __FILE__ might not play well with symlinks in dev env.
 	define( 'NCC_PLUGIN_FILE', __FILE__ );
 }
 
-
-// TODO: Switch to Composer autoloading.
-require_once dirname( __FILE__ ) . '/dependency-includer-script.php';
-
+if ( defined( 'WP_CLI' ) && WP_CLI ) {
+	(new CLI)->register_commands();
+}
 
 // Construct the app with a dependency graph, without the use of a service container.
-new \NewspackContentConverter\Converter(
-	new \NewspackContentConverter\Installer(),
-	new \NewspackContentConverter\ConverterController(
-		new \NewspackContentConverter\ConversionProcessor(
-			new \NewspackContentConverter\ContentPatcher\PatchHandler(
+new Converter(
+	new Installer(),
+	new ConverterController(
+		new ConversionProcessor(
+			new ContentPatcher\PatchHandler(
 				array(
 					// Pre-conversion Patchers.
-					new \NewspackContentConverter\ContentPatcher\Patchers\ShortcodePreconversionPatcher(),
+					new ContentPatcher\Patchers\ShortcodePreconversionPatcher(),
 					// Patchers.
-					new \NewspackContentConverter\ContentPatcher\Patchers\ImgPatcher(),
-					new \NewspackContentConverter\ContentPatcher\Patchers\CaptionImgPatcher(),
-					new \NewspackContentConverter\ContentPatcher\Patchers\ParagraphPatcher(),
-					new \NewspackContentConverter\ContentPatcher\Patchers\BlockquotePatcher(),
-					new \NewspackContentConverter\ContentPatcher\Patchers\VideoPatcher(),
-					new \NewspackContentConverter\ContentPatcher\Patchers\AudioPatcher(),
-					new \NewspackContentConverter\ContentPatcher\Patchers\ShortcodeModulePatcher(),
-					new \NewspackContentConverter\ContentPatcher\Patchers\ShortcodePullquotePatcher(),
+					new ContentPatcher\Patchers\ImgPatcher(),
+					new ContentPatcher\Patchers\CaptionImgPatcher(),
+					new ContentPatcher\Patchers\ParagraphPatcher(),
+					new ContentPatcher\Patchers\BlockquotePatcher(),
+					new ContentPatcher\Patchers\VideoPatcher(),
+					new ContentPatcher\Patchers\AudioPatcher(),
+					new ContentPatcher\Patchers\ShortcodeModulePatcher(),
+					new ContentPatcher\Patchers\ShortcodePullquotePatcher(),
 				)
 			)
 		)

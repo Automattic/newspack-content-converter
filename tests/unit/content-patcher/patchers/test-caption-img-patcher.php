@@ -5,8 +5,12 @@
  * @package Newspack
  */
 
+namespace NewspackContentConverterTest;
+
+use WP_UnitTestCase;
 use NewspackContentConverter\ContentPatcher\Patchers\PatcherAbstract;
 use NewspackContentConverter\ContentPatcher\Patchers\CaptionImgPatcher;
+use NewspackContentConverterTest\DataProviderCaptionImgPatcher;
 
 /**
  * Class TestCaptionImgPatcher
@@ -31,10 +35,6 @@ class TestCaptionImgPatcher extends WP_UnitTestCase {
 	 * Override setUp.
 	 */
 	public function setUp() {
-		$this->fixtures_dir = dirname( __FILE__ ) . '/../../../fixtures/unit/content-patcher/patchers/';
-
-		require_once $this->fixtures_dir . 'class-dataprovidercaptionimgpatcher.php';
-
 		$this->patcher       = new CaptionImgPatcher();
 		$this->data_provider = new DataProviderCaptionImgPatcher();
 	}

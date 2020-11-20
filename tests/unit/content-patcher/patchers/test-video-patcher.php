@@ -5,8 +5,12 @@
  * @package Newspack
  */
 
+namespace NewspackContentConverterTest;
+
+use WP_UnitTestCase;
 use NewspackContentConverter\ContentPatcher\Patchers\PatcherAbstract;
 use NewspackContentConverter\ContentPatcher\Patchers\VideoPatcher;
+use NewspackContentConverterTest\DataProviderVideoPatcher;
 
 /**
  * Class TestVideoPatcher
@@ -31,10 +35,6 @@ class TestVideoPatcher extends WP_UnitTestCase {
 	 * Override setUp.
 	 */
 	public function setUp() {
-		$this->fixtures_dir = dirname( __FILE__ ) . '/../../../fixtures/unit/content-patcher/patchers/';
-
-		require_once $this->fixtures_dir . 'class-dataprovidervideopatcher.php';
-
 		$this->patcher       = new VideoPatcher();
 		$this->data_provider = new DataProviderVideoPatcher();
 	}

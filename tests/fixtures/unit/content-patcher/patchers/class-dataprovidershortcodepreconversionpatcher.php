@@ -5,6 +5,8 @@
  * @package Newspack
  */
 
+namespace NewspackContentConverterTest;
+
 /**
  * Class DataProviderShortcodePullquotePatcher
  *
