@@ -5,8 +5,12 @@
  * @package Newspack
  */
 
+namespace NewspackContentConverterTest;
+
+use WP_UnitTestCase;
 use NewspackContentConverter\ContentPatcher\Patchers\PreconversionPatcherAbstract;
 use NewspackContentConverter\ContentPatcher\Patchers\ShortcodePreconversionPatcher;
+use NewspackContentConverterTest\DataProviderShortcodePreconversionPatcher;
 
 /**
  * Class ShortcodePreconversionPatcher
@@ -31,10 +35,6 @@ class TestShortcodePreconversionPatcher extends WP_UnitTestCase {
 	 * Override setUp.
 	 */
 	public function setUp() {
-		$this->fixtures_dir = dirname( __FILE__ ) . '/../../../fixtures/unit/content-patcher/patchers/';
-
-		require_once $this->fixtures_dir . 'class-dataprovidershortcodepreconversionpatcher.php';
-
 		$this->patcher       = new ShortcodePreconversionPatcher();
 		$this->data_provider = new DataProviderShortcodePreconversionPatcher();
 	}

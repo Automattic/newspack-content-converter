@@ -5,6 +5,9 @@
  * @package Newspack
  */
 
+namespace NewspackContentConverterTest;
+
+use WP_UnitTestCase;
 use NewspackContentConverter\ContentPatcher\Patchers\PatcherAbstract;
 use NewspackContentConverter\ContentPatcher\Patchers\BlockquotePatcher;
 

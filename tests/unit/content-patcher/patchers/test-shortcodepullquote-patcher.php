@@ -5,8 +5,12 @@
  * @package Newspack
  */
 
+namespace NewspackContentConverterTest;
+
+use WP_UnitTestCase;
 use NewspackContentConverter\ContentPatcher\Patchers\PatcherAbstract;
 use NewspackContentConverter\ContentPatcher\Patchers\ShortcodePullquotePatcher;
+use NewspackContentConverterTest\DataProviderShortcodePullquotePatcher;
 
 /**
  * Class ShortcodePullquotePatcher
@@ -31,10 +35,6 @@ class TestPullquoteShortcodePatcher extends WP_UnitTestCase {
 	 * Override setUp.
 	 */
 	public function setUp() {
-		$this->fixtures_dir = dirname( __FILE__ ) . '/../../../fixtures/unit/content-patcher/patchers/';
-
-		require_once $this->fixtures_dir . 'class-dataprovidershortcodepullquotepatcher.php';
-
 		$this->patcher       = new ShortcodePullquotePatcher();
 		$this->data_provider = new DataProviderShortcodePullquotePatcher();
 	}

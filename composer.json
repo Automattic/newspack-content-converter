@@ -3,6 +3,12 @@
     "description": "Plugin that enables mass conversion of pre-Gutenberg post content to the Gutenberg Blocks content.",
     "type": "wordpress-plugin",
     "license": "GPL-2.0-or-later",
+    "autoload": {
+      "classmap": [
+        "lib/",
+        "tests/"
+      ]
+    },
     "require": {
         "composer/installers": "^1.6",
         "brainmaestro/composer-git-hooks": "^2.7",
