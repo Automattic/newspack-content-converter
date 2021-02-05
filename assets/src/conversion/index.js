@@ -3,24 +3,21 @@
  */
 import { Component, Fragment } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
+import {
+	Button,
+	Card,
+	CardBody,
+	CardFooter,
+	CardHeader,
+	FlexBlock,
+	Notice,
+	TextControl
+} from '@wordpress/components';
 
 /**
  * Newspack dependencies.
  */
-import {
-	Button,
-	Card,
-	FormattedHeader,
-	Grid,
-	NewspackLogo,
-	Notice,
-	TextControl,
-} from 'newspack-components';
-
-/**
- * Material UI dependencies.
- */
-import UnarchiveIcon from '@material-ui/icons/Unarchive';
+import { NewspackLogo } from 'newspack-components';
 
 /**
  * Internal dependencies.
@@ -114,82 +111,107 @@ class Conversion extends Component {
 		if ( '1' == isConversionOngoing ) {
 			return (
 				<Fragment>
-					<div className="newspack-logo-wrapper">
-						<NewspackLogo />
-					</div>
-					<Grid>
-						<FormattedHeader
-							headerIcon={ <UnarchiveIcon /> }
-							headerText={ __( 'Run conversion' ) }
-							subHeaderText={ __( 'Start conversion to Gutenberg blocks.' ) }
-						/>
-						<Card>
-							<Notice
-								noticeText={ __(
-									'A designated browser tab has already started to convert your content.'
-								) }
-								isPrimary
-							/>
-							<hr />
-							<h2>{ __( 'Reset ongoing conversion' ) }</h2>
+					<Card>
+						<CardHeader isShady>
+							<FlexBlock>
+								<h2>{ __( 'Converting...' ) }</h2>
+								<p>{ __( 'The conversion is already running' ) }</p>
+							</FlexBlock>
+						</CardHeader>
+						<CardFooter isBorderless>
 							<p>
-								{ __(
-									'In case that your active conversion browser tab has been closed by accident, or it has been interrupted and closed unexpectedly, you may reset the conversion status here, and start converting all over again.'
-								) }
+								{ __( 'A designated browser tab has already started to convert your content.' ) }
 							</p>
-							<Notice
-								noticeText={ __(
+						</CardFooter>
+					</Card>
+					<Card>
+						<CardHeader isShady>
+							<FlexBlock>
+								<h2>{ __( 'Reset Conversion' ) }</h2>
+								<p>{ __( 'Start converting all over again' ) }</p>
+							</FlexBlock>
+						</CardHeader>
+						<CardBody>
+							<Notice status="warning" isDismissible={ false }>
+								{ __(
 									'This will enable you to restart the conversion, but any previous results may be lost.'
 								) }
-								isWarning
-							/>
-							<div className="newspack-buttons-card">
-								<Button isPrimary onClick={ this.handleOnClickResetConversion }>
-									{ __( 'Reset conversion' ) }
-								</Button>
-							</div>
-						</Card>
-					</Grid>
+							</Notice>
+							<p>
+								{ __(
+									'In case that your active conversion browser tab has been closed by accident, or it has been interrupted and closed unexpectedly, you may reset the conversion status here.'
+								) }
+							</p>
+						</CardBody>
+						<CardFooter justify="flex-end">
+							<Button isPrimary onClick={ this.handleOnClickResetConversion }>
+								{ __( 'Reset Conversion' ) }
+							</Button>
+						</CardFooter>
+					</Card>
+					<div className="newspack-logo__wrapper">
+						<Button
+							href="https://newspack.pub/"
+							target="_blank"
+							label={ __( 'By Newspack' ) }
+						>
+							<NewspackLogo />
+						</Button>
+					</div>
 				</Fragment>
 			);
 		} else {
 			return (
 				<Fragment>
-					<div className="newspack-logo-wrapper">
-						<NewspackLogo />
-					</div>
-					<Grid>
-						<FormattedHeader
-							headerIcon={ <UnarchiveIcon /> }
-							headerText={ __( 'Run conversion' ) }
-							subHeaderText={ __( 'Start conversion to Gutenberg blocks.' ) }
-						/>
+					{ !! someConversionsFailed && (
 						<Card>
-							{ !! someConversionsFailed && (
-								<Fragment>
-									<Notice
-										noticeText={ __(
-											"Looks like some entries weren't converted properly. You may retry converting these."
+							<CardHeader isShady>
+								<FlexBlock>
+									<h2>{ __( 'Conversion Error' ) }</h2>
+									<p>
+										{ __( 'Retry converting the failed entries' ) }
+									</p>
+								</FlexBlock>
+							</CardHeader>
+							<CardBody>
+								<FlexBlock>
+									<Notice status="error" isDismissible={ false }>
+										{ __(
+											"Looks like some entries weren't converted properly."
 										) }
-										isError
-									/>
+									</Notice>
 									<TextControl
 										label={ __( 'Number of failed entries' ) }
 										disabled={ true }
 										value={ countFailedConverting }
 									/>
-									<Card noBackground className="newspack-card__buttons-card">
-										<Button isPrimary onClick={ this.handleOnClickInitializeRetryFailed }>
-											{ __( 'Retry conversion' ) }
-										</Button>
-									</Card>
-									<hr />
-								</Fragment>
-							) }
-							<Notice
-								noticeText={ __( 'This page will automatically reload for every batch.' ) }
-								isPrimary
-							/>
+								</FlexBlock>
+							</CardBody>
+							<CardFooter justify="flex-end">
+								<Button isPrimary onClick={ this.handleOnClickInitializeRetryFailed }>
+									{ __( 'Retry Conversion' ) }
+								</Button>
+							</CardFooter>
+						</Card>
+					) }
+					<Card>
+						<CardHeader isShady>
+							<FlexBlock>
+								<h2>{ __( 'Run Conversion' ) }</h2>
+								<p>
+									{ __( 'Start conversion to Gutenberg blocks' ) }
+								</p>
+							</FlexBlock>
+						</CardHeader>
+						<CardBody>
+							<Notice status="warning" isDismissible={ false }>
+								{ __(
+									'Once started, the conversion should not be interrupted! Your browser page needs to remain active until conversion is complete.'
+								) }
+							</Notice>
+							<h4>
+								{ __( 'This page will automatically reload for every batch.' ) }
+							</h4>
 							<TextControl
 								label={ __( 'Number of entries to be converted' ) }
 								disabled={ true }
@@ -200,25 +222,28 @@ class Conversion extends Component {
 								disabled={ true }
 								value={ maxBatch }
 							/>
-							<Notice
-								noticeText={ __(
-									'Once started, the conversion should not be interrupted! Your browser page needs to remain active until conversion is complete.'
-								) }
-								isWarning
-							/>
-							<div className="newspack-buttons-card">
-								<Button isPrimary onClick={ this.handleOnClickInitializeConversion }>
-									{ __( 'Run conversion' ) }
-								</Button>
-								<Button
-									isSecondary
-									href="/wp-admin/admin.php?page=newspack-content-converter-settings"
-								>
-									{ __( 'Settings' ) }
-								</Button>
-							</div>
-						</Card>
-					</Grid>
+						</CardBody>
+						<CardFooter justify="flex-end">
+							<Button
+								isSecondary
+								href="/wp-admin/admin.php?page=newspack-content-converter-settings"
+							>
+								{ __( 'Settings' ) }
+							</Button>
+							<Button isPrimary onClick={ this.handleOnClickInitializeConversion }>
+								{ __( 'Run Conversion' ) }
+							</Button>
+						</CardFooter>
+					</Card>
+					<div className="newspack-logo__wrapper">
+						<Button
+							href="https://newspack.pub/"
+							target="_blank"
+							label={ __( 'By Newspack' ) }
+						>
+							<NewspackLogo />
+						</Button>
+					</div>
 				</Fragment>
 			);
 		}

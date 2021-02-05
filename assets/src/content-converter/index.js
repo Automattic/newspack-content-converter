@@ -3,19 +3,21 @@
  */
 import { Component, Fragment } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
+import {
+	Button,
+	Card,
+	CardBody,
+	CardFooter,
+	CardHeader,
+	FlexBlock,
+	Notice,
+	Spinner
+} from '@wordpress/components';
 
 /**
  * Newspack dependencies.
  */
-import {
-	Button,
-	Card,
-	FormattedHeader,
-	Grid,
-	NewspackLogo,
-	Notice,
-	Waiting,
-} from 'newspack-components';
+import { NewspackLogo } from 'newspack-components';
 
 /**
  * Material UI dependencies.
@@ -103,91 +105,122 @@ class ContentConverter extends Component {
 		if ( null == isActive ) {
 			return (
 				<div className="newspack-content-converter__wrapper">
-					<div className="newspack-logo-wrapper">
-						<NewspackLogo />
+					<Card>
+						<CardHeader isShady>
+							<FlexBlock>
+								<h2>{ __( 'Converting...' ) }</h2>
+								<p>{ __( 'Conversion to Gutenberg blocks is in progress' ) }</p>
+							</FlexBlock>
+						</CardHeader>
+						<CardFooter justify="center" isBorderless>
+							<Spinner />
+						</CardFooter>
+					</Card>
+					<div className="newspack-logo__wrapper">
+						<Button
+							href="https://newspack.pub/"
+							target="_blank"
+							label={ __( 'By Newspack' ) }
+						>
+							<NewspackLogo />
+						</Button>
 					</div>
-					<Grid>
-						<FormattedHeader
-							headerIcon={ <UnarchiveIcon /> }
-							headerText={ __( 'Conversion' ) }
-							subHeaderText={ __( 'Conversion to Gutenberg blocks is in progress.' ) }
-						/>
-						<Card>
-							<div className="newspack-content-converter__status">
-								<Waiting isLeft />
-								{ __( 'Loading...' ) }
-							</div>
-						</Card>
-					</Grid>
 				</div>
 			);
 		} else if ( true == isActive ) {
 			return (
-				<div className="newspack-content-converter__wrapper newspack-content-converter__is-active">
-					<div className="newspack-logo-wrapper">
-						<NewspackLogo />
-					</div>
-					<Grid>
-						<FormattedHeader
-							headerIcon={ <UnarchiveIcon /> }
-							headerText={ __( 'Conversion' ) }
-							subHeaderText={ __( 'Conversion to Gutenberg blocks is in progress.' ) }
-						/>
-						<Card>
-							<h2>{ __( 'Do not close this page!' ) }</h2>
-							<div className="newspack-content-converter__status">
-								<Waiting isLeft />
-								{ __( 'Now processing batch' ) } { thisBatch }/{ maxBatch }...
-							</div>
+				<div className="newspack-content-converter__wrapper is-active">
+					<Card>
+						<CardHeader isShady>
+							<FlexBlock>
+								<h2>{ __( 'Converting...' ) }</h2>
+								<p>{ __( 'Conversion to Gutenberg blocks is in progress' ) }</p>
+							</FlexBlock>
+						</CardHeader>
+						<CardBody>
+							<h4>{ __( 'Do not close this page!' ) }</h4>
 							<p>
 								{ __(
 									'This page will occasionally automatically reload, and notify you when the conversion is complete.'
 								) }
 							</p>
 							<p>{ __( 'If asked to Reload, chose yes.' ) }</p>
-							<Notice
-								noticeText={ __(
-									'You may also carefully open an additional tab to convert another batch in parallel.'
-								) }
-								isPrimary
-							/>
-						</Card>
-					</Grid>
+							<p>
+								<em>
+									{ __(
+										'You may also carefully open an additional tab to convert another batch in parallel.'
+									) }
+								</em>
+							</p>
+						</CardBody>
+						<CardFooter justify="center" className="newspack-content-converter__batch">
+								<Spinner />
+								<p>{ __( 'Now processing batch' ) } { thisBatch }/{ maxBatch }</p>
+						</CardFooter>
+					</Card>
+					<div className="newspack-logo__wrapper">
+						<Button
+							href="https://newspack.pub/"
+							target="_blank"
+							label={ __( 'By Newspack' ) }
+						>
+							<NewspackLogo />
+						</Button>
+					</div>
 				</div>
 			);
 		} else if ( false == isActive ) {
 			return (
 				<div className="newspack-content-converter__wrapper">
-					<div className="newspack-logo-wrapper">
-						<NewspackLogo />
-					</div>
-					<Grid>
-						<FormattedHeader
-							headerIcon={ <UnarchiveIcon /> }
-							headerText={ __( 'Conversion' ) }
-							subHeaderText={ __( 'Conversion to Gutenberg blocks is complete.' ) }
-						/>
-						<Card>
-							{ true == hasIncompleteConversions ? (
-								<Notice
-									noticeText={ __(
-										'Certain entries were not converted successfully. You may try converting those again on the Run conversion page.'
-									) }
-									isError
-								/>
-							) : (
-								<Notice
-									noticeText={ __( 'All queued content has been converted successfully.' ) }
-									isSuccess
-								/>
-							) }
-							<div className="newspack-buttons-card">
-								<Button href="/wp-admin/admin.php?page=newspack-content-converter" isPrimary>
-									{ __( 'Back to Run conversion' ) }
+					<Card>
+						<CardHeader isShady>
+							<FlexBlock>
+								<h2>{ __( 'Finished' ) }</h2>
+								<p>{ __( 'Conversion to Gutenberg blocks is now complete' ) }</p>
+							</FlexBlock>
+						</CardHeader>
+						<CardBody>
+						{ true == hasIncompleteConversions ? (
+							<Notice isDismissible={ false } status="error">
+								{ __(
+									'Certain entries were not converted successfully. You may try converting those again on the "Run conversion" page.'
+								) }
+							</Notice>
+						) : (
+							<Notice isDismissible={ false } status="success">
+								{ __( 'All queued content has been converted successfully.' ) }
+							</Notice>
+						) }
+						</CardBody>
+						{ true == hasIncompleteConversions ? (
+							<CardFooter justify="flex-end">
+								<Button href="/wp-admin/" isSecondary>
+									{ __( 'Back to Dashboard' ) }
 								</Button>
-							</div>
-						</Card>
-					</Grid>
+								<Button href="/wp-admin/admin.php?page=newspack-content-converter" isPrimary>
+									{ __( 'Run Conversion' ) }
+								</Button>
+							</CardFooter>
+						) : (
+							<CardFooter justify="flex-end">
+								<Button href="/wp-admin/admin.php?page=newspack-content-converter" isSecondary>
+									{ __( 'Run Conversion' ) }
+								</Button>
+								<Button href="/wp-admin/" isPrimary>
+									{ __( 'Back to Dashboard' ) }
+								</Button>
+							</CardFooter>
+						) }
+					</Card>
+					<div className="newspack-logo__wrapper">
+						<Button
+							href="https://newspack.pub/"
+							target="_blank"
+							label={ __( 'By Newspack' ) }
+						>
+							<NewspackLogo />
+						</Button>
+					</div>
 				</div>
 			);
 		}
