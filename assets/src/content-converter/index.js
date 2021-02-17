@@ -105,6 +105,15 @@ class ContentConverter extends Component {
 		if ( null == isActive ) {
 			return (
 				<div className="newspack-content-converter__wrapper">
+					<div className="newspack-logo__wrapper">
+						<Button
+							href="https://newspack.pub/"
+							target="_blank"
+							label={ __( 'By Newspack' ) }
+						>
+							<NewspackLogo />
+						</Button>
+					</div>
 					<Card>
 						<CardHeader isShady>
 							<FlexBlock>
@@ -116,6 +125,11 @@ class ContentConverter extends Component {
 							<Spinner />
 						</CardFooter>
 					</Card>
+				</div>
+			);
+		} else if ( true == isActive ) {
+			return (
+				<div className="newspack-content-converter__wrapper is-active">
 					<div className="newspack-logo__wrapper">
 						<Button
 							href="https://newspack.pub/"
@@ -125,11 +139,6 @@ class ContentConverter extends Component {
 							<NewspackLogo />
 						</Button>
 					</div>
-				</div>
-			);
-		} else if ( true == isActive ) {
-			return (
-				<div className="newspack-content-converter__wrapper is-active">
 					<Card>
 						<CardHeader isShady>
 							<FlexBlock>
@@ -158,6 +167,11 @@ class ContentConverter extends Component {
 								<p>{ __( 'Now processing batch' ) } { thisBatch }/{ maxBatch }</p>
 						</CardFooter>
 					</Card>
+				</div>
+			);
+		} else if ( false == isActive ) {
+			return (
+				<div className="newspack-content-converter__wrapper">
 					<div className="newspack-logo__wrapper">
 						<Button
 							href="https://newspack.pub/"
@@ -167,11 +181,6 @@ class ContentConverter extends Component {
 							<NewspackLogo />
 						</Button>
 					</div>
-				</div>
-			);
-		} else if ( false == isActive ) {
-			return (
-				<div className="newspack-content-converter__wrapper">
 					<Card>
 						<CardHeader isShady>
 							<FlexBlock>
@@ -212,15 +221,6 @@ class ContentConverter extends Component {
 							</CardFooter>
 						) }
 					</Card>
-					<div className="newspack-logo__wrapper">
-						<Button
-							href="https://newspack.pub/"
-							target="_blank"
-							label={ __( 'By Newspack' ) }
-						>
-							<NewspackLogo />
-						</Button>
-					</div>
 				</div>
 			);
 		}

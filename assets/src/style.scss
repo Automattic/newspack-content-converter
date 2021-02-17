@@ -1,4 +1,4 @@
-@import '~@wordpress/base-styles/colors';
+@import '~newspack-components/shared/scss/colors';
 
 .components-card {
 	margin: 2rem auto;
@@ -19,25 +19,51 @@
 	}
 }
 
-.newspack-logo__wrapper {
-	display: flex;
-	justify-content: center;
+.newspack-logo {
+	display: block;
+	fill: currentColor;
+	height: inherit;
+	padding: 0;
 
-	.components-button {
-		color: $gray-400;
-		height: 32px;
-		padding: 0;
+	&__wrapper {
+		background: $primary-500;
+		display: flex;
+		padding: 12px 0;
+		position: relative;
 
-		&:hover {
-			color: $gray-900;
+		&::before {
+			background: $primary-500;
+			bottom: 0;
+			content: '';
+			display: block;
+			left: -20px;
+			position: absolute;
+			right: 0;
+			top: 0;
+			z-index: -1;
 		}
-	}
 
-	.newspack-logo {
-		display: block;
-		fill: currentColor;
-		height: inherit;
-		padding: 0;
+		.components-button {
+			color: white;
+			display: block;
+			height: 32px;
+			padding: 0;
+			width: 100%;
+
+			&:focus,
+			&:hover {
+				box-shadow: none;
+				color: white;
+				outline: none;
+			}
+
+			&:focus {
+				svg {
+					outline: 1px solid white;
+					outline-offset: 4px;
+				}
+			}
+		}
 	}
 }
 
@@ -65,6 +91,10 @@
 		.components-button + .components-button {
 			margin-left: 8px;
 		}
+
+		.newspack-logo {
+			margin: 0 20px;
+		}
 	}
 
 	&__batch {
@@ -74,6 +104,12 @@
 	}
 }
 
-.interface-interface-skeleton__footer {
-	display: none;
+.interface-interface-skeleton {
+	&__body {
+		opacity: 0;
+	}
+
+	&__footer {
+		display: none;
+	}
 }

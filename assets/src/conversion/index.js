@@ -111,6 +111,15 @@ class Conversion extends Component {
 		if ( '1' == isConversionOngoing ) {
 			return (
 				<Fragment>
+					<div className="newspack-logo__wrapper">
+						<Button
+							href="https://newspack.pub/"
+							target="_blank"
+							label={ __( 'By Newspack' ) }
+						>
+							<NewspackLogo />
+						</Button>
+					</div>
 					<Card>
 						<CardHeader isShady>
 							<FlexBlock>
@@ -149,6 +158,11 @@ class Conversion extends Component {
 							</Button>
 						</CardFooter>
 					</Card>
+				</Fragment>
+			);
+		} else {
+			return (
+				<Fragment>
 					<div className="newspack-logo__wrapper">
 						<Button
 							href="https://newspack.pub/"
@@ -158,11 +172,6 @@ class Conversion extends Component {
 							<NewspackLogo />
 						</Button>
 					</div>
-				</Fragment>
-			);
-		} else {
-			return (
-				<Fragment>
 					{ !! someConversionsFailed && (
 						<Card>
 							<CardHeader isShady>
@@ -235,15 +244,6 @@ class Conversion extends Component {
 							</Button>
 						</CardFooter>
 					</Card>
-					<div className="newspack-logo__wrapper">
-						<Button
-							href="https://newspack.pub/"
-							target="_blank"
-							label={ __( 'By Newspack' ) }
-						>
-							<NewspackLogo />
-						</Button>
-					</div>
 				</Fragment>
 			);
 		}

@@ -57,6 +57,15 @@ class Settings extends Component {
 
 		return (
 			<Fragment>
+				<div className="newspack-logo__wrapper">
+					<Button
+						href="https://newspack.pub/"
+						target="_blank"
+						label={ __( 'By Newspack' ) }
+					>
+						<NewspackLogo />
+					</Button>
+				</div>
 				<Card>
 					<CardHeader isShady>
 						<FlexBlock>
@@ -92,15 +101,6 @@ class Settings extends Component {
 						</Button>
 					</CardFooter>
 				</Card>
-				<div className="newspack-logo__wrapper">
-					<Button
-						href="https://newspack.pub/"
-						target="_blank"
-						label={ __( 'By Newspack' ) }
-					>
-						<NewspackLogo />
-					</Button>
-				</div>
 			</Fragment>
 		);
 	}
