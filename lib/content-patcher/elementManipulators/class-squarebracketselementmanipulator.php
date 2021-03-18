@@ -204,4 +204,27 @@ class SquareBracketsElementManipulator {
 
 		return $matches;
 	}
+
+	/**
+	 * Matches a specific shortcode, e.g `[video ...]`.
+	 *
+	 * @param string $shortcode_designation Shortcode designation, e.g. "video" in `[video ...]`.
+	 * @param string $content               Content to look for matches in.
+	 *
+	 * @return array `preg_match_all`'s $match array with all shortcode designations.
+	 */
+	public function match_shortcode_designations( $shortcode_designation, $content ) {
+		$matches                       = [];
+		$pattern_shortcode_designation = '|
+			\[          # shortcode opening bracket
+			%s          # shortcode designation
+			([^\s/\]]+) # match the shortcode designation string (which is anything except space, forward slash, and closing bracket)
+			[^\]]+      # zero or more of any char except closing bracket
+			\]          # closing bracket
+		|xim';
+		$pattern_shortcode_designation = sprintf( $pattern_shortcode_designation, $shortcode_designation );
+		preg_match_all( $pattern_shortcode_designation, $content, $matches );
+
+		return $matches;
+	}
 }
