@@ -3,23 +3,20 @@
  */
 import { Component, Fragment } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
+import {
+	Button,
+	Card,
+	CardBody,
+	CardFooter,
+	CardHeader,
+	FlexBlock,
+	TextControl
+} from '@wordpress/components';
 
 /**
  * Newspack dependencies.
  */
-import {
-	Button,
-	Card,
-	FormattedHeader,
-	Grid,
-	NewspackLogo,
-	TextControl,
-} from 'newspack-components';
-
-/**
- * Material UI dependencies.
- */
-import SettingsIcon from '@material-ui/icons/Settings';
+import { NewspackLogo } from 'newspack-components';
 
 /**
  * Internal dependencies.
@@ -60,16 +57,25 @@ class Settings extends Component {
 
 		return (
 			<Fragment>
-				<div className="newspack-logo-wrapper">
-					<NewspackLogo />
+				<div className="newspack-logo__wrapper">
+					<Button
+						href="https://newspack.pub/"
+						target="_blank"
+						label={ __( 'By Newspack' ) }
+					>
+						<NewspackLogo />
+					</Button>
 				</div>
-				<Grid>
-					<FormattedHeader
-						headerIcon={ <SettingsIcon /> }
-						headerText={ __( 'Settings' ) }
-						subHeaderText={ __( 'Adding content to the queue to convert it to Gutenberg blocks.' ) }
-					/>
-					<Card>
+				<Card>
+					<CardHeader isShady>
+						<FlexBlock>
+							<h2>{ __( 'Settings' ) }</h2>
+							<p>
+								{ __( 'Adding content to the queue to convert it to Gutenberg blocks' ) }
+							</p>
+						</FlexBlock>
+					</CardHeader>
+					<CardBody>
 						<p>
 							{ __(
 								'The type of HTML content to be converted to Gutenberg blocks is specified here.'
@@ -85,13 +91,16 @@ class Settings extends Component {
 							disabled={ true }
 							value={ conversionContentStatusesCsv }
 						/>
-						<div className="newspack-buttons-card">
-							<Button isPrimary href="/wp-admin/admin.php?page=newspack-content-converter">
-								{ __( 'Run conversion' ) }
-							</Button>
-						</div>
-					</Card>
-				</Grid>
+					</CardBody>
+					<CardFooter justify="flex-end">
+						<Button
+							isPrimary
+							href="/wp-admin/admin.php?page=newspack-content-converter"
+						>
+							{ __( 'Run Conversion' ) }
+						</Button>
+					</CardFooter>
+				</Card>
 			</Fragment>
 		);
 	}
