@@ -9,6 +9,13 @@ This plugin is open source, and the creators can not be held responsible for any
 
 The plugin is presently in Alpha, and used primarily as a Developer's tool -- please check back for a full and improved version soon.
 
+
+### Usage
+
+Clicking "Newspack Content Converter" in the Admin area's main left-hand menu, opens a page where the number of Posts and number of batches queued for Conversion is displayed. Clicking the "Run conversion" button there actually initializes the conversion and starts converting your queued Posts and Pages to Blocks.
+
+To re-scan your freshest HTML Posts, and to update the conversion queue, run the CLI command `wp newspack-content-converter reset`.
+
 ### Development
 
 - Run `npm start` to compile the JS files, and start file watcher.
