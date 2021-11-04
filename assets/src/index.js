@@ -27,6 +27,16 @@ const nccInsertRootAdjacentToElementByClass = function( className ) {
 	nccGetElementByClassName( className ).insertAdjacentHTML( 'afterend', '<div id="root"></div>' );
 };
 
+const nccRenderRoot = function() {
+	window.onbeforeunload = function() {};
+
+	const getParams = queryString.parse( window.location.search );
+	render(
+		<ContentConverter retryFailedConversions={ 'retry-failed' in getParams } />,
+		document.getElementById( 'root' )
+	);
+};
+
 // Wrapper function which enables retrying a callback after a timeout interval and for a defined maxAttempts (useful to retry
 // actions for elements which haven't yet been injected into DOM).
 function nccCallbackWithRetry( callback, callbackParam, maxAttempts = 10, timeout = 1000 ) {
@@ -64,13 +74,6 @@ window.onload = function() {
 		nccCallbackWithRetry( nccHideElementByClass, 'edit-post-layout__content' );
 		nccCallbackWithRetry( nccHideElementByClass, 'edit-post-sidebar' );
 		nccCallbackWithRetry( nccInsertRootAdjacentToElementByClass, 'edit-post-header' );
-
-		window.onbeforeunload = function() {};
-
-		const getParams = queryString.parse( window.location.search );
-		render(
-			<ContentConverter retryFailedConversions={ 'retry-failed' in getParams } />,
-			document.getElementById( 'root' )
-		);
+		nccCallbackWithRetry( nccRenderRoot );
 	}
 };
