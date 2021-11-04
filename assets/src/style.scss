@@ -1,5 +1,11 @@
 @import '~newspack-components/shared/scss/colors';
 
+.edit-post-header,
+.edit-post-layout__content,
+.edit-post-sidebar {
+	display: none;
+}
+
 .toplevel_page_newspack-content-converter,
 body[class*="newspack-content-converter_"] {
 	#wpcontent {
