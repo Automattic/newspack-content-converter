@@ -127,6 +127,14 @@ body[class*="newspack-content-converter_"] {
 	display: flex;
 }
 
+// Hide Skeleton
+.interface-interface-skeleton {
+	&__footer,
+	&__sidebar {
+		display: none !important;
+	}
+}
+
 @keyframes newspack-content-converter__is-active-animation {
 	from {
 		left: 0;
