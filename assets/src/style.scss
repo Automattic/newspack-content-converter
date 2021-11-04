@@ -55,7 +55,7 @@ body[class*="newspack-content-converter_"] {
 	display: flex;
 	flex-direction: column;
 	left: 0;
-	overflow-y: auto;
+	overflow-y: inherit;
 	position: absolute;
 	right: 0;
 	top: 0;
