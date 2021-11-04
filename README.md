@@ -5,7 +5,7 @@ Plugin which mass-converts pre-Gutenberg Classic HTML Posts and Pages to the Gut
 
 Please make sure to back up your site contents fully, because this converter updates the content permanently by replacing the classic HTML content with Gutenberg Blocks content.
 
-This plugin is open sourse, and the creators can not be held responsible for any data loss or consequences to the user's site.
+This plugin is open source, and the creators can not be held responsible for any data loss or consequences of its usage.
 
 The plugin is presently in Alpha, and used primarily as a Developer's tool -- please check back for a full and improved version soon.
 
