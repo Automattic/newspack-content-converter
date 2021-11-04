@@ -55,7 +55,7 @@ body[class*="newspack-content-converter_"] {
 	display: flex;
 	flex-direction: column;
 	left: 0;
-	overflow-y: auto;
+	overflow-y: inherit;
 	position: absolute;
 	right: 0;
 	top: 0;
@@ -125,6 +125,14 @@ body[class*="newspack-content-converter_"] {
 .newspack-content-converter__status {
 	align-items: center;
 	display: flex;
+}
+
+// Hide Skeleton
+.interface-interface-skeleton {
+	&__footer,
+	&__sidebar {
+		display: none !important;
+	}
 }
 
 @keyframes newspack-content-converter__is-active-animation {
