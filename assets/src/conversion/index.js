@@ -206,9 +206,9 @@ class Conversion extends Component {
 					<Card>
 						<CardHeader isShady>
 							<FlexBlock>
-								<h2>{ __( 'Run Conversion' ) }</h2>
+								<h2>{ __( 'Newspack Content Converter' ) }</h2>
 								<p>
-									{ __( 'Start conversion to Gutenberg blocks' ) }
+									{ __( 'Convert classic HTML to Gutenberg blocks' ) }
 								</p>
 							</FlexBlock>
 						</CardHeader>

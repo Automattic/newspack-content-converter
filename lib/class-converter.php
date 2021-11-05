@@ -74,8 +74,8 @@ class Converter {
 			function () {
 
 				add_menu_page(
-					__( 'Run Conversion' ),
-					__( 'Content Converter' ),
+					__( 'Newspack Content Converter' ),
+					__( 'Newspack Content Converter' ),
 					'manage_options',
 					'newspack-content-converter',
 					function () {
@@ -86,8 +86,8 @@ class Converter {
 
 				add_submenu_page(
 					'newspack-content-converter',
-					__( 'Run Conversion' ),
-					__( 'Run Conversion' ),
+					__( 'Converter' ),
+					__( 'Converter' ),
 					'manage_options',
 					'newspack-content-converter',
 					function () {
