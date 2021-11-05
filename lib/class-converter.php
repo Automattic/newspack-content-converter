@@ -74,20 +74,20 @@ class Converter {
 			function () {
 
 				add_menu_page(
-					__( 'Run conversion' ),
-					__( 'Newspack Content Converter' ),
+					__( 'Run Conversion' ),
+					__( 'Content Converter' ),
 					'manage_options',
 					'newspack-content-converter',
 					function () {
 						echo '<div id="ncc-conversion"></div>';
 					},
-					'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiBkPSJNMjAuNTUgNS4yMmwtMS4zOS0xLjY4QzE4Ljg4IDMuMjEgMTguNDcgMyAxOCAzSDZjLS40NyAwLS44OC4yMS0xLjE1LjU1TDMuNDYgNS4yMkMzLjE3IDUuNTcgMyA2LjAxIDMgNi41VjE5YzAgMS4xLjg5IDIgMiAyaDE0YzEuMSAwIDItLjkgMi0yVjYuNWMwLS40OS0uMTctLjkzLS40NS0xLjI4ek0xMiA5LjVsNS41IDUuNUgxNHYyaC00di0ySDYuNUwxMiA5LjV6TTUuMTIgNWwuODItMWgxMmwuOTMgMUg1LjEyeiIgZmlsbD0iY3VycmVudGNvbG9yIi8+PC9zdmc+Cg=='
+					'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgd2lkdGg9IjI0Ij48cGF0aCBkPSJNMTIsMkM2LjQ4LDIsMiw2LjQ4LDIsMTJjMCw1LjUyLDQuNDgsMTAsMTAsMTBzMTAtNC40OCwxMC0xMEMyMiw2LjQ4LDE3LjUyLDIsMTIsMnogTTEyLjA2LDE5di0yLjAxYy0wLjAyLDAtMC4wNCwwLTAuMDYsMCBjLTEuMjgsMC0yLjU2LTAuNDktMy41NC0xLjQ2Yy0xLjcxLTEuNzEtMS45Mi00LjM1LTAuNjQtNi4yOWwxLjEsMS4xYy0wLjcxLDEuMzMtMC41MywzLjAxLDAuNTksNC4xM2MwLjcsMC43LDEuNjIsMS4wMywyLjU0LDEuMDEgdi0yLjE0bDIuODMsMi44M0wxMi4wNiwxOXogTTE2LjE3LDE0Ljc2bC0xLjEtMS4xYzAuNzEtMS4zMywwLjUzLTMuMDEtMC41OS00LjEzQzEzLjc5LDguODQsMTIuOSw4LjUsMTIsOC41Yy0wLjAyLDAtMC4wNCwwLTAuMDYsMCB2Mi4xNUw5LjExLDcuODNMMTEuOTQsNXYyLjAyYzEuMy0wLjAyLDIuNjEsMC40NSwzLjYsMS40NUMxNy4yNCwxMC4xNywxNy40NSwxMi44MiwxNi4xNywxNC43NnoiIGZpbGw9IndoaXRlIi8+PC9zdmc+Cg=='
 				);
 
 				add_submenu_page(
 					'newspack-content-converter',
-					__( 'Run conversion' ),
-					__( 'Run conversion' ),
+					__( 'Run Conversion' ),
+					__( 'Run Conversion' ),
 					'manage_options',
 					'newspack-content-converter',
 					function () {
