@@ -20,12 +20,6 @@ import {
 import { NewspackLogo } from 'newspack-components';
 
 /**
- * Material UI dependencies.
- */
-import ArrowBackIcon from '@material-ui/icons/ArrowBack';
-import UnarchiveIcon from '@material-ui/icons/Unarchive';
-
-/**
  * Internal dependencies.
  */
 import {
