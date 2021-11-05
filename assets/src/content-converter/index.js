@@ -186,7 +186,7 @@ class ContentConverter extends Component {
 						{ true == hasIncompleteConversions ? (
 							<Notice isDismissible={ false } status="error">
 								{ __(
-									'Certain entries were not converted successfully. You may try converting those again on the "Run conversion" page.'
+									'Certain entries were not converted successfully. You may try converting those again on the "Converter" page.'
 								) }
 							</Notice>
 						) : (
@@ -201,13 +201,13 @@ class ContentConverter extends Component {
 									{ __( 'Back to Dashboard' ) }
 								</Button>
 								<Button href="/wp-admin/admin.php?page=newspack-content-converter" isPrimary>
-									{ __( 'Run Conversion' ) }
+									{ __( 'Back to Converter' ) }
 								</Button>
 							</CardFooter>
 						) : (
 							<CardFooter justify="flex-end">
 								<Button href="/wp-admin/admin.php?page=newspack-content-converter" isSecondary>
-									{ __( 'Run Conversion' ) }
+									{ __( 'Back to Converter' ) }
 								</Button>
 								<Button href="/wp-admin/" isPrimary>
 									{ __( 'Back to Dashboard' ) }

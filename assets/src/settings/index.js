@@ -97,7 +97,7 @@ class Settings extends Component {
 							isPrimary
 							href="/wp-admin/admin.php?page=newspack-content-converter"
 						>
-							{ __( 'Run Conversion' ) }
+							{ __( 'Go to Converter' ) }
 						</Button>
 					</CardFooter>
 				</Card>
