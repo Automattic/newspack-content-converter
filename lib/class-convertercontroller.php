@@ -124,7 +124,11 @@ class ConverterController extends WP_REST_Controller {
 			[
 				'methods'             => WP_REST_Server::READABLE,
 				'callback'            => [ $this, 'get_post_content' ],
-				'args'                => [ 'id' ],
+				'args'                => [
+					'id' => [
+						'validate_callback' => 'is_numeric',
+					],
+				],
 				'permission_callback' => [ $this, 'rest_permission' ],
 			]
 		);
