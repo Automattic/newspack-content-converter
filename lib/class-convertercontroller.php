@@ -7,9 +7,9 @@
 
 namespace NewspackContentConverter;
 
-use \WP_REST_Controller;
-use \WP_REST_Server;
-use \NewspackContentConverter\ConversionProcessor;
+use WP_Error;
+use WP_REST_Controller;
+use WP_REST_Server;
 
 /**
  * Class ConverterController
@@ -28,7 +28,7 @@ class ConverterController extends WP_REST_Controller {
 	/**
 	 * ConverterController constructor.
 	 *
-	 * @param \NewspackContentConverter\ConversionProcessor $conversion_processor Conversion processor service.
+	 * @param  ConversionProcessor  $conversion_processor Conversion processor service.
 	 */
 	public function __construct( ConversionProcessor $conversion_processor ) {
 		$this->conversion_processor = $conversion_processor;
@@ -126,7 +126,9 @@ class ConverterController extends WP_REST_Controller {
 				'callback'            => [ $this, 'get_post_content' ],
 				'args'                => [
 					'id' => [
-						'validate_callback' => 'is_numeric',
+						'validate_callback' => function ( $id ) {
+							return is_numeric( $id );
+						},
 					],
 				],
 				'permission_callback' => [ $this, 'rest_permission' ],
