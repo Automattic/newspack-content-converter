@@ -1,7 +1,6 @@
 {
     "name": "automattic/newspack-content-converter",
     "description": "Plugin that enables mass conversion of pre-Gutenberg post content to the Gutenberg Blocks content.",
-    "type": "wordpress-plugin",
     "license": "GPL-2.0-or-later",
     "autoload": {
       "classmap": [
