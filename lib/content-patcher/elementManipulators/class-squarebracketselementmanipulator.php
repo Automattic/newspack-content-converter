@@ -218,7 +218,6 @@ class SquareBracketsElementManipulator {
 		$pattern_shortcode_designation = '|
 			\[          # shortcode opening bracket
 			%s          # shortcode designation
-			([^\s/\]]+) # match the shortcode designation string (which is anything except space, forward slash, and closing bracket)
 			[^\]]+      # zero or more of any char except closing bracket
 			\]          # closing bracket
 		|xim';
