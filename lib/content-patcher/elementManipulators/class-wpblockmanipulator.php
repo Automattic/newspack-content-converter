@@ -81,6 +81,30 @@ class WpBlockManipulator {
 	}
 
 	/**
+	 * Gets an attribute's value from the block element's header.
+	 *
+	 * @param string $block_element The block element, accepts a multiline string.
+	 * @param string $attribute_name Attribute name.
+	 *
+	 * @return string|null Attribute value.
+	 */
+	public function get_attribute( $block_element, $attribute_name ) {
+		$block_element_lines    = explode( "\n", $block_element );
+		$block_element_1st_line = $block_element_lines[0];
+
+		$curly_open_pos = strpos( $block_element_1st_line, '{' );
+		$curly_close_pos = strpos( $block_element_1st_line, '}' );
+		if ( false === $curly_open_pos || false === $curly_close_pos ) {
+			return null;
+		}
+
+		$attributes_json = substr( $block_element_1st_line, $curly_open_pos, $curly_close_pos - $curly_open_pos + 1 );
+		$attributes = json_decode( $attributes_json, true );
+
+		return $attributes[ $attribute_name ] ?? null;
+	}
+
+	/**
 	 * Adds an attribute to the block element's header.
 	 * It doesn't check whethet the attribute already exists, simply appends it to the block definition.
 	 *
