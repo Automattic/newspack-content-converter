@@ -9,7 +9,7 @@
       ]
     },
     "require": {
-        "composer/installers": "^1.6",
+        "composer/installers": "^2.2",
         "brainmaestro/composer-git-hooks": "^2.6"
     },
     "require-dev": {
