@@ -16,6 +16,8 @@ Clicking "Newspack Content Converter" in the Admin area's main left-hand menu, o
 
 After a conversion is complete, it's sometimes necessary to flush the cache, as well.
 
+After running Newspack Content Converter, if you need to undo the conversion, you restore the `wp_posts` table to its pre-conversion state by running `wp newspack-content-converter restore-content`. This will also undo any other editorial changes that have been made to the content in the interim.
+
 To re-scan your freshest HTML Posts, and to update the conversion queue, run the CLI command `wp newspack-content-converter reset`.
 
 ### Development
