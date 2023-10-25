@@ -30,7 +30,7 @@ class HtmlElementManipulator {
 		</          # beginning of the closing tag
 		%1$s        # element name/designation
 		>           # end of element
-		|xim';
+		|xims';
 
 	/**
 	 * Regex pattern to match all occurences of a self closing HTML element.
@@ -50,7 +50,7 @@ class HtmlElementManipulator {
 		%s          # element name, should be substituted by using sprintf(), eg. sprintf( $this_pattern, \'img\' );
 		.*?         # anything in the middle
 		>           # > is the end of the element
-		/xim';
+		/xims';
 
 	/**
 	 * Regex pattern to match the attribute in a HTML element. It matches two groups: the attribute name, and the value.
@@ -65,8 +65,8 @@ class HtmlElementManipulator {
 		["\']           # the attribute value starts with one double or a single quote
 		([^"\']+)       # capture (using parenthesis) the attr value, one or more chars except (and up to) double or single quote
 		.*?             # we captured all we were looking for, take the rest of the element.
-                      
-		/xim';
+
+		/xims';
 
 	/**
 	 * Match elements with closing tags.

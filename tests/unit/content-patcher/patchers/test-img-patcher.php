@@ -34,7 +34,7 @@ class TestImgPatcher extends WP_UnitTestCase {
 	/**
 	 * Override setUp.
 	 */
-	public function setUp() {
+	public function setUp(): void {
 		$this->img_patcher   = new ImgPatcher();
 		$this->data_provider = new DataProviderImgPatcher();
 	}

@@ -78,6 +78,9 @@ class ImgPatcher extends PatcherAbstract implements PatcherInterface {
 		}
 
 		$matches_blocks = $this->html_element_manipulator->match_elements_with_self_closing_tags( 'img', $source_blocks );
+		if ( is_null( $matches_blocks ) ) {
+			return $source_blocks;
+		}
 		// We expect to find the same number of <img> elements in HTML and blocks contents (this is a very basic check).
 		if ( ! $this->validate_html_and_block_matches( $matches_html[0], $matches_blocks[0] ) ) {
 			// TODO: DEBUG LOG 'HTML and block matches do not correspond'.

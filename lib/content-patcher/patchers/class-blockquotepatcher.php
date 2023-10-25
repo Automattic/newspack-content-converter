@@ -58,6 +58,9 @@ class BlockquotePatcher extends PatcherAbstract implements PatcherInterface {
 		}
 
 		$matches_blocks = $this->html_element_manipulator->match_elements_with_closing_tags( 'blockquote', $source_blocks );
+		if ( is_null( $matches_blocks ) ) {
+			return $source_blocks;
+		}
 		if ( ! $this->validate_html_and_block_matches( $matches_html[0], $matches_blocks[0] ) ) {
 			// TODO: DEBUG LOG 'HTML and block matches do not correspond'.
 			return $source_blocks;

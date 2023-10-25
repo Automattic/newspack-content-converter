@@ -67,6 +67,9 @@ class VideoPatcher extends PatcherAbstract implements PatcherInterface {
 		}
 
 		$matches_blocks = $this->wp_block_manipulator->match_wp_block( 'wp:video', $source_blocks );
+		if ( is_null( $matches_blocks ) ) {
+			return $source_blocks;
+		}
 		if ( ! $this->validate_html_and_block_matches( $matches_html[0], $matches_blocks[0] ) ) {
 			// TODO: DEBUG LOG 'HTML and block matches do not correspond'.
 			return $source_blocks;
