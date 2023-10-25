@@ -34,7 +34,7 @@ class TestVideoPatcher extends WP_UnitTestCase {
 	/**
 	 * Override setUp.
 	 */
-	public function setUp() {
+	public function setUp(): void {
 		$this->patcher       = new VideoPatcher();
 		$this->data_provider = new DataProviderVideoPatcher();
 	}

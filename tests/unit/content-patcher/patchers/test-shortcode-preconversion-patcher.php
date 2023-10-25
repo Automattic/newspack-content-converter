@@ -34,7 +34,7 @@ class TestShortcodePreconversionPatcher extends WP_UnitTestCase {
 	/**
 	 * Override setUp.
 	 */
-	public function setUp() {
+	public function setUp(): void {
 		$this->patcher       = new ShortcodePreconversionPatcher();
 		$this->data_provider = new DataProviderShortcodePreconversionPatcher();
 	}

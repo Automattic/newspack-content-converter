@@ -34,7 +34,7 @@ class TestPullquoteShortcodePatcher extends WP_UnitTestCase {
 	/**
 	 * Override setUp.
 	 */
-	public function setUp() {
+	public function setUp(): void {
 		$this->patcher       = new ShortcodePullquotePatcher();
 		$this->data_provider = new DataProviderShortcodePullquotePatcher();
 	}

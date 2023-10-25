@@ -17,19 +17,8 @@
         "automattic/vipwpcs": "^2.0.0",
         "wp-coding-standards/wpcs": "*",
         "dealerdirect/phpcodesniffer-composer-installer": "*",
-        "phpcompatibility/phpcompatibility-wp": "*"
-    },
-    "scripts": {
-        "post-install-cmd": [
-            "vendor/bin/cghooks add --no-lock"
-        ],
-        "post-update-cmd": [
-            "vendor/bin/cghooks update"
-        ]
-    },
-    "extra": {
-        "hooks": {
-            "pre-commit": "./vendor/xwp/wp-dev-lib/scripts/pre-commit"
-        }
+        "phpcompatibility/phpcompatibility-wp": "*",
+        "yoast/phpunit-polyfills": "^1.0",
+        "phpunit/phpunit": "^9.5"
     }
 }

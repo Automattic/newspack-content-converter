@@ -34,7 +34,7 @@ class TestAudioPatcher extends WP_UnitTestCase {
 	/**
 	 * Override setUp.
 	 */
-	public function setUp() {
+	public function setUp(): void {
 		$this->patcher       = new AudioPatcher();
 		$this->data_provider = new DataProviderAudioPatcher();
 	}

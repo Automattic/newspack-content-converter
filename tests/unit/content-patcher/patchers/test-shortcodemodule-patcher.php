@@ -34,7 +34,7 @@ class TestModuleShortcodePatcher extends WP_UnitTestCase {
 	/**
 	 * Override setUp.
 	 */
-	public function setUp() {
+	public function setUp(): void {
 		$this->patcher       = new ShortcodeModulePatcher();
 		$this->data_provider = new DataProviderShortcodeModulePatcher();
 	}
