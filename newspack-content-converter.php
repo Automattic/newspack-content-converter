@@ -34,6 +34,9 @@ new Converter(
 		new ConversionProcessor(
 			new ContentPatcher\PatchHandler(
 				array(
+					// Encode blocks as very first thing.
+					new ContentPatcher\Patchers\BlockEncodePatcher(),
+					new ContentPatcher\Patchers\WpFiltersPatcher(),
 					// Pre-conversion Patchers.
 					new ContentPatcher\Patchers\ShortcodePreconversionPatcher(),
 					// Patchers.
@@ -45,6 +48,8 @@ new Converter(
 					new ContentPatcher\Patchers\AudioPatcher(),
 					new ContentPatcher\Patchers\ShortcodeModulePatcher(),
 					new ContentPatcher\Patchers\ShortcodePullquotePatcher(),
+					// Decode blocks as the very last thing.
+					new ContentPatcher\Patchers\BlockDecodePatcher(),
 				)
 			)
 		)

@@ -9,16 +9,20 @@
       ]
     },
     "require": {
-        "composer/installers": "^1.6",
-        "brainmaestro/composer-git-hooks": "^2.6"
+        "composer/installers": "^1.6"
     },
     "require-dev": {
-        "xwp/wp-dev-lib": "^1.5",
         "automattic/vipwpcs": "^2.0.0",
         "wp-coding-standards/wpcs": "*",
         "dealerdirect/phpcodesniffer-composer-installer": "*",
         "phpcompatibility/phpcompatibility-wp": "*",
         "yoast/phpunit-polyfills": "^1.0",
         "phpunit/phpunit": "^9.5"
+    },
+    "config": {
+        "allow-plugins": {
+            "composer/installers": true,
+            "dealerdirect/phpcodesniffer-composer-installer": true
+        }
     }
 }
