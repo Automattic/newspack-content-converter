@@ -1,6 +1,6 @@
 <?php
 /**
- * A pre-conversion Patcher for shortcode elements.
+ * A pre-conversion Patcher that encodeds existing GB blocks so they don't get mangled in conversion.
  *
  * @package Newspack
  */
@@ -59,13 +59,14 @@ class BlockEncodePatcher extends PreconversionPatcherAbstract {
 		$as_string = serialize_block( $block );
 
 		$anchor = self::ENCODED_ANCHOR . base64_encode( $as_string ) . ']';
+		$content = "<p>{$anchor}</p>";
 
 		return [
 			'blockName'    => 'core/paragraph',
 			'attrs'        => [],
 			'innerBlocks'  => [],
-			'innerHTML'    => $anchor,
-			'innerContent' => [ $anchor ],
+			'innerHTML'    => $content,
+			'innerContent' => [ $content ],
 		];
 	}
 
