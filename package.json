@@ -7,7 +7,8 @@
     "@wordpress/components": "^12.0.5",
     "newspack-components": "^1.4.0",
     "npm-run-all": "^4.1.5",
-    "query-string": "^6.13.8"
+    "query-string": "^6.13.8",
+    "sass": "^1.67.0"
   },
   "scripts": {
     "build:js": "calypso-build",
@@ -21,14 +22,8 @@
     "release": "run-p \"clean\" && run-p \"release:build-all\" && run-p \"release:archive\""
   },
   "devDependencies": {
-    "@automattic/calypso-build": "^5.1.0",
-    "@babel/core": "^7.12.13",
-    "@wordpress/blocks": "^6.25.2",
-    "@wordpress/browserslist-config": "^2.7.0",
-    "@wordpress/data": "^4.26.5",
-    "@wordpress/element": "^2.19.1",
-    "eslint": "^5.16.0",
-    "prettier": "https://github.com/Automattic/wp-prettier/releases/download/wp-1.16.4/wp-prettier-1.16.4.tgz",
-    "webpack": "^4.46.0"
+    "newspack-scripts": "^5.3.0",
+    "eslint": "^7.32.0",
+    "prettier": "npm:wp-prettier@^2.6.2-beta-1"
   }
 }

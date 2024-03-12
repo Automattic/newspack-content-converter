@@ -22,6 +22,9 @@ To re-scan your freshest HTML Posts, and to update the conversion queue, run the
 
 ### Development
 
-- Run `npm start` to compile the JS files, and start file watcher.
-- Run `npm run build` to perform a single compilation run.
-- Run `npm run release:archive` to package a release. The archive will be created in `assets/release/newspack-content-converter.zip`.
+- `composer install`
+- `nvm use 16`
+- `npm ci --legacy-peer-deps`
+- `npm run build`
+- Run `npm run release:archive` to package a release. The archive will be created in `assets/release/newspack-content-converter.zip`
+- Run `npm start` to compile the JS files, and start file watcher

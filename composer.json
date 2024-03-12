@@ -20,5 +20,11 @@
         "phpcompatibility/phpcompatibility-wp": "*",
         "yoast/phpunit-polyfills": "^1.0",
         "phpunit/phpunit": "^9.5"
+    },
+    "config": {
+        "allow-plugins": {
+            "composer/installers": true,
+            "dealerdirect/phpcodesniffer-composer-installer": true
+        }
     }
 }
