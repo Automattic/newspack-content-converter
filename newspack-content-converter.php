@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Newspack Content Converter
  * Description: Mass converts pre-Gutenberg HTML content to Gutenberg Blocks.
- * Version: 0.1.2
+ * Version: 0.1.3
  * Author: Automattic
  * Author URI: https://newspack.blog/
  * License: GPL2
