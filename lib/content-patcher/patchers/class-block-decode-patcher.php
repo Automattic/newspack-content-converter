@@ -1,6 +1,6 @@
 <?php
 /**
- * Patcher for the [pullquote][/pullquote] elements.
+ * Patcher for decoding encoded GB blocks.
  *
  * @package Newspack
  */
