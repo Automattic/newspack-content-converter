@@ -109,29 +109,14 @@ class ConversionProcessor {
 	 * @return string|null Post content, or null.
 	 */
 	public function get_post_content( $post_id ) {
-		if ( ! $post_id ) {
+		$res = $this->get_ncc_post( $post_id );
+		if ( empty( $res->post_content ) ) {
 			return null;
 		}
 
-		global $wpdb;
-
-		$table_name = Config::get_instance()->get( 'table_name' );
-		$table_name = esc_sql( $table_name );
-
-		// phpcs:ignore -- the following is a false positive; this SQL is safe, and the table name is escaped above.
-		$results = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM {$table_name} WHERE ID = %d;", $post_id ) );
-		if ( ! $results ) {
-			return null;
-		}
-
-		$post = $results[0];
-
-		// Do not run the `do_shortcode` function which substitutes shortcodes with rendered HTML -- let Gutenberg convert those.
-		remove_filter( 'the_content', 'do_shortcode', 11 );
-		$post_content_filtered = apply_filters( 'the_content', $post->post_content );
-
-		// Run registered pre-conversion Patchers, which get to modify the HTML source before it gets converted to Blocks.
-		$post_content_filtered = $this->patcher_handler->run_all_preconversion_patches( $post_content_filtered );
+		// Run registered pre-conversion Patchers, which get to modify the HTML source before it gets
+		// converted to Blocks.
+		$post_content_filtered = $this->patcher_handler->run_all_preconversion_patches( $res->post_content );
 
 		return $post_content_filtered;
 	}
