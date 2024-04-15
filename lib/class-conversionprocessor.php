@@ -162,6 +162,8 @@ class ConversionProcessor {
 		$blocks_content_patched = $this->patcher_handler->run_all_patches( $html_content, $blocks_content );
 		$this->update_ncc_posts_table( $post_id, [ 'post_content_gutenberg_converted' => $blocks_content ] );
 		$this->update_posts_table( $post_id, [ 'post_content' => $blocks_content_patched ] );
+
+		do_action( 'ncc_after_post_content_saved', $post_id, $blocks_content_patched, $html_content, $blocks_content );
 	}
 
 	/**
@@ -184,6 +186,8 @@ class ConversionProcessor {
 
 		// phpcs:ignore -- OK to query DB directly.
 		$wpdb->update( $table_name, array_merge( $data, $timestamps ), [ 'ID' => $post_id ] );
+
+		do_action( 'ncc_after_post_table_update', 'ncc', $post_id, $data );
 	}
 
 	/**
@@ -205,6 +209,8 @@ class ConversionProcessor {
 
 		// phpcs:ignore -- OK to query DB directly.
 		$wpdb->update( $wpdb->posts, array_merge( $data, $timestamps ), [ 'ID' => $post_id ] );
+
+		do_action( 'ncc_after_post_table_update', 'wp', $post_id, $data );
 	}
 
 	/**
