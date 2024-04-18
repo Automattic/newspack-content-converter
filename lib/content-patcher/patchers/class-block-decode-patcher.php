@@ -29,6 +29,9 @@ class BlockDecodePatcher extends PatcherAbstract {
 	 * @return string The string with all blocks decoded.
 	 */
 	private function decode_post_content( string $html_content ): string {
+		if ( ! str_contains( $html_content, BlockEncodePatcher::ENCODED_ANCHOR ) ) {
+			return $html_content;
+		}
 		$blocks         = parse_blocks( $html_content );
 		$encoded_blocks = array_filter( $blocks, fn( $block ) => str_contains( $block['innerHTML'], BlockEncodePatcher::ENCODED_ANCHOR ) );
 

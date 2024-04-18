@@ -49,20 +49,19 @@ class BlockEncodePatcher extends PreconversionPatcherAbstract {
 	}
 
 	/**
-	 * Encode a block's content as base64 string inside a paragraph block.
+	 * Encode a block's content as base64 string inside a block.
 	 *
 	 * @param array $block block to encode.
 	 *
-	 * @return array Paragraph block with the encoded block as innerHTML.
+	 * @return array "Empty" block with the encoded block as innerHTML.
 	 */
 	private function encode_block( array $block ): array {
 		$as_string = serialize_block( $block );
 
 		$anchor = self::ENCODED_ANCHOR . base64_encode( $as_string ) . ']';
-		$content = "<p>{$anchor}</p>";
-
+		$content = '<pre class="wp-block-preformatted">' . $anchor . '</pre>' . str_repeat( PHP_EOL, 2 );
 		return [
-			'blockName'    => 'core/paragraph',
+			'blockName'    => null, // On purpose.
 			'attrs'        => [],
 			'innerBlocks'  => [],
 			'innerHTML'    => $content,
