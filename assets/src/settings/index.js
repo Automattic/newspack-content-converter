@@ -59,7 +59,7 @@ class Settings extends Component {
 			<Fragment>
 				<div className="newspack-logo__wrapper">
 					<Button
-						href="https://newspack.pub/"
+						href="https://newspack.com/"
 						target="_blank"
 						label={ __( 'By Newspack' ) }
 					>

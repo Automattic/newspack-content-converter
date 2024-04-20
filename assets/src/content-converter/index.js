@@ -101,7 +101,7 @@ class ContentConverter extends Component {
 				<div className="newspack-content-converter__wrapper">
 					<div className="newspack-logo__wrapper">
 						<Button
-							href="https://newspack.pub/"
+							href="https://newspack.com/"
 							target="_blank"
 							label={ __( 'By Newspack' ) }
 						>
@@ -126,7 +126,7 @@ class ContentConverter extends Component {
 				<div className="newspack-content-converter__wrapper is-active">
 					<div className="newspack-logo__wrapper">
 						<Button
-							href="https://newspack.pub/"
+							href="https://newspack.com/"
 							target="_blank"
 							label={ __( 'By Newspack' ) }
 						>
@@ -168,7 +168,7 @@ class ContentConverter extends Component {
 				<div className="newspack-content-converter__wrapper">
 					<div className="newspack-logo__wrapper">
 						<Button
-							href="https://newspack.pub/"
+							href="https://newspack.com/"
 							target="_blank"
 							label={ __( 'By Newspack' ) }
 						>

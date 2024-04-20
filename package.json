@@ -12,7 +12,8 @@
   },
   "scripts": {
     "build:js": "calypso-build",
-    "build": "run-p \"build:*\"",
+    "build": "newspack-scripts build",
+    "build-old": "run-p \"build:*\"",
     "clean": "rm -rf assets/dist/",
     "dev:js": "calypso-build --watch",
     "dev": "run-p \"dev:*\"",
