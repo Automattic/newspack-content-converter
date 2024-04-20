@@ -28,30 +28,34 @@ if ( defined( 'WP_CLI' ) && WP_CLI ) {
 }
 
 // Construct the app with a dependency graph, without the use of a service container.
-new Converter(
-	new Installer(),
-	new ConverterController(
-		new ConversionProcessor(
-			new ContentPatcher\PatchHandler(
-				array(
-					// Encode blocks as very first thing.
-					new ContentPatcher\Patchers\BlockEncodePatcher(),
-					new ContentPatcher\Patchers\WpFiltersPatcher(),
-					// Pre-conversion Patchers.
-					new ContentPatcher\Patchers\ShortcodePreconversionPatcher(),
-					// Patchers.
-					new ContentPatcher\Patchers\ImgPatcher(),
-					new ContentPatcher\Patchers\CaptionImgPatcher(),
-					new ContentPatcher\Patchers\ParagraphPatcher(),
-					new ContentPatcher\Patchers\BlockquotePatcher(),
-					new ContentPatcher\Patchers\VideoPatcher(),
-					new ContentPatcher\Patchers\AudioPatcher(),
-					new ContentPatcher\Patchers\ShortcodeModulePatcher(),
-					new ContentPatcher\Patchers\ShortcodePullquotePatcher(),
-					// Decode blocks as the very last thing.
-					new ContentPatcher\Patchers\BlockDecodePatcher(),
-				)
-			)
-		)
+$patch_handler = new ContentPatcher\PatchHandler(
+	array(
+		// Encode blocks as very first thing.
+		new ContentPatcher\Patchers\BlockEncodePatcher(),
+		new ContentPatcher\Patchers\WpFiltersPatcher(),
+		// Pre-conversion Patchers.
+		new ContentPatcher\Patchers\ShortcodePreconversionPatcher(),
+		// Patchers.
+		new ContentPatcher\Patchers\ImgPatcher(),
+		new ContentPatcher\Patchers\CaptionImgPatcher(),
+		new ContentPatcher\Patchers\ParagraphPatcher(),
+		new ContentPatcher\Patchers\BlockquotePatcher(),
+		new ContentPatcher\Patchers\VideoPatcher(),
+		new ContentPatcher\Patchers\AudioPatcher(),
+		new ContentPatcher\Patchers\ShortcodeModulePatcher(),
+		new ContentPatcher\Patchers\ShortcodePullquotePatcher(),
+		// Decode blocks as the very last thing.
+		new ContentPatcher\Patchers\BlockDecodePatcher(),
 	)
+);
+$processor = new ConversionProcessor(
+	$patch_handler
+);
+$controller = new ConverterController(
+	$processor
+);
+$installer = new Installer();
+$converter = new Converter(
+	$installer,
+	$controller
 );

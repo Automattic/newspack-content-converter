@@ -215,23 +215,15 @@ class Installer {
 	) {
 		$post_types_csv                      = implode( ',', $post_types_for_conversion );
 		$post_statuses_csv                   = implode( ',', $post_statuses_for_conversion );
-		$conversion_max_batches              = (int) ceil( $queued_entries_total / $conversion_batch_size );
-		$option_conversion_post_types_csv    = Config::get_instance()->get( 'option_conversion_post_types_csv' );
-		$option_conversion_post_statuses_csv = Config::get_instance()->get( 'option_conversion_post_statuses_csv' );
-		$option_conversion_batch_size        = Config::get_instance()->get( 'option_conversion_batch_size' );
-		$option_conversion_max_batches       = Config::get_instance()->get( 'option_conversion_max_batches' );
 
-		if ( null === get_option( $option_conversion_post_types_csv, null ) ) {
-			update_option( $option_conversion_post_types_csv, $post_types_csv );
+		if ( null === get_option( 'ncc-convert_post_types_csv', null ) ) {
+			update_option( 'ncc-convert_post_types_csv', $post_types_csv );
 		}
-		if ( null === get_option( $option_conversion_post_statuses_csv, null ) ) {
-			update_option( $option_conversion_post_statuses_csv, $post_statuses_csv );
+		if ( null === get_option( 'ncc-convert_post_statuses_csv', null ) ) {
+			update_option( 'ncc-convert_post_statuses_csv', $post_statuses_csv );
 		}
-		if ( null === get_option( $option_conversion_batch_size, null ) ) {
-			update_option( $option_conversion_batch_size, $conversion_batch_size );
-		}
-		if ( null === get_option( $option_conversion_max_batches, null ) ) {
-			update_option( $option_conversion_max_batches, $conversion_max_batches );
+		if ( null === get_option( 'ncc-conversion_batch_size', null ) ) {
+			update_option( 'ncc-conversion_batch_size', $conversion_batch_size );
 		}
 	}
 
@@ -239,15 +231,14 @@ class Installer {
 	 * Deletes all plugin's options.
 	 */
 	private static function delete_all_options() {
-		delete_option( Config::get_instance()->get( 'option_conversion_post_types_csv' ) );
-		delete_option( Config::get_instance()->get( 'option_conversion_post_statuses_csv' ) );
-		delete_option( Config::get_instance()->get( 'option_conversion_batch_size' ) );
-		delete_option( Config::get_instance()->get( 'option_conversion_max_batches' ) );
-		delete_option( Config::get_instance()->get( 'option_retry_conversion_failed_max_batches' ) );
-		delete_option( Config::get_instance()->get( 'option_is_queued_conversion' ) );
-		delete_option( Config::get_instance()->get( 'option_is_queued_retry_failed_conversion' ) );
-		delete_option( Config::get_instance()->get( 'option_conversion_queued_batches' ) );
-		delete_option( Config::get_instance()->get( 'option_retry_conversion_failed_queued_batches' ) );
+		delete_option( 'ncc-convert_post_types_csv' );
+		delete_option( 'ncc-convert_post_statuses_csv' );
+		delete_option( 'ncc-conversion_batch_size' );
+		delete_option( 'ncc-retry_conversion_failed_max_batches' );
+		delete_option( 'ncc-is_conversion_running' );
+		delete_option( 'ncc-is_queued_retry_failed_conversion' );
+		delete_option( 'ncc-conversion_queued_batches_csv' );
+		delete_option( 'ncc-retry_conversion_failed_queued_batches_csv' );
 	}
 
 	/**

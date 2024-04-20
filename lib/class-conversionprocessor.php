@@ -34,6 +34,36 @@ class ConversionProcessor {
 	}
 
 	/**
+	 * Gets content types to be processed by the plugin.
+	 *
+	 * @return array Content types.
+	 */
+	public function get_conversion_content_types() {
+		return ['post', 'page'];
+	}
+
+	/**
+	 * Gets content type statuses to be processed by the plugin.
+	 *
+	 * @return array Content statuses.
+	 */
+	public function get_conversion_content_statuses() {
+		return [ 'publish' ];
+	}
+
+	/**
+	 * Gets the number of posts/content processed by a conversion batch.
+	 *
+	 * @return int Number of posts/content processed by a conversion batch.
+	 */
+	public function get_conversion_batch_size() {
+		return 100;
+	}
+
+
+
+
+	/**
 	 * Sets the next conversion batch in motion. It fetches the current conversion queue, finds the next queue number, and adds it
 	 * to the queue. If fetches and returns IDs belonging to that queue.
 	 *
@@ -42,18 +72,21 @@ class ConversionProcessor {
 	 * @return array|void Array of IDs, or void.
 	 */
 	public function set_next_conversion_batch_to_queue() {
-		if ( false === $this->is_queued_conversion() ) {
+		if ( false === $this->is_conversion_running() ) {
 			return;
 		}
 
 		// Get queued batches.
 		$queued_batches = $this->get_conversion_queued_batches();
-		$max_batches    = $this->get_conversion_max_batch();
+		$max_batches    = $this->get_number_of_batches();
 
 		// If the whole queue is processed, clear it.
 		$this_batch = empty( $queued_batches ) ? 1 : max( $queued_batches ) + 1;
 		if ( $this_batch > $max_batches ) {
-			$this->clear_conversion_queue();
+
+			// Clears the conversion queue.
+			update_option( 'ncc-is_conversion_running', 0 );
+			delete_option( 'ncc-conversion_queued_batches_csv' );
 
 			return;
 		}
@@ -212,8 +245,8 @@ class ConversionProcessor {
 	 *
 	 * @return bool Is queued or not.
 	 */
-	public function is_queued_conversion() {
-		$conversion_queued = get_option( Config::get_instance()->get( 'option_is_queued_conversion' ), false );
+	public function is_conversion_running() {
+		$conversion_queued = get_option( 'ncc-is_conversion_running', false );
 		if ( '1' === $conversion_queued ) {
 			return true;
 		}
@@ -227,7 +260,7 @@ class ConversionProcessor {
 	 * @return bool Is queued or not.
 	 */
 	public function is_queued_conversion_retry_failed() {
-		$conversion_queued = get_option( Config::get_instance()->get( 'option_is_queued_retry_failed_conversion' ), false );
+		$conversion_queued = get_option( 'ncc-is_queued_retry_failed_conversion', false );
 		if ( '1' === $conversion_queued ) {
 			return true;
 		}
@@ -241,7 +274,7 @@ class ConversionProcessor {
 	 * @return array Array of integers, queued batches.
 	 */
 	public function get_conversion_queued_batches() {
-		$queued_batches = get_option( Config::get_instance()->get( 'option_conversion_queued_batches' ), [] );
+		$queued_batches = get_option( 'ncc-conversion_queued_batches_csv', [] );
 		if ( ! empty( $queued_batches ) ) {
 			// Option field contains CSV of integers.
 			$queued_batches = array_map( 'intval', explode( ',', $queued_batches ) );
@@ -256,7 +289,7 @@ class ConversionProcessor {
 	 * @return array The queued batches.
 	 */
 	public function get_conversion_retry_failed_queued_batches() {
-		$queued_batches = get_option( Config::get_instance()->get( 'option_retry_conversion_failed_queued_batches' ), [] );
+		$queued_batches = get_option( 'ncc-retry_conversion_failed_queued_batches_csv', [] );
 		if ( ! empty( $queued_batches ) ) {
 			// Option field contains CSV of integers.
 			$queued_batches = array_map( 'intval', explode( ',', $queued_batches ) );
@@ -323,14 +356,14 @@ class ConversionProcessor {
 	}
 
 	/**
-	 * Gets max conversion batch.
+	 * Gets number of batches to be converted.
 	 *
 	 * @return int|null Batch number.
 	 */
-	public function get_conversion_max_batch() {
-		$max_batches = get_option( Config::get_instance()->get( 'option_conversion_max_batches' ), null );
+	public function get_number_of_batches() {
+		$batches = (int) ceil( $this->get_unconverted_posts_total_number() / $this->get_conversion_batch_size() );
 
-		return null == $max_batches ? null : (int) $max_batches;
+		return $batches;
 	}
 
 	/**
@@ -339,38 +372,9 @@ class ConversionProcessor {
 	 * @return int|null Batch number.
 	 */
 	public function get_conversion_retry_failed_max_batch() {
-		$max_batches = get_option( Config::get_instance()->get( 'option_retry_conversion_failed_max_batches' ), null );
+		$max_batches = get_option( 'ncc-retry_conversion_failed_max_batches', null );
 
 		return null == $max_batches ? null : (int) $max_batches;
-	}
-
-	/**
-	 * Gets content types to be processed by the plugin.
-	 *
-	 * @return string|null CSV, or null.
-	 */
-	public function get_conversion_content_types() {
-		return get_option( Config::get_instance()->get( 'option_conversion_post_types_csv' ), null );
-	}
-
-	/**
-	 * Gets content type statuses to be processed by the plugin.
-	 *
-	 * @return string|null CSV, or null.
-	 */
-	public function get_conversion_content_statuses() {
-		return get_option( Config::get_instance()->get( 'option_conversion_post_statuses_csv' ), null );
-	}
-
-	/**
-	 * Gets the number of posts/content processed by a conversion batch.
-	 *
-	 * @return int|null Number of posts/content processed by a conversion batch.
-	 */
-	public function get_conversion_batch_size() {
-		$batch_size = get_option( Config::get_instance()->get( 'option_conversion_batch_size' ), null );
-
-		return null == $batch_size ? null : (int) $batch_size;
 	}
 
 	/**
@@ -378,16 +382,39 @@ class ConversionProcessor {
 	 *
 	 * @return int|false Total number of entries.
 	 */
-	public function get_queued_entries_total_number() {
+	public function get_unconverted_posts_total_number() {
+		return count( $this->get_all_unconverted_posts() );
+	}
+
+	/**
+	 * Excludes empty posts.
+	 *
+	 * @param array $post_statuses
+	 * @param array $post_types
+	 * @return array Results from $wpdb->get_results() as ARRAY_A.
+	 */
+	public function get_all_unconverted_posts( $post_statuses = ['publish','draft','pending','future','private'], $post_types = ['post','page'] ) {
 		global $wpdb;
 
-		$table_name = Config::get_instance()->get( 'table_name' );
-		$table_name = esc_sql( $table_name );
+		$statuses_placeholders = implode( ',', array_fill( 0, count( $post_statuses ), '%s' ) );
+		$types_placeholders    = implode( ',', array_fill( 0, count( $post_types ), '%s' ) );
 
-		// phpcs:ignore -- the following is a false positive; this SQL is safe, and the table name is escaped above.
-		$results = $wpdb->get_results( "SELECT COUNT(*) as total FROM `$table_name` ;" );
+		// Excludes empty ones.
+		$results = $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT ID,post_type,post_status,post_content,post_excerpt,post_name,guid
+				FROM {$wpdb->posts}
+				WHERE post_status IN ( {$statuses_placeholders} )
+				AND post_type IN ( {$types_placeholders} )
+				AND post_content NOT LIKE '<!-- wp:%'
+				AND post_content <> ''
+				AND post_content NOT REGEXP '^[[:space:]|(&nbsp;)|(\\r\\n)]+$' ;",
+				array_merge( $post_statuses, $post_types )
+			),
+			ARRAY_A
+		);
 
-		return isset( $results[0]->total ) ? (int) $results[0]->total : false;
+		return $results;
 	}
 
 	/**
@@ -396,27 +423,14 @@ class ConversionProcessor {
 	 * @return bool Is initialized.
 	 */
 	public function initialize_conversion() {
-		$this->clear_conversion_queue();
-		$set = $this->set_conversion_queue();
+		// Clears the conversion queue.
+		update_option( 'ncc-is_conversion_running', 0 );
+		delete_option( 'ncc-conversion_queued_batches_csv' );
+
+		// Set conversion flag up.
+		$set = update_option( 'ncc-is_conversion_running', 1 );
 
 		return $set;
-	}
-
-	/**
-	 * Set conversion flag up.
-	 *
-	 * @return bool Success.
-	 */
-	private function set_conversion_queue() {
-		return update_option( Config::get_instance()->get( 'option_is_queued_conversion' ), 1 );
-	}
-
-	/**
-	 * Clears the conversion queue.
-	 */
-	private function clear_conversion_queue() {
-		update_option( Config::get_instance()->get( 'option_is_queued_conversion' ), 0 );
-		delete_option( Config::get_instance()->get( 'option_conversion_queued_batches' ) );
 	}
 
 	/**
@@ -434,8 +448,7 @@ class ConversionProcessor {
 	}
 
 	/**
-	 * Sets the option value 'option_retry_conversion_failed_max_batches', saying how many batches are there in the
-	 * retry-converting-failed-posts queue.
+	 * Sets the option value saying how many batches are there in the retry-converting-failed-posts queue.
 	 *
 	 * @return bool
 	 */
@@ -443,14 +456,14 @@ class ConversionProcessor {
 		global $wpdb;
 
 		$table_name = esc_sql( Config::get_instance()->get( 'table_name' ) );
-		$batch_size = get_option( Config::get_instance()->get( 'option_conversion_batch_size' ), null );
+		$batch_size = get_option( 'ncc-conversion_batch_size', null );
 
 		// phpcs:ignore -- OK to query DB directly.
 		$total = $wpdb->get_var("SELECT COUNT(*) as total FROM $table_name WHERE `retry_conversion` = 1 ; ");
 
 		$max_batches = (int) ceil( $total / $batch_size );
 
-		return update_option( Config::get_instance()->get( 'option_retry_conversion_failed_max_batches' ), $max_batches );
+		return update_option( 'ncc-retry_conversion_failed_max_batches', $max_batches );
 	}
 
 	/**
@@ -459,16 +472,16 @@ class ConversionProcessor {
 	 * @return bool Success.
 	 */
 	private function set_conversion_retry_failed_queue() {
-		return update_option( Config::get_instance()->get( 'option_is_queued_retry_failed_conversion' ), 1 );
+		return update_option( 'ncc-is_queued_retry_failed_conversion', 1 );
 	}
 
 	/**
 	 * Clears the retry converting failed Posts queue.
 	 */
 	private function clear_conversion_retry_failed_queue() {
-		update_option( Config::get_instance()->get( 'option_is_queued_retry_failed_conversion' ), 0 );
-		delete_option( Config::get_instance()->get( 'option_retry_conversion_failed_queued_batches' ) );
-		delete_option( Config::get_instance()->get( 'option_retry_conversion_failed_max_batches' ) );
+		update_option( 'ncc-is_queued_retry_failed_conversion', 0 );
+		delete_option( 'ncc-retry_conversion_failed_queued_batches_csv' );
+		delete_option( 'ncc-retry_conversion_failed_max_batches' );
 	}
 
 	/**
@@ -517,7 +530,7 @@ class ConversionProcessor {
 	private function add_batch_to_coversion_queue( $this_batch, $queued_batches ) {
 		$new_queued_batches     = array_merge( $queued_batches, [ $this_batch ] );
 		$new_queued_batches_csv = implode( ',', $new_queued_batches );
-		update_option( Config::get_instance()->get( 'option_conversion_queued_batches' ), $new_queued_batches_csv );
+		update_option( 'ncc-conversion_queued_batches_csv', $new_queued_batches_csv );
 	}
 
 	/**
@@ -529,7 +542,7 @@ class ConversionProcessor {
 	private function add_batch_to_coversion_retry_failed_queue( $this_batch, $queued_batches ) {
 		$new_queued_batches     = array_merge( $queued_batches, [ $this_batch ] );
 		$new_queued_batches_csv = implode( ',', $new_queued_batches );
-		update_option( Config::get_instance()->get( 'option_retry_conversion_failed_queued_batches' ), $new_queued_batches_csv );
+		update_option( 'ncc-retry_conversion_failed_queued_batches_csv', $new_queued_batches_csv );
 	}
 
 	/**
@@ -602,16 +615,16 @@ class ConversionProcessor {
 	 * Resets it if there's an ongoing conversion of all content.
 	 */
 	private function reset_conversion() {
-		delete_option( Config::get_instance()->get( 'option_is_queued_conversion' ) );
-		delete_option( Config::get_instance()->get( 'option_conversion_queued_batches' ) );
+		delete_option( 'ncc-is_conversion_running' );
+		delete_option( 'ncc-conversion_queued_batches_csv' );
 	}
 
 	/**
 	 * Resets it if there's an ongoing retry-conversion-of-failed-posts.
 	 */
 	private function reset_conversion_retry_failed() {
-		delete_option( Config::get_instance()->get( 'option_is_queued_retry_failed_conversion' ) );
-		delete_option( Config::get_instance()->get( 'option_retry_conversion_failed_queued_batches' ) );
-		delete_option( Config::get_instance()->get( 'option_retry_conversion_failed_max_batches' ) );
+		delete_option( 'ncc-is_queued_retry_failed_conversion' );
+		delete_option( 'ncc-retry_conversion_failed_queued_batches_csv' );
+		delete_option( 'ncc-retry_conversion_failed_max_batches' );
 	}
 }

@@ -167,8 +167,8 @@ class ConverterController extends WP_REST_Controller {
 			[
 				'conversionContentTypesCsv'    => $this->conversion_processor->get_conversion_content_types(),
 				'conversionContentStatusesCsv' => $this->conversion_processor->get_conversion_content_statuses(),
-				'conversionBatchSize'          => $this->conversion_processor->get_conversion_batch_size(),
-				'queuedEntries'                => $this->conversion_processor->get_queued_entries_total_number(),
+				// 'conversionBatchSize'          => $this->conversion_processor->get_conversion_batch_size(),
+				// 'unconvertedCount'             => $this->conversion_processor->get_unconverted_posts_total_number(),
 			]
 		);
 	}
@@ -180,29 +180,21 @@ class ConverterController extends WP_REST_Controller {
 	 * @return array Info for the settings page.
 	 */
 	public function get_conversion_info() {
-		$is_conversion_ongoing = $this->conversion_processor->is_queued_conversion()
-									|| $this->conversion_processor->is_queued_conversion_retry_failed()
-			? '1' : '0';
-		$queued_entries        = $this->conversion_processor->get_queued_entries_total_number();
-		if ( $this->conversion_processor->is_queued_conversion() ) {
-			$max_batch = $this->conversion_processor->get_conversion_max_batch();
-		} elseif ( $this->conversion_processor->is_queued_conversion_retry_failed() ) {
-			$max_batch = $this->conversion_processor->get_conversion_retry_failed_max_batch();
-		} else {
-			$max_batch = $this->conversion_processor->get_conversion_max_batch();
-		}
+		$is_conversion_running = $this->conversion_processor->is_conversion_running() ? '1' : '0';
+		$unconverted_count        = $this->conversion_processor->get_unconverted_posts_total_number();
+		$number_of_batches = $this->conversion_processor->get_number_of_batches();
 		$posts_converted_count   = $this->conversion_processor->get_posts_converted_count();
 		$has_converted_posts     = ! is_null( $posts_converted_count ) && $posts_converted_count > 0 ? true : false;
-		$has_failed_conversions  = ! $this->conversion_processor->is_queued_conversion()
+		$has_failed_conversions  = ! $this->conversion_processor->is_conversion_running()
 									&& $has_converted_posts
 									&& $this->conversion_processor->has_incomplete_conversions();
 		$count_failed_converting = $this->conversion_processor->get_incomplete_conversions_count();
 
 		return rest_ensure_response(
 			[
-				'isConversionOngoing'   => $is_conversion_ongoing,
-				'queuedEntries'         => $queued_entries,
-				'maxBatch'              => $max_batch,
+				'isConversionOngoing'   => $is_conversion_running,
+				'unconvertedCount'      => $unconverted_count,
+				'numberOfBatches'       => $number_of_batches,
 				'hasConvertedPosts'     => $has_converted_posts,
 				'hasFailedConversions'  => $has_failed_conversions,
 				'countFailedConverting' => $count_failed_converting,
@@ -230,7 +222,7 @@ class ConverterController extends WP_REST_Controller {
 	 */
 	public function get_conversion_batch_data() {
 		$ids                        = $this->conversion_processor->set_next_conversion_batch_to_queue();
-		$has_incomplete_conversions = ! $this->conversion_processor->is_queued_conversion() && $this->conversion_processor->has_incomplete_conversions();
+		$has_incomplete_conversions = ! $this->conversion_processor->is_conversion_running() && $this->conversion_processor->has_incomplete_conversions();
 		$queued_batches             = $this->conversion_processor->get_conversion_queued_batches();
 		$this_batch                 = ! empty( $queued_batches ) ? max( $queued_batches ) : null;
 
@@ -238,7 +230,7 @@ class ConverterController extends WP_REST_Controller {
 			[
 				'ids'                      => $ids,
 				'thisBatch'                => $this_batch,
-				'maxBatch'                 => $this->conversion_processor->get_conversion_max_batch(),
+				'numberOfBatches'                 => $this->conversion_processor->get_number_of_batches(),
 				'hasIncompleteConversions' => $has_incomplete_conversions,
 			]
 		);
@@ -263,13 +255,13 @@ class ConverterController extends WP_REST_Controller {
 	 * @return array Conversion retry failed posts batch data.
 	 */
 	public function get_conversion_retry_failed_batch_data() {
-		$has_incomplete_conversions = ! $this->conversion_processor->is_queued_conversion() && $this->conversion_processor->has_incomplete_conversions();
+		$has_incomplete_conversions = ! $this->conversion_processor->is_conversion_running() && $this->conversion_processor->has_incomplete_conversions();
 
 		return rest_ensure_response(
 			[
 				'ids'                      => $this->conversion_processor->set_next_retry_conversion_failed_batch_to_queue(),
 				'thisBatch'                => max( $this->conversion_processor->get_conversion_retry_failed_queued_batches() ),
-				'maxBatch'                 => $this->conversion_processor->get_conversion_retry_failed_max_batch(),
+				'numberOfBatches'                 => $this->conversion_processor->get_conversion_retry_failed_max_batch(),
 				'hasIncompleteConversions' => $has_incomplete_conversions,
 			]
 		);

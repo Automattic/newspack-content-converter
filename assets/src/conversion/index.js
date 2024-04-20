@@ -35,8 +35,8 @@ class Conversion extends Component {
 
 		this.state = {
 			isConversionOngoing: false,
-			queuedEntries: '...',
-			maxBatch: '...',
+			unconvertedCount: '...',
+			numberOfBatches: '...',
 			hasConvertedPosts: false,
 			hasFailedConversions: false,
 			countFailedConverting: '...',
@@ -48,16 +48,16 @@ class Conversion extends Component {
 			if ( response ) {
 				const {
 					isConversionOngoing,
-					queuedEntries,
-					maxBatch,
+					unconvertedCount,
+					numberOfBatches,
 					hasConvertedPosts,
 					hasFailedConversions,
 					countFailedConverting,
 				} = response;
 				this.setState( {
 					isConversionOngoing,
-					queuedEntries,
-					maxBatch,
+					unconvertedCount,
+					numberOfBatches,
 					hasConvertedPosts,
 					hasFailedConversions,
 					countFailedConverting,
@@ -100,8 +100,8 @@ class Conversion extends Component {
 	render() {
 		const {
 			isConversionOngoing,
-			queuedEntries,
-			maxBatch,
+			unconvertedCount,
+			numberOfBatches,
 			hasConvertedPosts,
 			hasFailedConversions,
 			countFailedConverting,
@@ -215,7 +215,7 @@ class Conversion extends Component {
 						<CardBody>
 							<Notice status="warning" isDismissible={ false }>
 								{ __(
-									'Once started, the conversion should not be interrupted! Your browser page needs to remain active until conversion is complete.'
+									'Once started, the conversion should not be interrupted! Your browser tab needs to remain active until conversion is complete.'
 								) }
 							</Notice>
 							<h4>
@@ -224,12 +224,12 @@ class Conversion extends Component {
 							<TextControl
 								label={ __( 'Number of entries to be converted' ) }
 								disabled={ true }
-								value={ queuedEntries }
+								value={ unconvertedCount }
 							/>
 							<TextControl
 								label={ __( 'Total conversion batches' ) }
 								disabled={ true }
-								value={ maxBatch }
+								value={ numberOfBatches }
 							/>
 						</CardBody>
 						<CardFooter justify="flex-end">

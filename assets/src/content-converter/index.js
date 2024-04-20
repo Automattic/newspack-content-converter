@@ -40,7 +40,7 @@ class ContentConverter extends Component {
 			retryFailedConversions: props.retryFailedConversions,
 			postIds: null,
 			thisBatch: null,
-			maxBatch: null,
+			numberOfBatches: null,
 			hasIncompleteConversions: false,
 		};
 	}
@@ -56,11 +56,11 @@ class ContentConverter extends Component {
 		return fetchBatchPromise()
 			.then( response => {
 				if ( response ) {
-					const { ids: postIds, thisBatch, maxBatch, hasIncompleteConversions } = response;
+					const { ids: postIds, thisBatch, numberOfBatches, hasIncompleteConversions } = response;
 					this.setState( {
 						postIds,
 						thisBatch,
-						maxBatch,
+						numberOfBatches,
 						hasIncompleteConversions,
 						isActive: true,
 					} );
@@ -94,7 +94,7 @@ class ContentConverter extends Component {
 	 * render().
 	 */
 	render() {
-		const { isActive, thisBatch, maxBatch, hasIncompleteConversions } = this.state;
+		const { isActive, thisBatch, numberOfBatches, hasIncompleteConversions } = this.state;
 
 		if ( null == isActive ) {
 			return (
@@ -158,7 +158,7 @@ class ContentConverter extends Component {
 						</CardBody>
 						<CardFooter justify="center" className="newspack-content-converter__batch">
 								<Spinner />
-								<p>{ __( 'Now processing batch' ) } { thisBatch }/{ maxBatch }</p>
+								<p>{ __( 'Now processing batch' ) } { thisBatch }/{ numberOfBatches }</p>
 						</CardFooter>
 					</Card>
 				</div>

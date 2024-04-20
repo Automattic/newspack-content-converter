@@ -37,16 +37,6 @@ class Config {
 			'table_name'                                 => 'ncc_wp_posts',
 			'post_statuses'                              => array( 'publish' ),
 			'conversion_batch_size'                      => 100,
-			// --- All plugin's options.
-			'option_conversion_post_types_csv'           => 'ncc-convert_post_types_csv',
-			'option_conversion_post_statuses_csv'        => 'ncc-convert_post_statuses_csv',
-			'option_conversion_batch_size'               => 'ncc-conversion_batch_size',
-			'option_is_queued_conversion'                => 'ncc-is_queued_conversion',
-			'option_is_queued_retry_failed_conversion'   => 'ncc-is_queued_retry_failed_conversion',
-			'option_conversion_queued_batches'           => 'ncc-conversion_queued_batches_csv',
-			'option_retry_conversion_failed_queued_batches' => 'ncc-retry_conversion_failed_queued_batches_csv',
-			'option_conversion_max_batches'              => 'ncc-conversion_max_batches',
-			'option_retry_conversion_failed_max_batches' => 'ncc-retry_conversion_failed_max_batches',
 		);
 	}
 

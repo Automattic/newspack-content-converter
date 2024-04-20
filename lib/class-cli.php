@@ -30,6 +30,10 @@ class CLI {
 	 */
 	public function register_commands() {
 		WP_CLI::add_command(
+			'newspack-content-converter debug',
+			array( $this, 'cli_debug' ),
+		);
+		WP_CLI::add_command(
 			'newspack-content-converter reset',
 			array( $this, 'cli_reset' ),
 			array(
@@ -59,6 +63,35 @@ class CLI {
 				),
 			)
 		);
+	}
+
+	public function cli_debug() {
+		// $processor = \NewspackContentConverter\ConversionProcessor $conversion_processor;
+		// $controller = new \NewspackContentConverter\ConverterController();
+		$patch_handler = new ContentPatcher\PatchHandler(
+			array(
+				// Encode blocks as very first thing.
+				new ContentPatcher\Patchers\BlockEncodePatcher(),
+				new ContentPatcher\Patchers\WpFiltersPatcher(),
+				// Pre-conversion Patchers.
+				new ContentPatcher\Patchers\ShortcodePreconversionPatcher(),
+				// Patchers.
+				new ContentPatcher\Patchers\ImgPatcher(),
+				new ContentPatcher\Patchers\CaptionImgPatcher(),
+				new ContentPatcher\Patchers\ParagraphPatcher(),
+				new ContentPatcher\Patchers\BlockquotePatcher(),
+				new ContentPatcher\Patchers\VideoPatcher(),
+				new ContentPatcher\Patchers\AudioPatcher(),
+				new ContentPatcher\Patchers\ShortcodeModulePatcher(),
+				new ContentPatcher\Patchers\ShortcodePullquotePatcher(),
+				// Decode blocks as the very last thing.
+				new ContentPatcher\Patchers\BlockDecodePatcher(),
+			)
+		);
+		$processor = new ConversionProcessor(
+			$patch_handler
+		);
+		$a = $processor->get_all_unconverted_posts();
 	}
 
 	/**
