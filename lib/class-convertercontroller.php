@@ -124,7 +124,13 @@ class ConverterController extends WP_REST_Controller {
 			[
 				'methods'             => WP_REST_Server::READABLE,
 				'callback'            => [ $this, 'get_post_content' ],
-				'args'                => [ 'id' ],
+				'args'                => [
+					'id' => [
+						'validate_callback' => function( $param, $request, $key ) {
+							return is_numeric( $param );
+						},
+					],
+				],
 				'permission_callback' => [ $this, 'rest_permission' ],
 			]
 		);
@@ -167,8 +173,6 @@ class ConverterController extends WP_REST_Controller {
 			[
 				'conversionContentTypesCsv'    => $this->conversion_processor->get_conversion_content_types(),
 				'conversionContentStatusesCsv' => $this->conversion_processor->get_conversion_content_statuses(),
-				// 'conversionBatchSize'          => $this->conversion_processor->get_conversion_batch_size(),
-				// 'unconvertedCount'             => $this->conversion_processor->get_unconverted_posts_total_number(),
 			]
 		);
 	}
@@ -192,7 +196,7 @@ class ConverterController extends WP_REST_Controller {
 
 		return rest_ensure_response(
 			[
-				'isConversionOngoing'   => $is_conversion_running,
+				'isConversionRunning'   => $is_conversion_running,
 				'unconvertedCount'      => $unconverted_count,
 				'numberOfBatches'       => $number_of_batches,
 				'hasConvertedPosts'     => $has_converted_posts,
@@ -204,7 +208,7 @@ class ConverterController extends WP_REST_Controller {
 
 	/**
 	 * Callback for the /conversion/initialize route.
-	 * Initializes the conversion queue.
+	 * Initializes the conversion.
 	 *
 	 * @return array Null or formatted response -- key 'result', value 'queued'.
 	 */
@@ -221,7 +225,7 @@ class ConverterController extends WP_REST_Controller {
 	 * @return array Conversion batch data.
 	 */
 	public function get_conversion_batch_data() {
-		$ids                        = $this->conversion_processor->set_next_conversion_batch_to_queue();
+		$ids                        = $this->conversion_processor->start_next_batch();
 		$has_incomplete_conversions = ! $this->conversion_processor->is_conversion_running() && $this->conversion_processor->has_incomplete_conversions();
 		$queued_batches             = $this->conversion_processor->get_conversion_queued_batches();
 		$this_batch                 = ! empty( $queued_batches ) ? max( $queued_batches ) : null;

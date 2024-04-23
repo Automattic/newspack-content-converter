@@ -60,18 +60,95 @@ class ConversionProcessor {
 		return 100;
 	}
 
+	/**
+	 * Gets number of batches to be converted.
+	 *
+	 * @return int|null Batch number.
+	 */
+	public function get_number_of_batches() {
+		$batches = (int) ceil( $this->get_unconverted_posts_total_number() / $this->get_conversion_batch_size() );
 
-
+		return $batches;
+	}
 
 	/**
-	 * Sets the next conversion batch in motion. It fetches the current conversion queue, finds the next queue number, and adds it
-	 * to the queue. If fetches and returns IDs belonging to that queue.
+	 * This gets the posts that need to be converted -- either all (if $limit = 0), or just for the next batch (if $limit = size of batch).
+	 * Excludes empty posts.
+	 * Ordering is by ID descending.
 	 *
-	 * If queue maxed out (all processed), or conversion not ongoing, returns void.
+	 * @param int   $limit         You want to use size of batch here to get just the IDs for the next batch.
+	 * @param array $post_statuses
+	 * @param array $post_types
+	 * @return array Results from $wpdb->get_results() as ARRAY_A.
+	 */
+	public function get_unconverted_posts( int $limit = 0, array $post_statuses = ['publish','draft','pending','future','private'], array  $post_types = ['post','page'] ) {
+		global $wpdb;
+
+		$statuses_placeholders = implode( ',', array_fill( 0, count( $post_statuses ), '%s' ) );
+		$types_placeholders    = implode( ',', array_fill( 0, count( $post_types ), '%s' ) );
+
+		$limit_clause = '';
+		if ( $limit > 0 ) {
+			$limit_clause = $wpdb->prepare( " LIMIT %d ", $limit );
+		}
+
+		// Excludes empty ones.
+		$results = $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT ID,post_type,post_status,post_content,post_excerpt,post_name,guid
+				FROM {$wpdb->posts}
+				WHERE post_status IN ( {$statuses_placeholders} )
+				AND post_type IN ( {$types_placeholders} )
+				AND post_content NOT LIKE '<!-- wp:%'
+				AND post_content <> ''
+				AND post_content NOT REGEXP '^[[:space:]|(&nbsp;)|(\\r\\n)]+$'
+				ORDER BY ID DESC
+				{$limit_clause} ;",
+				array_merge( $post_statuses, $post_types )
+			),
+			ARRAY_A
+		);
+
+		return $results;
+	}
+
+	/**
+	 * Gets total number of entries (posts) configured for conversion.
+	 *
+	 * @return int|false Total number of entries.
+	 */
+	public function get_unconverted_posts_total_number() {
+		return count( $this->get_unconverted_posts() );
+	}
+
+	/**
+	 * Fetches posts IDs for a batch.
+	 * Default orderig of IDs is descending.
+	 *
+	 * @param int $this_batch Batch number.
+	 * @param int $batch_size Batch size (number of posts/entries per batch).
+	 *
+	 * @return array Post IDs.
+	 */
+	public function get_ids_for_next_batch() {
+		$results = $this->get_unconverted_posts( $this->get_conversion_batch_size() );
+
+		$ids = [];
+		foreach ( $results as $result ) {
+			$ids[] = $result['ID'];
+		}
+
+		return $ids;
+	}
+
+	/**
+	 * Sets the next conversion batch in motion.
+	 *
+	 * If all batches are processed, or conversion is not ongoing, returns void.
 	 *
 	 * @return array|void Array of IDs, or void.
 	 */
-	public function set_next_conversion_batch_to_queue() {
+	public function start_next_batch() {
 		if ( false === $this->is_conversion_running() ) {
 			return;
 		}
@@ -95,11 +172,17 @@ class ConversionProcessor {
 		$this->add_batch_to_coversion_queue( $this_batch, $queued_batches );
 
 		// Get IDs for conversion.
-		$batch_size = $this->get_conversion_batch_size();
-		$ids        = $this->select_ids_for_batch( $this_batch, $batch_size );
+		$limit = $this->get_conversion_batch_size();
+		$ids   = $this->get_ids_for_next_batch( $limit );
 
 		return $ids;
 	}
+
+
+
+
+
+
 
 	/**
 	 * Sets the next batch of Posts which previously failed to get converted to now retry their conversion. It fetches the current
@@ -246,8 +329,7 @@ class ConversionProcessor {
 	 * @return bool Is queued or not.
 	 */
 	public function is_conversion_running() {
-		$conversion_queued = get_option( 'ncc-is_conversion_running', false );
-		if ( '1' === $conversion_queued ) {
+		if ( '1' === get_option( 'ncc-is_conversion_running', false ) ) {
 			return true;
 		}
 
@@ -356,17 +438,6 @@ class ConversionProcessor {
 	}
 
 	/**
-	 * Gets number of batches to be converted.
-	 *
-	 * @return int|null Batch number.
-	 */
-	public function get_number_of_batches() {
-		$batches = (int) ceil( $this->get_unconverted_posts_total_number() / $this->get_conversion_batch_size() );
-
-		return $batches;
-	}
-
-	/**
 	 * Gets the max batch number for the retry-conversion-of-failed-posts queue.
 	 *
 	 * @return int|null Batch number.
@@ -378,56 +449,16 @@ class ConversionProcessor {
 	}
 
 	/**
-	 * Gets total number of entries (posts) configured for conversion.
-	 *
-	 * @return int|false Total number of entries.
-	 */
-	public function get_unconverted_posts_total_number() {
-		return count( $this->get_all_unconverted_posts() );
-	}
-
-	/**
-	 * Excludes empty posts.
-	 *
-	 * @param array $post_statuses
-	 * @param array $post_types
-	 * @return array Results from $wpdb->get_results() as ARRAY_A.
-	 */
-	public function get_all_unconverted_posts( $post_statuses = ['publish','draft','pending','future','private'], $post_types = ['post','page'] ) {
-		global $wpdb;
-
-		$statuses_placeholders = implode( ',', array_fill( 0, count( $post_statuses ), '%s' ) );
-		$types_placeholders    = implode( ',', array_fill( 0, count( $post_types ), '%s' ) );
-
-		// Excludes empty ones.
-		$results = $wpdb->get_results(
-			$wpdb->prepare(
-				"SELECT ID,post_type,post_status,post_content,post_excerpt,post_name,guid
-				FROM {$wpdb->posts}
-				WHERE post_status IN ( {$statuses_placeholders} )
-				AND post_type IN ( {$types_placeholders} )
-				AND post_content NOT LIKE '<!-- wp:%'
-				AND post_content <> ''
-				AND post_content NOT REGEXP '^[[:space:]|(&nbsp;)|(\\r\\n)]+$' ;",
-				array_merge( $post_statuses, $post_types )
-			),
-			ARRAY_A
-		);
-
-		return $results;
-	}
-
-	/**
 	 * Initalize conversion by flagging it to "queued".
 	 *
 	 * @return bool Is initialized.
 	 */
 	public function initialize_conversion() {
-		// Clears the conversion queue.
+		// Just in case, clear previous flags.
 		update_option( 'ncc-is_conversion_running', 0 );
 		delete_option( 'ncc-conversion_queued_batches_csv' );
 
-		// Set conversion flag up.
+		// Set the "conversion is running" flag.
 		$set = update_option( 'ncc-is_conversion_running', 1 );
 
 		return $set;
@@ -543,35 +574,6 @@ class ConversionProcessor {
 		$new_queued_batches     = array_merge( $queued_batches, [ $this_batch ] );
 		$new_queued_batches_csv = implode( ',', $new_queued_batches );
 		update_option( 'ncc-retry_conversion_failed_queued_batches_csv', $new_queued_batches_csv );
-	}
-
-	/**
-	 * Fetches posts IDs for a batch.
-	 *
-	 * @param int $this_batch Batch number.
-	 * @param int $batch_size Batch size (number of posts/entries per batch).
-	 *
-	 * @return array Post IDs.
-	 */
-	private function select_ids_for_batch( $this_batch, $batch_size ) {
-		global $wpdb;
-
-		$table_name = Config::get_instance()->get( 'table_name' );
-		$table_name = esc_sql( $table_name );
-		$this_batch = esc_sql( $this_batch );
-		$batch_size = esc_sql( $batch_size );
-
-		$offset        = ( $this_batch - 1 ) * $batch_size;
-		$query_prepare = "SELECT ID FROM $table_name ORDER BY ID ASC LIMIT %d OFFSET %d ;";
-		// phpcs:ignore -- the following is a false positive; this SQL is safe, and the table name is escaped above.
-		$results = $wpdb->get_results( $wpdb->prepare( $query_prepare, $batch_size, $offset ) );
-
-		$ids = [];
-		foreach ( $results as $result ) {
-			$ids[] = $result->ID;
-		}
-
-		return $ids;
 	}
 
 	/**
