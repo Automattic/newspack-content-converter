@@ -29,10 +29,8 @@ const nccInsertRootAdjacentToElementByClass = function( className ) {
 
 const nccRenderRoot = function() {
 	window.onbeforeunload = function() {};
-
-	const getParams = queryString.parse( window.location.search );
 	render(
-		<ContentConverter retryFailedConversions={ 'retry-failed' in getParams } />,
+		<ContentConverter />,
 		document.getElementById( 'root' )
 	);
 };

@@ -234,11 +234,8 @@ class Installer {
 		delete_option( 'ncc-convert_post_types_csv' );
 		delete_option( 'ncc-convert_post_statuses_csv' );
 		delete_option( 'ncc-conversion_batch_size' );
-		delete_option( 'ncc-retry_conversion_failed_max_batches' );
 		delete_option( 'ncc-is_conversion_running' );
-		delete_option( 'ncc-is_queued_retry_failed_conversion' );
 		delete_option( 'ncc-conversion_queued_batches_csv' );
-		delete_option( 'ncc-retry_conversion_failed_queued_batches_csv' );
 	}
 
 	/**

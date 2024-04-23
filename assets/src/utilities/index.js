@@ -41,7 +41,7 @@ export function runSinglePost( postId ) {
 		.then( html => getAllBlocksContents( postId, html ) )
 		.then( ( [ blocks, html ] ) => updatePost( postId, blocks, html ) )
 		.catch( error => {
-			console.error( 'A conversion error occured:' );
+			console.error( 'A conversion error occured in runSinglePost:' );
 			console.error( error );
 		} );
 }
@@ -139,7 +139,6 @@ export function updatePost( postId, blocks, html ) {
 	if ( ! blocks ) {
 		throw new Error( 'No resulting blocks content.' );
 	}
-
 	return apiFetch( {
 		path: NEWSPACK_CONVERTER_API_BASE_URL + '/conversion/update-post',
 		method: 'POST',
@@ -157,12 +156,6 @@ export function fetchConversionBatch() {
 	} ).then( response => Promise.resolve( response ) );
 }
 
-export function fetchRetryFailedConversionsBatch() {
-	return apiFetch( {
-		path: NEWSPACK_CONVERTER_API_BASE_URL + '/conversion-retry-failed/get-batch-data',
-	} ).then( response => Promise.resolve( response ) );
-}
-
 export function fetchSettingsInfo() {
 	return apiFetch( {
 		path: NEWSPACK_CONVERTER_API_BASE_URL + '/settings/get-info',
@@ -175,32 +168,66 @@ export function fetchConversionInfo() {
 	} ).then( response => Promise.resolve( response ) );
 }
 
-export function fetchInitializeConversion() {
-	return apiFetch( {
-		path: NEWSPACK_CONVERTER_API_BASE_URL + '/conversion/initialize',
-	} ).then( response => Promise.resolve( response ) );
-}
-
-export function fetchInitializeRetryFailedConversion() {
-	return apiFetch( {
-		path: NEWSPACK_CONVERTER_API_BASE_URL + '/conversion-retry-failed/initialize',
-	} ).then( response => Promise.resolve( response ) );
-}
-
 export function fetchResetConversion() {
 	return apiFetch( {
 		path: NEWSPACK_CONVERTER_API_BASE_URL + '/conversion/reset',
 	} ).then( response => Promise.resolve( response ) );
 }
 
+export function downloadListConvertedIds() {
+	return apiFetch( {
+		path: NEWSPACK_CONVERTER_API_BASE_URL + '/conversion/get-successfully-converted-ids',
+	} ).then( response => {
+		console.log(response);
+		if ( response && response.ids ) {
+			// Create a Blob from the CSV content with an URL.
+			const blob = new Blob([response.ids], { type: 'text/csv;charset=utf-8;' });
+			const url = URL.createObjectURL(blob);
+
+			// Create a temporary anchor element with URL and filename.
+			const link = document.createElement('a');
+			link.href = url;
+			link.download = 'converted_ids.csv';
+
+			// Click the anchor to start download.
+			link.click();
+
+			// Clean up.
+			URL.revokeObjectURL(url);
+		}
+	});
+}
+
+export function downloadListUnsuccessfullyConvertedIds() {
+	return apiFetch( {
+		path: NEWSPACK_CONVERTER_API_BASE_URL + '/conversion/get-unsuccessfully-converted-ids',
+	} ).then( response => {
+		console.log(response);
+		if ( response && response.ids ) {
+			// Create a Blob from the CSV content with an URL.
+			const blob = new Blob([response.ids], { type: 'text/csv;charset=utf-8;' });
+			const url = URL.createObjectURL(blob);
+
+			// Create a temporary anchor element with URL and filename.
+			const link = document.createElement('a');
+			link.href = url;
+			link.download = 'unsuccessfully_converted_ids.csv';
+
+			// Click the anchor to start download.
+			link.click();
+
+			// Clean up.
+			URL.revokeObjectURL(url);
+		}
+	});
+}
+
 export default {
 	runSinglePost,
 	runMultiplePosts,
 	fetchConversionBatch,
-	fetchRetryFailedConversionsBatch,
 	fetchSettingsInfo,
 	fetchConversionInfo,
-	fetchInitializeConversion,
-	fetchInitializeRetryFailedConversion,
 	fetchResetConversion,
+	downloadListConvertedIds,
 };

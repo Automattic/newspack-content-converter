@@ -25,7 +25,6 @@ import { NewspackLogo } from 'newspack-components';
 import {
 	runMultiplePosts,
 	fetchConversionBatch,
-	fetchRetryFailedConversionsBatch,
 } from '../utilities';
 
 class ContentConverter extends Component {
@@ -37,31 +36,24 @@ class ContentConverter extends Component {
 
 		this.state = {
 			isActive: null,
-			retryFailedConversions: props.retryFailedConversions,
 			postIds: null,
 			thisBatch: null,
-			numberOfBatches: null,
-			hasIncompleteConversions: false,
+			numberOfBatchesToBeConverted: null,
 		};
 	}
 
 	componentDidMount() {
-		const { retryFailedConversions } = this.state;
 
-		// Get a batch of regular conversions, or retry the failed ones.
-		const fetchBatchPromise = retryFailedConversions
-			? fetchRetryFailedConversionsBatch
-			: fetchConversionBatch;
-
-		return fetchBatchPromise()
+		// Run a batch of conversions.
+		return fetchConversionBatch()
 			.then( response => {
 				if ( response ) {
-					const { ids: postIds, thisBatch, numberOfBatches, hasIncompleteConversions } = response;
+					const { ids: postIds, thisBatch, numberOfBatchesToBeConverted } = response;
+					// Starting conversion, setting isActive to true.
 					this.setState( {
 						postIds,
 						thisBatch,
-						numberOfBatches,
-						hasIncompleteConversions,
+						numberOfBatchesToBeConverted,
 						isActive: true,
 					} );
 					if ( postIds ) {
@@ -75,13 +67,15 @@ class ContentConverter extends Component {
 			.then( () => {
 				return new Promise( ( resolve, reject ) => {
 					console.log( ' ----------------------- FINISHED.' );
-					if ( this.state.postIds ) {
+					if ( this.state.postIds && this.state.postIds.length > 0 ) {
+						// Conversion hasn't started yet, so isActive is null before it's either true or false.
 						this.setState( { isActive: null } );
 						// This should disable the browser's "Reload page?" popup, although it doesn't always work as expected.
 						window.onbeforeunload = function() {};
 						// Reload this window to pick up the next batch.
 						window.location.reload( true );
 					} else {
+						// No more posts to convert, so isActive is false.
 						this.setState( { isActive: false } );
 					}
 
@@ -94,9 +88,10 @@ class ContentConverter extends Component {
 	 * render().
 	 */
 	render() {
-		const { isActive, thisBatch, numberOfBatches, hasIncompleteConversions } = this.state;
+		const { isActive, thisBatch, numberOfBatchesToBeConverted } = this.state;
 
 		if ( null == isActive ) {
+			// This is the initial state of the interface, before conversion has started (true) or finished (false).
 			return (
 				<div className="newspack-content-converter__wrapper">
 					<div className="newspack-logo__wrapper">
@@ -122,6 +117,7 @@ class ContentConverter extends Component {
 				</div>
 			);
 		} else if ( true == isActive ) {
+			// Conversion is running.
 			return (
 				<div className="newspack-content-converter__wrapper is-active">
 					<div className="newspack-logo__wrapper">
@@ -158,12 +154,13 @@ class ContentConverter extends Component {
 						</CardBody>
 						<CardFooter justify="center" className="newspack-content-converter__batch">
 								<Spinner />
-								<p>{ __( 'Now processing batch' ) } { thisBatch }/{ numberOfBatches }</p>
+								<p>{ __( 'Now processing batch' ) } { thisBatch }/{ numberOfBatchesToBeConverted }</p>
 						</CardFooter>
 					</Card>
 				</div>
 			);
 		} else if ( false == isActive ) {
+			// Conversion has finished.
 			return (
 				<div className="newspack-content-converter__wrapper">
 					<div className="newspack-logo__wrapper">
@@ -183,37 +180,18 @@ class ContentConverter extends Component {
 							</FlexBlock>
 						</CardHeader>
 						<CardBody>
-						{ true == hasIncompleteConversions ? (
-							<Notice isDismissible={ false } status="error">
-								{ __(
-									'Certain entries were not converted successfully. You may try converting those again on the "Converter" page.'
-								) }
-							</Notice>
-						) : (
 							<Notice isDismissible={ false } status="success">
-								{ __( 'All queued content has been converted successfully.' ) }
+								{ __( 'All queued content has been converted.' ) }
 							</Notice>
-						) }
 						</CardBody>
-						{ true == hasIncompleteConversions ? (
-							<CardFooter justify="flex-end">
-								<Button href="/wp-admin/" isSecondary>
-									{ __( 'Back to Dashboard' ) }
-								</Button>
-								<Button href="/wp-admin/admin.php?page=newspack-content-converter" isPrimary>
-									{ __( 'Back to Converter' ) }
-								</Button>
-							</CardFooter>
-						) : (
-							<CardFooter justify="flex-end">
-								<Button href="/wp-admin/admin.php?page=newspack-content-converter" isSecondary>
-									{ __( 'Back to Converter' ) }
-								</Button>
-								<Button href="/wp-admin/" isPrimary>
-									{ __( 'Back to Dashboard' ) }
-								</Button>
-							</CardFooter>
-						) }
+						<CardFooter justify="flex-end">
+							<Button href="/wp-admin/" isSecondary>
+								{ __( 'Back to Dashboard' ) }
+							</Button>
+							<Button href="/wp-admin/admin.php?page=newspack-content-converter" isPrimary>
+								{ __( 'Back to Converter' ) }
+							</Button>
+						</CardFooter>
 					</Card>
 				</div>
 			);
@@ -222,3 +200,4 @@ class ContentConverter extends Component {
 }
 
 export default ContentConverter;
+

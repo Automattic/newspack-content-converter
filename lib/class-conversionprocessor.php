@@ -65,7 +65,7 @@ class ConversionProcessor {
 	 *
 	 * @return int|null Batch number.
 	 */
-	public function get_number_of_batches() {
+	public function get_number_of_batches_to_be_converted() {
 		$batches = (int) ceil( $this->get_unconverted_posts_total_number() / $this->get_conversion_batch_size() );
 
 		return $batches;
@@ -92,24 +92,93 @@ class ConversionProcessor {
 			$limit_clause = $wpdb->prepare( " LIMIT %d ", $limit );
 		}
 
-		// Excludes empty ones.
+		// Excludes those that have already been converted and empty ones.
 		$results = $wpdb->get_results(
 			$wpdb->prepare(
-				"SELECT ID,post_type,post_status,post_content,post_excerpt,post_name,guid
-				FROM {$wpdb->posts}
-				WHERE post_status IN ( {$statuses_placeholders} )
-				AND post_type IN ( {$types_placeholders} )
-				AND post_content NOT LIKE '<!-- wp:%'
-				AND post_content <> ''
-				AND post_content NOT REGEXP '^[[:space:]|(&nbsp;)|(\\r\\n)]+$'
-				ORDER BY ID DESC
+				"SELECT wp.ID,wp.post_type,wp.post_status,wp.post_content,wp.post_excerpt,wp.post_name,wp.guid
+				FROM {$wpdb->posts} wp
+				-- Left join to get all wp_posts with or without meta.
+				LEFT JOIN {$wpdb->postmeta} wpm
+					ON wpm.post_id = wp.ID
+					AND wpm.meta_key = 'ncc_original_post_content_blocks'
+				-- Select desired post types.
+				WHERE wp.post_type IN ( {$types_placeholders} )
+				AND wp.post_status IN ( {$statuses_placeholders} )
+				-- Filter out post which are already in blocks.
+				AND wp.post_content NOT LIKE '<!-- wp:%'
+				-- Fetch posts that were not yet converted i.e. have no saved meta.
+				AND wpm.meta_id IS NULL
+				ORDER BY wp.ID DESC
+				-- Optional limit gets all posts or posts in the next batch.
 				{$limit_clause} ;",
-				array_merge( $post_statuses, $post_types )
+				array_merge( $post_types, $post_statuses )
 			),
 			ARRAY_A
 		);
 
 		return $results;
+	}
+
+	/**
+	 * Gets the successfully converted post IDs.
+	 *
+	 * @param array $post_statuses
+	 * @param array $post_types
+	 * @return void
+	 */
+	public function get_successfully_converted_ids( array $post_statuses = ['publish','draft','pending','future','private'], array  $post_types = ['post','page'] ) {
+		global $wpdb;
+
+		$statuses_placeholders = implode( ',', array_fill( 0, count( $post_statuses ), '%s' ) );
+		$types_placeholders    = implode( ',', array_fill( 0, count( $post_types ), '%s' ) );
+
+		// Excludes those that have already been converted and empty ones.
+		$ids = $wpdb->get_col(
+			$wpdb->prepare(
+				"SELECT wp.ID
+				FROM {$wpdb->posts} wp
+				JOIN {$wpdb->postmeta} wpm
+					ON wpm.post_id = wp.ID
+					AND wpm.meta_key = 'ncc_original_post_content_blocks'
+				WHERE wp.post_type IN ( {$types_placeholders} )
+				AND wp.post_status IN ( {$statuses_placeholders} )
+				-- Either unconverted posts (no meta) or converted but make sure they were converted successfully (wp_posts.post_content doesn't get updated if conversion syntax is empty, so it's kept the same).
+				AND (
+					wpm.meta_value IS NULL
+					OR wpm.meta_value <> wp.post_content
+				)
+				; ",
+				array_merge( $post_types, $post_statuses )
+			)
+		);
+
+		return $ids;
+	}
+
+	public function get_unsuccessfully_converted_ids( array $post_statuses = ['publish','draft','pending','future','private'], array  $post_types = ['post','page'] ) {
+		global $wpdb;
+
+		$statuses_placeholders = implode( ',', array_fill( 0, count( $post_statuses ), '%s' ) );
+		$types_placeholders    = implode( ',', array_fill( 0, count( $post_types ), '%s' ) );
+
+		// Excludes those that have already been converted and empty ones.
+		$ids = $wpdb->get_col(
+			$wpdb->prepare(
+				"SELECT wp.ID
+				FROM {$wpdb->posts} wp
+				-- Get posts with the meta.
+				JOIN {$wpdb->postmeta} wpm
+				  ON wpm.post_id = wp.ID
+				  AND wpm.meta_key = 'ncc_original_post_content_blocks'
+				WHERE wp.post_type IN ( {$types_placeholders} )
+				AND wp.post_status IN ( {$statuses_placeholders} )
+				-- Fetch posts where conversion happened (meta exists) but post_content is still the same as original post content (wp_posts.post_content does not get updated/saved if the conversion returns an empty result i.e. was unsuccessful).
+				AND wpm.meta_value = wp.post_content ;",
+				array_merge( $post_types, $post_statuses )
+			)
+		);
+
+		return $ids;
 	}
 
 	/**
@@ -142,40 +211,29 @@ class ConversionProcessor {
 	}
 
 	/**
-	 * Sets the next conversion batch in motion.
+	 * Sets the next batch to queue.
 	 *
-	 * If all batches are processed, or conversion is not ongoing, returns void.
+	 * If all batches are processed, returns null.
 	 *
-	 * @return array|void Array of IDs, or void.
+	 * @return int|null Number of this batch, or null if no more batches to process.
 	 */
-	public function start_next_batch() {
-		if ( false === $this->is_conversion_running() ) {
-			return;
-		}
-
+	public function set_next_batch_to_queue() {
 		// Get queued batches.
-		$queued_batches = $this->get_conversion_queued_batches();
-		$max_batches    = $this->get_number_of_batches();
+		$queued_batches                    = $this->get_conversion_queued_batches();
+		$number_of_batches_to_be_converted = $this->get_number_of_batches_to_be_converted();
 
-		// If the whole queue is processed, clear it.
+		// If all the batches were processed, clear the queue.
 		$this_batch = empty( $queued_batches ) ? 1 : max( $queued_batches ) + 1;
-		if ( $this_batch > $max_batches ) {
-
-			// Clears the conversion queue.
-			update_option( 'ncc-is_conversion_running', 0 );
+		if ( $this_batch > $number_of_batches_to_be_converted ) {
 			delete_option( 'ncc-conversion_queued_batches_csv' );
 
-			return;
+			return null;
 		}
 
 		// Immediately add this batch to the queue.
 		$this->add_batch_to_coversion_queue( $this_batch, $queued_batches );
 
-		// Get IDs for conversion.
-		$limit = $this->get_conversion_batch_size();
-		$ids   = $this->get_ids_for_next_batch( $limit );
-
-		return $ids;
+		return $this_batch;
 	}
 
 
@@ -184,100 +242,52 @@ class ConversionProcessor {
 
 
 
-	/**
-	 * Sets the next batch of Posts which previously failed to get converted to now retry their conversion. It fetches the current
-	 * conversion queue, gets the next queue number, and appends it to the queue. If then fetches and returns IDs for that queue.
-	 *
-	 * If queue is maxed out (all Posts processed), or conversion is not ongoing, returns void.
-	 *
-	 * @return array|void Array of IDs, or void.
-	 */
-	public function set_next_retry_conversion_failed_batch_to_queue() {
-		if ( false === $this->is_queued_conversion_retry_failed() ) {
-			return;
-		}
-
-		// Get queued batches.
-		$queued_batches = $this->get_conversion_retry_failed_queued_batches();
-		$max_batches    = $this->get_conversion_retry_failed_max_batch();
-
-		// If the whole queue is processed, reset it.
-		$this_batch = empty( $queued_batches ) ? 1 : max( $queued_batches ) + 1;
-		if ( $this_batch > $max_batches ) {
-			$this->clear_conversion_retry_failed_queue();
-
-			return;
-		}
-
-		// Immediately add this batch to the retry-conversion-of-failed-Posts queue, and get the IDs.
-		$this->add_batch_to_coversion_retry_failed_queue( $this_batch, $queued_batches );
-		$batch_size = $this->get_conversion_batch_size();
-		$ids        = $this->select_ids_for_next_batch_retry_conversion_failed( $batch_size );
-
-		return $ids;
-	}
 
 	/**
-	 * Gets the original pre-conversion `post_content` (with the applied filter 'the_content') from the Plugin's queue table.
+	 * Gets the original pre-conversion `post_content` with the applied filter 'the_content'.
 	 *
 	 * @param int $post_id Post ID.
 	 *
 	 * @return string|null Post content, or null.
 	 */
 	public function get_post_content( $post_id ) {
-		$res = $this->get_ncc_post( $post_id );
-		if ( empty( $res->post_content ) ) {
-			return null;
-		}
+		global $wpdb;
 
-		// Run registered pre-conversion Patchers, which get to modify the HTML source before it gets
-		// converted to Blocks.
-		$post_content_filtered = $this->patcher_handler->run_all_preconversion_patches( $res->post_content );
+		$post_content = $wpdb->get_var( $wpdb->prepare( "SELECT post_content FROM {$wpdb->posts} WHERE ID = %d;", $post_id ) );
+		$post_content_filtered = $this->patcher_handler->run_all_preconversion_patches( $post_content );
 
 		return $post_content_filtered;
 	}
 
 	/**
-	 * Gets the Post object from the plugin's queue table (equivalent to the `wp_posts` table, with extra columns).
-	 *
-	 * @param int $post_id Post ID.
-	 *
-	 * @return object|null Post object, or null.
-	 */
-	public function get_ncc_post( $post_id ) {
-		global $wpdb;
-
-		if ( ! $post_id ) {
-			return null;
-		}
-
-		$table_name = Config::get_instance()->get( 'table_name' );
-		$table_name = esc_sql( $table_name );
-
-		// phpcs:ignore -- the following is a false positive; this SQL is safe, and the table name is escaped above.
-		$results = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM {$table_name} WHERE ID = %d;", $post_id ) );
-		if ( ! $results ) {
-			return null;
-		}
-
-		return $results[0];
-	}
-
-	/**
-	 * Takes Post ID, original HTML content, Gutenberg converted blocks content, applies content patchers and saves to Post.
+	 * Updates converted post content, but only if resulting block content is not empty.
+	 * Also creates a backup of original post content as post meta.
 	 *
 	 * @param int    $post_id Post ID.
 	 * @param string $html_content HTML content.
 	 * @param string $blocks_content Blocks content.
 	 */
-	public function save_converted_post_content( $post_id, $html_content, $blocks_content ) {
+	public function update_converted_post( $post_id, $html_content, $blocks_content ) {
+		global $wpdb;
+
 		if ( ! $post_id || ! $html_content || ! $blocks_content ) {
 			return;
 		}
 
 		$blocks_content_patched = $this->patcher_handler->run_all_patches( $html_content, $blocks_content );
-		$this->update_ncc_posts_table( $post_id, [ 'post_content_gutenberg_converted' => $blocks_content ] );
-		$this->update_posts_table( $post_id, [ 'post_content' => $blocks_content_patched ] );
+
+		/**
+		 * Back up original post_content as post meta.
+		 */
+		$current_post_content = $wpdb->get_var( $wpdb->prepare( "SELECT post_content FROM {$wpdb->posts} WHERE ID = %d;", $post_id ) );
+		add_post_meta( $post_id, 'ncc_original_post_content_blocks', $current_post_content );
+
+		/**
+		 * Update post_content.
+		 */
+		if ( ! empty( $blocks_content_patched ) ) {
+			$wpdb->update( $wpdb->posts, [ 'post_content' => $blocks_content_patched ], [ 'ID' => $post_id ] );
+		}
 	}
 
 	/**
@@ -303,47 +313,13 @@ class ConversionProcessor {
 	}
 
 	/**
-	 * Updates the WP posts table.
-	 *
-	 * @param int   $post_id Post ID.
-	 * @param array $data Column=>value data for update.
-	 */
-	private function update_posts_table( $post_id, $data ) {
-		global $wpdb;
-
-		$date        = new \DateTime();
-		$time_ts     = $date->format( 'Y-m-d H:i:s' );
-		$time_gmt_ts = get_gmt_from_date( $time_ts );
-		$timestamps  = [
-			'post_modified'     => $time_ts,
-			'post_modified_gmt' => $time_gmt_ts,
-		];
-
-		// phpcs:ignore -- OK to query DB directly.
-		$wpdb->update( $wpdb->posts, array_merge( $data, $timestamps ), [ 'ID' => $post_id ] );
-	}
-
-	/**
 	 * Checks whether conversion is queued/active.
 	 *
 	 * @return bool Is queued or not.
 	 */
 	public function is_conversion_running() {
-		if ( '1' === get_option( 'ncc-is_conversion_running', false ) ) {
-			return true;
-		}
-
-		return false;
-	}
-
-	/**
-	 * Checks whether the Retry conversion of failed Posts is queued.
-	 *
-	 * @return bool Is queued or not.
-	 */
-	public function is_queued_conversion_retry_failed() {
-		$conversion_queued = get_option( 'ncc-is_queued_retry_failed_conversion', false );
-		if ( '1' === $conversion_queued ) {
+		get_option( 'ncc-conversion_queued_batches_csv', [] );
+		if ( ! empty( $queued_batches ) ) {
 			return true;
 		}
 
@@ -357,21 +333,6 @@ class ConversionProcessor {
 	 */
 	public function get_conversion_queued_batches() {
 		$queued_batches = get_option( 'ncc-conversion_queued_batches_csv', [] );
-		if ( ! empty( $queued_batches ) ) {
-			// Option field contains CSV of integers.
-			$queued_batches = array_map( 'intval', explode( ',', $queued_batches ) );
-		}
-
-		return $queued_batches;
-	}
-
-	/**
-	 * Fetches the queued batches for retrying the conversion of failed Posts.
-	 *
-	 * @return array The queued batches.
-	 */
-	public function get_conversion_retry_failed_queued_batches() {
-		$queued_batches = get_option( 'ncc-retry_conversion_failed_queued_batches_csv', [] );
 		if ( ! empty( $queued_batches ) ) {
 			// Option field contains CSV of integers.
 			$queued_batches = array_map( 'intval', explode( ',', $queued_batches ) );
@@ -400,25 +361,6 @@ class ConversionProcessor {
 	}
 
 	/**
-	 * Checks whether there are any unconverted posts left.
-	 *
-	 * @return bool Are there any incomplete conversions left.
-	 */
-	public function has_incomplete_conversions() {
-		global $wpdb;
-
-		$table_name = esc_sql( Config::get_instance()->get( 'table_name' ) );
-
-		// phpcs:ignore -- the following is a false positive; this SQL is safe, and the table name is escaped above.
-		$results = $wpdb->get_results( "SELECT COUNT(*) as count_incomplete FROM {$table_name} WHERE post_content_gutenberg_converted = '';" );
-		if ( ! $results ) {
-			return false;
-		}
-
-		return isset( $results[0]->count_incomplete ) && $results[0]->count_incomplete > 0 ? true : false;
-	}
-
-	/**
 	 * Gets the total count of Posts that weren't converted yet.
 	 *
 	 * @return int|null Count of queued posts not converted yet.
@@ -435,97 +377,6 @@ class ConversionProcessor {
 		}
 
 		return isset( $results[0]->count_incomplete ) ? $results[0]->count_incomplete : null;
-	}
-
-	/**
-	 * Gets the max batch number for the retry-conversion-of-failed-posts queue.
-	 *
-	 * @return int|null Batch number.
-	 */
-	public function get_conversion_retry_failed_max_batch() {
-		$max_batches = get_option( 'ncc-retry_conversion_failed_max_batches', null );
-
-		return null == $max_batches ? null : (int) $max_batches;
-	}
-
-	/**
-	 * Initalize conversion by flagging it to "queued".
-	 *
-	 * @return bool Is initialized.
-	 */
-	public function initialize_conversion() {
-		// Just in case, clear previous flags.
-		update_option( 'ncc-is_conversion_running', 0 );
-		delete_option( 'ncc-conversion_queued_batches_csv' );
-
-		// Set the "conversion is running" flag.
-		$set = update_option( 'ncc-is_conversion_running', 1 );
-
-		return $set;
-	}
-
-	/**
-	 * Initializes retrying conversion of failed Posts.
-	 *
-	 * @return bool Is initialized.
-	 */
-	public function initialize_conversion_retry_failed() {
-		$this->clear_conversion_retry_failed_queue();
-		$set = $this->set_conversion_retry_failed_queue();
-		$this->set_retry_conversion_flags_for_failed_posts();
-		$set = $set && $this->set_retry_conversion_max_batches();
-
-		return $set;
-	}
-
-	/**
-	 * Sets the option value saying how many batches are there in the retry-converting-failed-posts queue.
-	 *
-	 * @return bool
-	 */
-	private function set_retry_conversion_max_batches() {
-		global $wpdb;
-
-		$table_name = esc_sql( Config::get_instance()->get( 'table_name' ) );
-		$batch_size = get_option( 'ncc-conversion_batch_size', null );
-
-		// phpcs:ignore -- OK to query DB directly.
-		$total = $wpdb->get_var("SELECT COUNT(*) as total FROM $table_name WHERE `retry_conversion` = 1 ; ");
-
-		$max_batches = (int) ceil( $total / $batch_size );
-
-		return update_option( 'ncc-retry_conversion_failed_max_batches', $max_batches );
-	}
-
-	/**
-	 * Set the 'is_queued' flag up for Retry converting failed Posts.
-	 *
-	 * @return bool Success.
-	 */
-	private function set_conversion_retry_failed_queue() {
-		return update_option( 'ncc-is_queued_retry_failed_conversion', 1 );
-	}
-
-	/**
-	 * Clears the retry converting failed Posts queue.
-	 */
-	private function clear_conversion_retry_failed_queue() {
-		update_option( 'ncc-is_queued_retry_failed_conversion', 0 );
-		delete_option( 'ncc-retry_conversion_failed_queued_batches_csv' );
-		delete_option( 'ncc-retry_conversion_failed_max_batches' );
-	}
-
-	/**
-	 * Sets the `retry_conversion` column for failed posts, meaning that they become queued for a conversion retry.
-	 */
-	private function set_retry_conversion_flags_for_failed_posts() {
-		global $wpdb;
-
-		$table_name = Config::get_instance()->get( 'table_name' );
-		$table_name = esc_sql( $table_name );
-
-		// phpcs:ignore -- allow a direct call here.
-		$wpdb->update( $table_name, [ 'retry_conversion' => 1 ], [ 'post_content_gutenberg_converted' => '' ] );
 	}
 
 	/**
@@ -564,69 +415,18 @@ class ConversionProcessor {
 		update_option( 'ncc-conversion_queued_batches_csv', $new_queued_batches_csv );
 	}
 
-	/**
-	 * Adds a batch number to the retry conversion of failed Posts batch queue.
-	 *
-	 * @param int   $this_batch Current batch number.
-	 * @param array $queued_batches Batches currently in queue.
-	 */
-	private function add_batch_to_coversion_retry_failed_queue( $this_batch, $queued_batches ) {
-		$new_queued_batches     = array_merge( $queued_batches, [ $this_batch ] );
-		$new_queued_batches_csv = implode( ',', $new_queued_batches );
-		update_option( 'ncc-retry_conversion_failed_queued_batches_csv', $new_queued_batches_csv );
-	}
-
-	/**
-	 * Fetches posts IDs for the batch of Retrying conversion of failed Posts.
-	 *
-	 * @param int $batch_size Batch size.
-	 *
-	 * @return array Post IDs.
-	 */
-	private function select_ids_for_next_batch_retry_conversion_failed( $batch_size ) {
-		global $wpdb;
-
-		$table_name = Config::get_instance()->get( 'table_name' );
-		$table_name = esc_sql( $table_name );
-		$batch_size = esc_sql( $batch_size );
-
-		$query_prepare = "SELECT ID FROM $table_name WHERE `retry_conversion` = 1 ORDER BY ID ASC LIMIT %d ;";
-		// phpcs:ignore -- the following is a false positive; this SQL is safe, and the table name is escaped above.
-		$results = $wpdb->get_results( $wpdb->prepare( $query_prepare, $batch_size ) );
-
-		$ids = [];
-		foreach ( $results as $result ) {
-			$ids[] = $result->ID;
-		}
-
-		// Unset `retry_conversion` flag for IDs which have just been picked up.
-		$this->unset_retry_conversion_flag_for_ids( $ids );
-
-		return $ids;
-	}
 
 	/**
 	 * Resets any ongoing conversions.
 	 */
 	public function reset_ongoing_conversion() {
 		$this->reset_conversion();
-		$this->reset_conversion_retry_failed();
 	}
 
 	/**
 	 * Resets it if there's an ongoing conversion of all content.
 	 */
 	private function reset_conversion() {
-		delete_option( 'ncc-is_conversion_running' );
 		delete_option( 'ncc-conversion_queued_batches_csv' );
-	}
-
-	/**
-	 * Resets it if there's an ongoing retry-conversion-of-failed-posts.
-	 */
-	private function reset_conversion_retry_failed() {
-		delete_option( 'ncc-is_queued_retry_failed_conversion' );
-		delete_option( 'ncc-retry_conversion_failed_queued_batches_csv' );
-		delete_option( 'ncc-retry_conversion_failed_max_batches' );
 	}
 }
