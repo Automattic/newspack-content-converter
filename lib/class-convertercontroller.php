@@ -147,7 +147,7 @@ class ConverterController extends WP_REST_Controller {
 	 * @return bool|WP_Error
 	 */
 	public function rest_permission() {
-		$is_user_authorized = current_user_can( 'edit_posts' );
+		$is_user_authorized = current_user_can( 'edit_others_posts' );
 
 		if ( ! $is_user_authorized ) {
 			return new WP_Error( 'newspack_content_converter_rest_invalid_permission', __( 'Unauthorized access.' ) );
