@@ -157,9 +157,9 @@ class ContentConverter extends Component {
 							<p>
 								<em>
 									{ __(
-										'To convert another batch in parallel and increase conversion speed (depending on your computer, no more than 10 max parallel browser tabs are recommended)'
+										'To convert another batch in parallel and increase conversion speed (depending on your computer performance, no more than 10 max parallel browser tabs are usually recommended), '
 									) }
-									<a href="" target="_blank">open this page in a new tab</a>
+									<a href="" target="_blank">open an additional conversion tab</a>.
 								</em>
 							</p>
 						</CardBody>

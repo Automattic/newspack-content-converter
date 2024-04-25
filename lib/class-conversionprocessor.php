@@ -114,19 +114,18 @@ class ConversionProcessor {
 
 	/**
 	 * Gets successfully converted post IDs from postmeta (ordered DESC).
-	 * If there are multiple backups in postmeta, gets the oldest version.
 	 *
 	 * @param array $post_statuses
 	 * @param array $post_types
 	 * @return void
 	 */
-	public function get_all_converted_ids() {
+	public function get_all_ids_with_original_content_meta() {
 		global $wpdb;
 
 		$ids = $wpdb->get_col(
 			$wpdb->prepare(
-				// Gets the oldest backup by using MIN( meta_value ).
-				"SELECT wpm.post_id, MIN( wpm.meta_value ) as meta_value
+				// If there are multiple backups in postmeta, get the most recent one with MAX(meta_value).
+				"SELECT wpm.post_id, MAX( wpm.meta_value ) as meta_value
 				FROM {$wpdb->postmeta} wpm
 				WHERE wpm.meta_key = %s
 				GROUP BY wpm.post_id
@@ -136,6 +135,19 @@ class ConversionProcessor {
 		);
 
 		return $ids;
+	}
+
+	public function get_all_converted_ids() {
+		/**
+		 * If a post was converted and then restored, the postmeta with original content will be attached to it, even though
+		 * this post will be unconverted. To get the actual posts which have been converted, subtract all posts with the meta
+		 * with unconverted posts.
+		 */
+		$ids_with_meta   = $this->get_all_ids_with_original_content_meta();
+		$unconverted_ids = $this->get_all_unconverted_ids();
+		$converted_ids   = array_diff( $ids_with_meta, $unconverted_ids );
+
+		return $converted_ids;
 	}
 
 	/**
@@ -312,6 +324,7 @@ class ConversionProcessor {
 			$wpdb->update( $wpdb->posts, [ 'post_content' => $blocks_content_patched ], [ 'ID' => $post_id ] );
 		}
 	}
+
 	/**
 	 * Restores post contents to before conversion.
 	 * If post_ids are provided only those posts will be restored, otherwise all posts will be restored.
@@ -325,25 +338,26 @@ class ConversionProcessor {
 		$where_post_ids_in_clause = '';
 		if ( ! empty( $post_ids ) ) {
 			$post_ids_placeholders = array_fill( 0, count( $post_ids ), '%d' );
-			$where_post_ids_in_clause = sprintf( ' WHERE wp.ID IN ( %s ) ', $post_ids_placeholders );
+			$where_post_ids_in_clause = sprintf( ' WHERE wp.ID IN ( %s ) ', implode( ',', $post_ids_placeholders ) );
 		}
 
-		$result = $wpdb->query( $wpdb->prepare(
+		$query = $wpdb->prepare(
 			"UPDATE {$wpdb->posts} wp
 			JOIN (
-				-- If there are multiple postmetas for same post_id, use the oldest one.
-				SELECT post_id, MIN( meta_id ) as min_meta_id
+				-- In case there are multiple metas for same post_id, use the most recent one.
+				SELECT post_id, MAX( meta_id ) as max_meta_id
 				FROM {$wpdb->postmeta}
 				WHERE meta_key = %s
 				GROUP BY post_id
-			) min_meta
-				ON wp.ID = min_meta.post_id
+			) max_meta
+				ON wp.ID = max_meta.post_id
 			JOIN wp_postmeta wpm
-				ON wpm.meta_id = min_meta.min_meta_id
+				ON wpm.meta_id = max_meta.max_meta_id
 			SET wp.post_content = wpm.meta_value
 			{$where_post_ids_in_clause} ;",
 			array_merge( [ self::POSTMETA_ORIGINAL_POST_CONTENT ], $post_ids )
-		) );
+		);
+		$result = $wpdb->query( $query );
 
 		return (bool) $result;
 	}

@@ -39,7 +39,7 @@ class Conversion extends Component {
 			unconvertedCount: '...',
 			totalNumberOfBatches: '...',
 			areThereSuccessfullyConvertedIds: false,
-			areThereUnsuccessfullyConvertedIds: false,
+			areThereUnconvertedIds: false,
 		};
 	}
 
@@ -51,14 +51,14 @@ class Conversion extends Component {
 					unconvertedCount,
 					totalNumberOfBatches,
 					areThereSuccessfullyConvertedIds,
-					areThereUnsuccessfullyConvertedIds,
+					areThereUnconvertedIds,
 				} = response;
 				this.setState( {
 					isConversionPrepared,
 					unconvertedCount,
 					totalNumberOfBatches,
 					areThereSuccessfullyConvertedIds,
-					areThereUnsuccessfullyConvertedIds,
+					areThereUnconvertedIds,
 				} );
 			}
 			return new Promise( ( resolve, reject ) => resolve() );
@@ -95,7 +95,7 @@ class Conversion extends Component {
 			unconvertedCount,
 			totalNumberOfBatches,
 			areThereSuccessfullyConvertedIds,
-			areThereUnsuccessfullyConvertedIds,
+			areThereUnconvertedIds,
 		} = this.state;
 		if ( '1' == isConversionPrepared ) {
 			return (
@@ -164,7 +164,7 @@ class Conversion extends Component {
 								) }
 							</Notice>
 							<h4>
-								{ __( 'This page will automatically reload for every batch.' ) }
+								{ __( 'Conversion permanently modifies content so it is recommended to perform a full database backup before running it.' ) }
 							</h4>
 							<TextControl
 								label={ __( 'Number of unconverted entries' ) }
@@ -177,21 +177,21 @@ class Conversion extends Component {
 								value={ totalNumberOfBatches }
 							/>
 						</CardBody>
-						{ ( areThereSuccessfullyConvertedIds || areThereUnsuccessfullyConvertedIds )&& (
+						{ ( areThereSuccessfullyConvertedIds || areThereUnconvertedIds )&& (
 							<CardBody>
 								{ areThereSuccessfullyConvertedIds && (
 									<a href="#" onClick={ this.handleDownloadListConverted }>{ __( 'Download IDs of all converted entries' ) }</a>
 								) }
-								{ areThereSuccessfullyConvertedIds && areThereUnsuccessfullyConvertedIds && (
+								{ areThereSuccessfullyConvertedIds && areThereUnconvertedIds && (
 									<br/>
 								) }
-								{ areThereUnsuccessfullyConvertedIds && (
+								{ areThereUnconvertedIds && (
 									<a href="#" onClick={ this.handleDownloadListUnsuccessfullyConverted }>{ __( 'Download IDs of unconverted entries' ) }</a>
 								) }
 							</CardBody>
 						) }
 						<CardFooter justify="flex-end">
-							<Button isPrimary onClick={ this.handleOnClickRunConversion } disabled={ ( true == areThereUnsuccessfullyConvertedIds ) ? false : true } >
+							<Button isPrimary onClick={ this.handleOnClickRunConversion } disabled={ ( true == areThereUnconvertedIds ) ? false : true } >
 								{ __( 'Run Conversion' ) }
 							</Button>
 						</CardFooter>

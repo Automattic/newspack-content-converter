@@ -208,7 +208,7 @@ class ConverterController extends WP_REST_Controller {
 		$unconverted_count                      = count( $this->conversion_processor->get_all_unconverted_ids() );
 		$total_number_of_batches                = ceil( $unconverted_count / $this->conversion_processor->get_conversion_batch_size() );
 		$are_there_successfully_converted_ids   = count( $this->conversion_processor->get_all_converted_ids() ) > 0;
-		$are_there_unsuccessfully_converted_ids = count( $this->conversion_processor->get_all_unconverted_ids() ) > 0;
+		$are_there_unconverted_ids              = $unconverted_count > 0;
 
 		$response = rest_ensure_response(
 			[
@@ -216,7 +216,7 @@ class ConverterController extends WP_REST_Controller {
 				'unconvertedCount'                   => $unconverted_count,
 				'totalNumberOfBatches'  => $total_number_of_batches,
 				'areThereSuccessfullyConvertedIds'   => $are_there_successfully_converted_ids,
-				'areThereUnsuccessfullyConvertedIds' => $are_there_unsuccessfully_converted_ids,
+				'areThereUnconvertedIds' => $are_there_unconverted_ids,
 			]
 		);
 		return $response;
@@ -243,7 +243,6 @@ class ConverterController extends WP_REST_Controller {
 	 * @return array
 	 */
 	public function restore_post_contents( $params ) {
-
 		$post_ids_csv = $params['post_ids'] ?? null;
 
 		// Sanitize input values and get array of post IDs.
@@ -256,19 +255,10 @@ class ConverterController extends WP_REST_Controller {
 			}
 		}
 
-		if ( empty( $post_ids ) ) {
-			return rest_ensure_response( [ 'success' => false ] );
-		}
-
 		// Restore content.
 		$success = $this->conversion_processor->restore_post_contents_to_before_conversion( $post_ids );
 
-		return rest_ensure_response(
-			[
-				'success' => $success,
-'testIDS' => $post_ids,
-			]
-		);
+		return rest_ensure_response( [ 'success' => $success ] );
 	}
 
 	/**
@@ -396,12 +386,12 @@ class ConverterController extends WP_REST_Controller {
 	 * @return array Successfully converted post IDs.
 	 */
 	public function get_all_converted_ids() {
-		$ids = $this->conversion_processor->get_all_converted_ids();
-		$ids_csv = implode( ',', $ids );
+		$converted_ids = $this->conversion_processor->get_all_converted_ids();
+		$converted_ids_csv = implode( ',', $converted_ids );
 
 		return rest_ensure_response(
 			[
-				'ids' => $ids_csv,
+				'ids' => $converted_ids_csv,
 			]
 		);
 	}

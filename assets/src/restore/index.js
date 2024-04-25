@@ -115,7 +115,7 @@ class Restore extends Component {
 					<Card>
 						<CardHeader isShady>
 							<FlexBlock>
-								<h2>{ __( 'Restore' ) }</h2>
+								<h2>{ __( 'Restore content' ) }</h2>
 								<p>
 									{ __( 'Restore posts to original content before conversion.' ) }
 								</p>
@@ -132,6 +132,11 @@ class Restore extends Component {
 								disabled={ true }
 								value={ numberOfConvertedIds }
 								/>
+							{ numberOfConvertedIds > 0 &&
+							<p>
+								{ __('Get the list of converted post IDs from ') }<a href="/wp-admin/admin.php?page=newspack-content-converter">{ __( 'the converter page' ) }</a>.
+							</p>
+							}
 
 							<TextareaControl
 								label={ __( 'Optional -- custom CSV post IDs' ) }
