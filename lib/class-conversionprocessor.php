@@ -79,7 +79,7 @@ class ConversionProcessor {
 	 * @return int Number of posts/content processed by a conversion batch.
 	 */
 	public function get_conversion_batch_size() {
-		return 100;
+		return 4;
 	}
 
 	/**
@@ -311,5 +311,40 @@ class ConversionProcessor {
 			// Update post_content.
 			$wpdb->update( $wpdb->posts, [ 'post_content' => $blocks_content_patched ], [ 'ID' => $post_id ] );
 		}
+	}
+	/**
+	 * Restores post contents to before conversion.
+	 * If post_ids are provided only those posts will be restored, otherwise all posts will be restored.
+	 *
+	 * @param array $post_ids Optional Post IDs. If empty, all posts will be restored.
+	 * @return boolean True if successful, false otherwise.
+	 */
+	public function restore_post_contents_to_before_conversion( array $post_ids = [] ): bool {
+		global $wpdb;
+
+		$where_post_ids_in_clause = '';
+		if ( ! empty( $post_ids ) ) {
+			$post_ids_placeholders = array_fill( 0, count( $post_ids ), '%d' );
+			$where_post_ids_in_clause = sprintf( ' WHERE wp.ID IN ( %s ) ', $post_ids_placeholders );
+		}
+
+		$result = $wpdb->query( $wpdb->prepare(
+			"UPDATE {$wpdb->posts} wp
+			JOIN (
+				-- If there are multiple postmetas for same post_id, use the oldest one.
+				SELECT post_id, MIN( meta_id ) as min_meta_id
+				FROM {$wpdb->postmeta}
+				WHERE meta_key = %s
+				GROUP BY post_id
+			) min_meta
+				ON wp.ID = min_meta.post_id
+			JOIN wp_postmeta wpm
+				ON wpm.meta_id = min_meta.min_meta_id
+			SET wp.post_content = wpm.meta_value
+			{$where_post_ids_in_clause} ;",
+			array_merge( [ self::POSTMETA_ORIGINAL_POST_CONTENT ], $post_ids )
+		) );
+
+		return (bool) $result;
 	}
 }

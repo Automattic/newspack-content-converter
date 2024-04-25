@@ -242,13 +242,31 @@ class ConverterController extends WP_REST_Controller {
 	 *
 	 * @return array
 	 */
-	public function restore_post_contents() {
-		$restored = true;
-		$restored = false;
+	public function restore_post_contents( $params ) {
+
+		$post_ids_csv = $params['post_ids'] ?? null;
+
+		// Sanitize input values and get array of post IDs.
+		$post_ids = [];
+		$values = explode( ',', $post_ids_csv );
+		foreach ( $values as $value ) {
+			$trimmed_value = trim( $value );
+			if ( ctype_digit($trimmed_value) ) {
+				$post_ids[] = (int)$trimmed_value;
+			}
+		}
+
+		if ( empty( $post_ids ) ) {
+			return rest_ensure_response( [ 'success' => false ] );
+		}
+
+		// Restore content.
+		$success = $this->conversion_processor->restore_post_contents_to_before_conversion( $post_ids );
 
 		return rest_ensure_response(
 			[
-				'success' => $restored,
+				'success' => $success,
+'testIDS' => $post_ids,
 			]
 		);
 	}

@@ -65,16 +65,12 @@ class Restore extends Component {
 				// Restore all IDs.
 				return fetchRestorePostContents().then( response => {
 					if ( response && response.success ) {
-						// Redirect.
-						console.log('redirecting');
-						// window.parent.location = '/wp-admin/admin.php?page=newspack-content-converter';
+						this.setState( { restoredSuccessfully: true } );
 					} else {
-						alert( 'There was an error restoring the posts.' );
+						this.setState( { restoredSuccessfully: false } );
 					}
 					return new Promise( ( resolve, reject ) => resolve() );
 				} );
-
-
 			}
 		} else {
 			// Custom CSV IDs are not empty.
@@ -84,9 +80,14 @@ class Restore extends Component {
 				alert('Please enter a valid CSV of integers, or leave the field empty to restore all posts.');
 			} else {
 				if (confirm("Are you sure you want to restore the custom IDs post contents to before conversion?")) {
-					console.log('1. Restoring CSV of IDs: ' + idCsvs );
-					console.log('2. redirecting' );
-					// window.parent.location = '/wp-admin/admin.php?page=newspack-content-converter';
+					return fetchRestorePostContents( idCsvs ).then( response => {
+						if ( response && response.success ) {
+							this.setState( { restoredSuccessfully: true } );
+						} else {
+							this.setState( { restoredSuccessfully: false } );
+						}
+						return new Promise( ( resolve, reject ) => resolve() );
+					} );
 				}
 			}
 		}
@@ -96,11 +97,8 @@ class Restore extends Component {
 	 * render().
 	 */
 	render() {
-		const { numberOfConvertedIds, idCsvs } = this.state;
-		// const { restoredSuccessfully, numberOfConvertedIds, idCsvs } = this.state;
+		const { restoredSuccessfully, numberOfConvertedIds, idCsvs } = this.state;
 		const isRestoreButtonDisabled = ( '...' === numberOfConvertedIds || 0 == numberOfConvertedIds ) && ( '' === idCsvs );
-
-		const restoredSuccessfully=false;
 
 		if ( null === restoredSuccessfully ) {
 			return (
