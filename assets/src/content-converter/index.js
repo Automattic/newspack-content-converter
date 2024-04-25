@@ -196,9 +196,6 @@ class ContentConverter extends Component {
 							</Notice>
 						</CardBody>
 						<CardFooter justify="flex-end">
-							<Button href="/wp-admin/" isSecondary>
-								{ __( 'Back to Dashboard' ) }
-							</Button>
 							<Button href="/wp-admin/admin.php?page=newspack-content-converter" isPrimary>
 								{ __( 'Back to Converter' ) }
 							</Button>

@@ -125,14 +125,14 @@ class Restore extends Component {
 							<FlexBlock>
 								<h2>{ __( 'Restore content' ) }</h2>
 								<p>
-									{ __( 'Restore posts to original content before conversion.' ) }
+									{ __( 'Restore post content to original content before conversion.' ) }
 								</p>
 							</FlexBlock>
 						</CardHeader>
 						<CardBody>
 							<p>
 								{ __(
-									'Restore post contents to the original content before the conversion to blocks was performed.'
+									'Restore post contents to the original contents before conversion to blocks.'
 								) }
 							</p>
 							<TextControl
@@ -156,7 +156,7 @@ class Restore extends Component {
 								) }
 							</Notice>
 							<p>
-								{ __( 'This plugin uses postmeta to store original content of each post before conversion. Click Flush meta to permanently delete all the content backups from the database.' ) }
+								{ __( 'This plugin uses postmeta to back up and store original content of posts before the conversion. Click Flush backups to permanently delete all the content backups from your database.' ) }
 							</p>
 						</CardBody>
 						<CardFooter justify="flex-end">
@@ -164,7 +164,7 @@ class Restore extends Component {
 								isSecondary
 								onClick={ () => { this.handleFlushAllMetaBackupsOnClick() } }
 							>
-								{ __( 'Flush meta' ) }
+								{ __( 'Flush backups' ) }
 							</Button>
 							<Button
 								isPrimary
@@ -202,9 +202,6 @@ class Restore extends Component {
 							</Notice>
 						</CardBody>
 						<CardFooter justify="flex-end">
-							<Button href="/wp-admin/" isSecondary>
-								{ __( 'Back to Dashboard' ) }
-							</Button>
 							<Button href="/wp-admin/admin.php?page=newspack-content-converter" isPrimary>
 								{ __( 'Back to Converter' ) }
 							</Button>
@@ -239,9 +236,6 @@ class Restore extends Component {
 							</Notice>
 						</CardBody>
 						<CardFooter justify="flex-end">
-							<Button href="/wp-admin/" isSecondary>
-								{ __( 'Back to Dashboard' ) }
-							</Button>
 							<Button href="/wp-admin/admin.php?page=newspack-content-converter" isPrimary>
 								{ __( 'Back to Converter' ) }
 							</Button>

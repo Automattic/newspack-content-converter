@@ -119,7 +119,7 @@ class Conversion extends Component {
 						<CardBody>
 							<Notice status="warning" isDismissible={ false }>
 								{ __(
-									'A browser tab had already started converting your content. In case that it was unexpectedly terminated or closed, reset the converson here and you can start converting again.'
+									'Conversion of your content has already been started in a designated browser tab. In case it was terminated or closed unexpectedly, you can reset the converson here and resume converting again.'
 								) }
 							</Notice>
 							<p>
