@@ -191,9 +191,6 @@ class Conversion extends Component {
 							</CardBody>
 						) }
 						<CardFooter justify="flex-end">
-							<Button isSecondary >
-								{ __( 'Settings' ) }
-							</Button>
 							<Button isPrimary onClick={ this.handleOnClickRunConversion } disabled={ ( true == areThereUnsuccessfullyConvertedIds ) ? false : true } >
 								{ __( 'Run Conversion' ) }
 							</Button>

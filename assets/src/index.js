@@ -9,6 +9,7 @@ import queryString from 'query-string';
  */
 import ContentConverter from './content-converter';
 import Settings from './settings';
+import Restore from './restore';
 import Conversion from './conversion';
 import './style.scss';
 
@@ -60,10 +61,13 @@ function nccCallbackWithRetry( callback, callbackParam, maxAttempts = 10, timeou
 
 window.onload = function() {
 	const div_settings = document.getElementById( 'ncc-settings' );
+	const div_restore = document.getElementById( 'ncc-restore' );
 	const div_conversion = document.getElementById( 'ncc-conversion' );
 
 	if ( typeof div_settings != 'undefined' && div_settings != null ) {
 		render( <Settings />, div_settings );
+	} else if ( typeof div_restore != 'undefined' && div_restore != null ) {
+		render( <Restore />, div_restore );
 	} else if ( typeof div_conversion != 'undefined' && div_conversion != null ) {
 		render( <Conversion />, div_conversion );
 	} else {

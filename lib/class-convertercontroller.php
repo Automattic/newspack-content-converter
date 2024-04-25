@@ -63,6 +63,17 @@ class ConverterController extends WP_REST_Controller {
 			]
 		);
 
+		// Fetches info for the restore page.
+		register_rest_route(
+			$namespace,
+			'/restore/get-info',
+			[
+				'methods'             => WP_REST_Server::READABLE,
+				'callback'            => [ $this, 'get_restore_info' ],
+				'permission_callback' => [ $this, 'rest_permission' ],
+			]
+		);
+
 		// Initializes and prepare batches to start being converted.
 		register_rest_route(
 			$namespace,
@@ -198,6 +209,21 @@ class ConverterController extends WP_REST_Controller {
 			]
 		);
 		return $response;
+	}
+
+	/**
+	 * Callback for the /restore/get-info route.
+	 *
+	 * @return array Info for the restore page.
+	 */
+	public function get_restore_info() {
+		$number_of_converted_ids = count( $this->conversion_processor->get_all_converted_ids() );
+
+		return rest_ensure_response(
+			[
+				'numberOfConvertedIds' => $number_of_converted_ids,
+			]
+		);
 	}
 
 	/**

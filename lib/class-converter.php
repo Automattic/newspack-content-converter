@@ -78,6 +78,17 @@ class Converter {
 
 				add_submenu_page(
 					'newspack-content-converter',
+					__( 'Restore content' ),
+					__( 'Restore content' ),
+					'manage_options',
+					'newspack-content-converter-restore',
+					function () {
+						echo '<div id="ncc-restore"></div>';
+					}
+				);
+
+				add_submenu_page(
+					'newspack-content-converter',
 					__( 'Settings' ),
 					__( 'Settings' ),
 					'manage_options',

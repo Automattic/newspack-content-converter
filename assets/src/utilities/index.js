@@ -162,6 +162,12 @@ export function fetchSettingsInfo() {
 	} ).then( response => Promise.resolve( response ) );
 }
 
+export function fetchRestoreInfo() {
+	return apiFetch( {
+		path: NEWSPACK_CONVERTER_API_BASE_URL + '/restore/get-info',
+	} ).then( response => Promise.resolve( response ) );
+}
+
 export function fetchConversionInfo() {
 	return apiFetch( {
 		path: NEWSPACK_CONVERTER_API_BASE_URL + '/conversion/get-info',
@@ -182,7 +188,7 @@ export function fetchResetConversion() {
 
 export function downloadListConvertedIds() {
 	return apiFetch( {
-		path: NEWSPACK_CONVERTER_API_BASE_URL + '/conversion/get-successfully-converted-ids',
+		path: NEWSPACK_CONVERTER_API_BASE_URL + '/conversion/get-all-converted-ids',
 	} ).then( response => {
 		console.log(response);
 		if ( response && response.ids ) {
@@ -206,7 +212,7 @@ export function downloadListConvertedIds() {
 
 export function downloadListUnsuccessfullyConvertedIds() {
 	return apiFetch( {
-		path: NEWSPACK_CONVERTER_API_BASE_URL + '/conversion/get-unsuccessfully-converted-ids',
+		path: NEWSPACK_CONVERTER_API_BASE_URL + '/conversion/get-all-unconverted-ids',
 	} ).then( response => {
 		console.log(response);
 		if ( response && response.ids ) {
@@ -217,7 +223,7 @@ export function downloadListUnsuccessfullyConvertedIds() {
 			// Create a temporary anchor element with URL and filename.
 			const link = document.createElement('a');
 			link.href = url;
-			link.download = 'unsuccessfully_converted_ids.csv';
+			link.download = 'unconverted_ids.csv';
 
 			// Click the anchor to start download.
 			link.click();
@@ -233,6 +239,7 @@ export default {
 	runMultiplePosts,
 	fetchConversionBatch,
 	fetchSettingsInfo,
+	fetchRestoreInfo,
 	fetchConversionInfo,
 	fetchPrepareConversion,
 	fetchResetConversion,
