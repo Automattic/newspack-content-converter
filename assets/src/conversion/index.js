@@ -97,7 +97,6 @@ class Conversion extends Component {
 			areThereSuccessfullyConvertedIds,
 			areThereUnsuccessfullyConvertedIds,
 		} = this.state;
-
 		if ( '1' == isConversionPrepared ) {
 			return (
 				<Fragment>
@@ -178,23 +177,24 @@ class Conversion extends Component {
 								value={ totalNumberOfBatches }
 							/>
 						</CardBody>
+						{ ( areThereSuccessfullyConvertedIds || areThereUnsuccessfullyConvertedIds )&& (
 							<CardBody>
 								{ areThereSuccessfullyConvertedIds && (
-									<a href="#" onClick={ this.handleDownloadListConverted }>{ __( 'Download list of converted IDs' ) }</a>
+									<a href="#" onClick={ this.handleDownloadListConverted }>{ __( 'Download IDs of all converted entries' ) }</a>
 								) }
-								<br/>
+								{ areThereSuccessfullyConvertedIds && areThereUnsuccessfullyConvertedIds && (
+									<br/>
+								) }
 								{ areThereUnsuccessfullyConvertedIds && (
-									<a href="#" onClick={ this.handleDownloadListUnsuccessfullyConverted }>{ __( 'Download list of unsuccessfully converted IDs' ) }</a>
+									<a href="#" onClick={ this.handleDownloadListUnsuccessfullyConverted }>{ __( 'Download IDs of unconverted entries' ) }</a>
 								) }
 							</CardBody>
+						) }
 						<CardFooter justify="flex-end">
-							<Button
-								isSecondary
-								href="/wp-admin/admin.php?page=newspack-content-converter-settings"
-							>
+							<Button isSecondary >
 								{ __( 'Settings' ) }
 							</Button>
-							<Button isPrimary onClick={ this.handleOnClickRunConversion }>
+							<Button isPrimary onClick={ this.handleOnClickRunConversion } disabled={ ( true == areThereUnsuccessfullyConvertedIds ) ? false : true } >
 								{ __( 'Run Conversion' ) }
 							</Button>
 						</CardFooter>

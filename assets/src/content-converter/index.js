@@ -45,6 +45,7 @@ class ContentConverter extends Component {
 	}
 
 	componentDidMount() {
+		document.title = "Newspack Content Converter";
 
 		// Run a batch of conversions.
 		return fetchConversionBatch()
@@ -158,7 +159,6 @@ class ContentConverter extends Component {
 									{ __(
 										'To convert another batch in parallel and increase conversion speed (depending on your computer, no more than 10 max parallel browser tabs are recommended)'
 									) }
-									--
 									<a href="" target="_blank">open this page in a new tab</a>
 								</em>
 							</p>

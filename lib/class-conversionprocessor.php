@@ -61,7 +61,7 @@ class ConversionProcessor {
 	 * @return array Content types.
 	 */
 	public function get_conversion_post_types() {
-		return ['post', 'page'];
+		return [ 'post' ];
 	}
 
 	/**
@@ -83,7 +83,7 @@ class ConversionProcessor {
 	}
 
 	/**
-	 * Gets post IDs for conversion for a batch. Excludes posts that begin with blocks code.
+	 * Gets unconverted IDs (ordered DESC). Excludes posts which begin with blocks code.
 	 */
 	public function get_all_unconverted_ids() {
 		global $wpdb;
@@ -94,7 +94,7 @@ class ConversionProcessor {
 		$post_statuses = $this->get_conversion_post_statuses();
 		$statuses_placeholders = implode( ',', array_fill( 0, count( $post_statuses ), '%s' ) );
 
-		// Get IDs. Exclude posts that begin with block code.
+		// Get unconverted IDs. Exclude posts that begin with block code.
 		$ids = $wpdb->get_col(
 			$wpdb->prepare(
 				"SELECT ID
@@ -103,7 +103,8 @@ class ConversionProcessor {
 				WHERE post_type IN ( {$types_placeholders} )
 				AND post_status IN ( {$statuses_placeholders} )
 				-- Filter out post which are already in blocks.
-				AND post_content NOT LIKE '<!-- wp:%' ;",
+				AND post_content NOT LIKE '<!-- wp:%'
+				ORDER BY ID DESC ;",
 				array_merge( $post_types, $post_statuses )
 			)
 		);
@@ -111,69 +112,26 @@ class ConversionProcessor {
 		return $ids;
 	}
 
-
 	/**
-	 * Gets the successfully converted post IDs.
+	 * Gets successfully converted post IDs from postmeta (ordered DESC).
+	 * If there are multiple backups in postmeta, gets the oldest version.
 	 *
 	 * @param array $post_statuses
 	 * @param array $post_types
 	 * @return void
 	 */
-	public function get_all_successfully_converted_ids() {
+	public function get_all_converted_ids() {
 		global $wpdb;
 
-		$post_statuses = $this->get_conversion_post_statuses();
-		$statuses_placeholders = implode( ',', array_fill( 0, count( $post_statuses ), '%s' ) );
-
-		$post_types    = $this->get_conversion_post_types();
-		$types_placeholders    = implode( ',', array_fill( 0, count( $post_types ), '%s' ) );
-
-		// Excludes those that have already been converted and empty ones.
 		$ids = $wpdb->get_col(
 			$wpdb->prepare(
-				"SELECT wp.ID
-				FROM {$wpdb->posts} wp
-				JOIN {$wpdb->postmeta} wpm
-					ON wpm.post_id = wp.ID
-					AND wpm.meta_key = %s
-				WHERE wp.post_type IN ( {$types_placeholders} )
-				AND wp.post_status IN ( {$statuses_placeholders} )
-				-- Either unconverted posts (no meta) or converted but make sure they were converted successfully (wp_posts.post_content doesn't get updated if conversion syntax is empty, so it's kept the same).
-				AND (
-					wpm.meta_value IS NULL
-					OR wpm.meta_value <> wp.post_content
-				)
-				; ",
-				array_merge( [ self::POSTMETA_ORIGINAL_POST_CONTENT ], $post_types, $post_statuses )
-			)
-		);
-
-		return $ids;
-	}
-
-	public function get_all_unsuccessfully_converted_ids() {
-		global $wpdb;
-
-		$post_statuses = $this->get_conversion_post_statuses();
-		$statuses_placeholders = implode( ',', array_fill( 0, count( $post_statuses ), '%s' ) );
-
-		$post_types    = $this->get_conversion_post_types();
-		$types_placeholders    = implode( ',', array_fill( 0, count( $post_types ), '%s' ) );
-
-		// Excludes those that have already been converted and empty ones.
-		$ids = $wpdb->get_col(
-			$wpdb->prepare(
-				"SELECT wp.ID
-				FROM {$wpdb->posts} wp
-				-- Get posts with the meta.
-				JOIN {$wpdb->postmeta} wpm
-				  ON wpm.post_id = wp.ID
-				  AND wpm.meta_key = %s
-				WHERE wp.post_type IN ( {$types_placeholders} )
-				AND wp.post_status IN ( {$statuses_placeholders} )
-				-- Fetch posts where conversion happened (meta exists) but post_content is still the same as original post content (wp_posts.post_content does not get updated/saved if the conversion returns an empty result i.e. was unsuccessful).
-				AND wpm.meta_value = wp.post_content ;",
-				array_merge( [ self::POSTMETA_ORIGINAL_POST_CONTENT ], $post_types, $post_statuses )
+				// Gets the oldest backup by using MIN( meta_value ).
+				"SELECT wpm.post_id, MIN( wpm.meta_value ) as meta_value
+				FROM {$wpdb->postmeta} wpm
+				WHERE wpm.meta_key = %s
+				GROUP BY wpm.post_id
+				ORDER BY wpm.post_id DESC ;",
+				self::POSTMETA_ORIGINAL_POST_CONTENT
 			)
 		);
 
@@ -181,7 +139,7 @@ class ConversionProcessor {
 	}
 
 	/**
-	 * Sets the next batch to queue.
+	 * Sets the next batch to options queue.
 	 * If all batches are processed, deletes all the conversion options and returns null.
 	 *
 	 * If all batches are processed, returns null.
@@ -214,7 +172,7 @@ class ConversionProcessor {
 	}
 
 	/**
-	 * Deletes all conversion batches options.
+	 * Deletes all conversion batches options (all prepared options params, including the running queue).
 	 */
 	public function delete_all_conversion_options() {
 		global $wpdb;
@@ -341,18 +299,16 @@ class ConversionProcessor {
 			return;
 		}
 
+		$current_post_content = $wpdb->get_var( $wpdb->prepare( "SELECT post_content FROM {$wpdb->posts} WHERE ID = %d;", $post_id ) );
+
 		$blocks_content_patched = $this->patcher_handler->run_all_patches( $html_content, $blocks_content );
 
-		/**
-		 * Back up original post_content as post meta.
-		 */
-		$current_post_content = $wpdb->get_var( $wpdb->prepare( "SELECT post_content FROM {$wpdb->posts} WHERE ID = %d;", $post_id ) );
-		add_post_meta( $post_id, self::POSTMETA_ORIGINAL_POST_CONTENT, $current_post_content );
-
-		/**
-		 * Update post_content.
-		 */
+		// Only update if resulting blocks content is not empty.
 		if ( ! empty( $blocks_content_patched ) ) {
+			// Back up original post_content as post meta.
+			add_post_meta( $post_id, self::POSTMETA_ORIGINAL_POST_CONTENT, $current_post_content );
+
+			// Update post_content.
 			$wpdb->update( $wpdb->posts, [ 'post_content' => $blocks_content_patched ], [ 'ID' => $post_id ] );
 		}
 	}

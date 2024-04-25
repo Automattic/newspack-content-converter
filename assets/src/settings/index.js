@@ -82,12 +82,12 @@ class Settings extends Component {
 							) }
 						</p>
 						<TextControl
-							label={ __( 'Content types' ) }
+							label={ __( 'Content types CSV' ) }
 							disabled={ true }
 							value={ conversionContentTypesCsv }
 						/>
 						<TextControl
-							label={ __( 'Content statuses' ) }
+							label={ __( 'Content statuses CSV' ) }
 							disabled={ true }
 							value={ conversionContentStatusesCsv }
 						/>

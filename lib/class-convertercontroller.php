@@ -127,20 +127,20 @@ class ConverterController extends WP_REST_Controller {
 
 		register_rest_route(
 			$namespace,
-			'/conversion/get-successfully-converted-ids',
+			'/conversion/get-all-converted-ids',
 			[
 				'methods'             => WP_REST_Server::READABLE,
-				'callback'            => [ $this, 'get_all_successfully_converted_ids' ],
+				'callback'            => [ $this, 'get_all_converted_ids' ],
 				'permission_callback' => [ $this, 'rest_permission' ],
 			]
 		);
 
 		register_rest_route(
 			$namespace,
-			'/conversion/get-unsuccessfully-converted-ids',
+			'/conversion/get-all-unconverted-ids',
 			[
 				'methods'             => WP_REST_Server::READABLE,
-				'callback'            => [ $this, 'get_unsuccessfully_converted_ids' ],
+				'callback'            => [ $this, 'get_all_unconverted_ids' ],
 				'permission_callback' => [ $this, 'rest_permission' ],
 			]
 		);
@@ -169,8 +169,8 @@ class ConverterController extends WP_REST_Controller {
 	public function get_settings_info() {
 		return rest_ensure_response(
 			[
-				'conversionContentTypesCsv'    => $this->conversion_processor->get_conversion_content_types(),
-				'conversionContentStatusesCsv' => $this->conversion_processor->get_conversion_content_statuses(),
+				'conversionContentTypesCsv'    => $this->conversion_processor->get_conversion_post_types(),
+				'conversionContentStatusesCsv' => $this->conversion_processor->get_conversion_post_statuses(),
 			]
 		);
 	}
@@ -182,21 +182,22 @@ class ConverterController extends WP_REST_Controller {
 	 * @return array Info for the settings page.
 	 */
 	public function get_conversion_info() {
-		$is_conversion_prepared = $this->conversion_processor->is_conversion_prepared();
+		$is_conversion_prepared                 = $this->conversion_processor->is_conversion_prepared() ? '1' : '0';
 		$unconverted_count                      = count( $this->conversion_processor->get_all_unconverted_ids() );
 		$total_number_of_batches                = ceil( $unconverted_count / $this->conversion_processor->get_conversion_batch_size() );
-		$are_there_successfully_converted_ids   = count( $this->conversion_processor->get_all_successfully_converted_ids() ) > 0;
-		$are_there_unsuccessfully_converted_ids = count( $this->conversion_processor->get_all_unsuccessfully_converted_ids() ) > 0;
+		$are_there_successfully_converted_ids   = count( $this->conversion_processor->get_all_converted_ids() ) > 0;
+		$are_there_unsuccessfully_converted_ids = count( $this->conversion_processor->get_all_unconverted_ids() ) > 0;
 
-		return rest_ensure_response(
+		$response = rest_ensure_response(
 			[
-				'isConversionPrepared'                => $is_conversion_prepared ? '1' : '0',
+				'isConversionPrepared'                => $is_conversion_prepared,
 				'unconvertedCount'                   => $unconverted_count,
 				'totalNumberOfBatches'  => $total_number_of_batches,
 				'areThereSuccessfullyConvertedIds'   => $are_there_successfully_converted_ids,
 				'areThereUnsuccessfullyConvertedIds' => $are_there_unsuccessfully_converted_ids,
 			]
 		);
+		return $response;
 	}
 
 	/**
@@ -318,13 +319,13 @@ class ConverterController extends WP_REST_Controller {
 	}
 
 	/**
-	 * Callback for the /conversion/get-successfully-converted-ids route.
+	 * Callback for the /conversion/get-all-converted-ids route.
 	 * Fetches successfully converted post IDs.
 	 *
 	 * @return array Successfully converted post IDs.
 	 */
-	public function get_all_successfully_converted_ids() {
-		$ids = $this->conversion_processor->get_all_successfully_converted_ids();
+	public function get_all_converted_ids() {
+		$ids = $this->conversion_processor->get_all_converted_ids();
 		$ids_csv = implode( ',', $ids );
 
 		return rest_ensure_response(
@@ -335,13 +336,13 @@ class ConverterController extends WP_REST_Controller {
 	}
 
 	/**
-	 * Callback for the /conversion/get-unsuccessfully-converted-ids route.
+	 * Callback for the /get-all-unconverted-ids route.
 	 * Fetches unsuccessfully converted post IDs.
 	 *
 	 * @return array Unsuccessfully converted post IDs.
 	 */
-	public function get_unsuccessfully_converted_ids() {
-		$ids = $this->conversion_processor->get_all_unsuccessfully_converted_ids();
+	public function get_all_unconverted_ids() {
+		$ids = $this->conversion_processor->get_all_unconverted_ids();
 		$ids_csv = implode( ',', $ids );
 
 		return rest_ensure_response(
