@@ -99,7 +99,8 @@ export function dispatchConvertClassicToBlocks( html ) {
 			.getBlocks()
 			.forEach( function( block, blockIndex ) {
 				if ( block.name === 'core/freeform' ) {
-					dispatch( 'core/editor' ).replaceBlocks(
+					// Previously here used now deprecated `dispatch( 'core/editor' ).replaceBlocks()`.
+					wp.data.dispatch( 'core/block-editor' ).replaceBlocks(
 						block.clientId,
 						rawHandler( {
 							HTML: getBlockContent( block ),

@@ -313,9 +313,13 @@ class ConverterController extends WP_REST_Controller {
 		$ids                     = $this_batch ? $this->conversion_processor->get_ids_for_batch( $this_batch ) : []	;
 
 		/**
-		 * If there's no new batch to process, conversion is finished.
+		 * Conversion is finished if there's no new batch to process.
 		 */
 		if ( empty( $ids ) || ( null === $this_batch ) || ( $this_batch > $total_number_of_batches ) ) {
+
+			// Flush the cache.
+			wp_cache_flush();
+
 			return rest_ensure_response(
 				[
 					'isConversionPrepared'          => '0',
