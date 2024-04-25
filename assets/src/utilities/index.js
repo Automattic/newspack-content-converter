@@ -186,6 +186,20 @@ export function fetchResetConversion() {
 	} ).then( response => Promise.resolve( response ) );
 }
 
+/**
+ * Restores post contents.
+ * @returns {Promise<any> | Promise}
+ */
+export function fetchRestorePostContents( postIds ) {
+	return apiFetch( {
+		path: NEWSPACK_CONVERTER_API_BASE_URL + '/restore/restore-post-contents',
+		method: 'POST',
+		data: {
+			post_ids: postIds,
+		},
+	} ).then( response => Promise.resolve( response ) );
+}
+
 export function downloadListConvertedIds() {
 	return apiFetch( {
 		path: NEWSPACK_CONVERTER_API_BASE_URL + '/conversion/get-all-converted-ids',
@@ -243,5 +257,6 @@ export default {
 	fetchConversionInfo,
 	fetchPrepareConversion,
 	fetchResetConversion,
+	fetchRestorePostContents,
 	downloadListConvertedIds,
 };

@@ -136,6 +136,17 @@ class ConverterController extends WP_REST_Controller {
 			]
 		);
 
+		// Updates the converted Post content.
+		register_rest_route(
+			$namespace,
+			'/restore/restore-post-contents',
+			[
+				'methods'             => WP_REST_Server::CREATABLE,
+				'callback'            => [ $this, 'restore_post_contents' ],
+				'permission_callback' => [ $this, 'rest_permission' ],
+			]
+		);
+
 		register_rest_route(
 			$namespace,
 			'/conversion/get-all-converted-ids',
@@ -222,6 +233,22 @@ class ConverterController extends WP_REST_Controller {
 		return rest_ensure_response(
 			[
 				'numberOfConvertedIds' => $number_of_converted_ids,
+			]
+		);
+	}
+
+	/**
+	 * Callback for the /restore/restore-post-contents route.
+	 *
+	 * @return array
+	 */
+	public function restore_post_contents() {
+		$restored = true;
+		$restored = false;
+
+		return rest_ensure_response(
+			[
+				'success' => $restored,
 			]
 		);
 	}

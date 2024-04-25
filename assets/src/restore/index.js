@@ -23,7 +23,7 @@ import { NewspackLogo } from 'newspack-components';
 /**
  * Internal dependencies.
  */
-import { fetchRestoreInfo } from '../utilities';
+import { fetchRestoreInfo, fetchRestorePostContents } from '../utilities';
 
 class Restore extends Component {
 	/**
@@ -33,6 +33,7 @@ class Restore extends Component {
 		super( props );
 
 		this.state = {
+			restoredSuccessfully: null,
 			numberOfConvertedIds: '...',
 			idCsvs: '',
 		};
@@ -55,6 +56,40 @@ class Restore extends Component {
 	}
 
 	handleRestoreContentOnClick() {
+		const idCsvs = this.state.idCsvs;
+		const regexCSVofIntegers = /^(\d+)(,\d+)*$/;
+
+		// If custom CSV IDs are empty, restore all posts.
+		if ( '' === idCsvs ) {
+			if (confirm("Are you sure you want to restore all the converted post contents to before conversion?")) {
+				// Restore all IDs.
+				return fetchRestorePostContents().then( response => {
+					if ( response && response.success ) {
+						// Redirect.
+						console.log('redirecting');
+						// window.parent.location = '/wp-admin/admin.php?page=newspack-content-converter';
+					} else {
+						alert( 'There was an error restoring the posts.' );
+					}
+					return new Promise( ( resolve, reject ) => resolve() );
+				} );
+
+
+			}
+		} else {
+			// Custom CSV IDs are not empty.
+
+			// If not valid CSV, alert.
+			if ( !regexCSVofIntegers.test(idCsvs) ) {
+				alert('Please enter a valid CSV of integers, or leave the field empty to restore all posts.');
+			} else {
+				if (confirm("Are you sure you want to restore the custom IDs post contents to before conversion?")) {
+					console.log('1. Restoring CSV of IDs: ' + idCsvs );
+					console.log('2. redirecting' );
+					// window.parent.location = '/wp-admin/admin.php?page=newspack-content-converter';
+				}
+			}
+		}
 	}
 
 	/*
@@ -62,62 +97,139 @@ class Restore extends Component {
 	 */
 	render() {
 		const { numberOfConvertedIds, idCsvs } = this.state;
+		// const { restoredSuccessfully, numberOfConvertedIds, idCsvs } = this.state;
 		const isRestoreButtonDisabled = ( '...' === numberOfConvertedIds || 0 == numberOfConvertedIds ) && ( '' === idCsvs );
 
-		return (
-			<Fragment>
-				<div className="newspack-logo__wrapper">
-					<Button
-						href="https://newspack.com/"
-						target="_blank"
-						label={ __( 'By Newspack' ) }
-					>
-						<NewspackLogo />
-					</Button>
-				</div>
-				<Card>
-					<CardHeader isShady>
-						<FlexBlock>
-							<h2>{ __( 'Restore' ) }</h2>
-							<p>
-								{ __( 'Restore posts to original content before conversion.' ) }
-							</p>
-						</FlexBlock>
-					</CardHeader>
-					<CardBody>
-						<p>
-							{ __(
-								'Restore post contents to the original content before the conversion to blocks was performed.'
-							) }
-						</p>
-						<TextControl
-							label={ __( 'Total number of converted IDs' ) }
-							disabled={ true }
-							value={ numberOfConvertedIds }
-							/>
+		const restoredSuccessfully=false;
 
-						<TextareaControl
-							label={ __( 'Optional -- custom CSV post IDs' ) }
-							onChange={ ( value ) => { this.handleTextControlOnChange( value ); } }
-						/>
-						<Notice status="warning" isDismissible={ false }>
-							{ __(
-								'By entering some custom CSV post IDs, only those posts contents will be restored. Otherwise all converted posts will be restored.'
-							) }
-						</Notice>
-					</CardBody>
-					<CardFooter justify="flex-end">
+		if ( null === restoredSuccessfully ) {
+			return (
+				<Fragment>
+					<div className="newspack-logo__wrapper">
 						<Button
-							isPrimary
-							onClick={ () => { this.handleRestoreContentOnClick() } }
-							disabled={ isRestoreButtonDisabled }
+							href="https://newspack.com/"
+							target="_blank"
+							label={ __( 'By Newspack' ) }
 						>
-							{ __( 'Restore content' ) }
+							<NewspackLogo />
 						</Button>
-					</CardFooter>
-				</Card>
-		</Fragment>
-		);
+					</div>
+					<Card>
+						<CardHeader isShady>
+							<FlexBlock>
+								<h2>{ __( 'Restore' ) }</h2>
+								<p>
+									{ __( 'Restore posts to original content before conversion.' ) }
+								</p>
+							</FlexBlock>
+						</CardHeader>
+						<CardBody>
+							<p>
+								{ __(
+									'Restore post contents to the original content before the conversion to blocks was performed.'
+								) }
+							</p>
+							<TextControl
+								label={ __( 'Total number of converted IDs' ) }
+								disabled={ true }
+								value={ numberOfConvertedIds }
+								/>
+
+							<TextareaControl
+								label={ __( 'Optional -- custom CSV post IDs' ) }
+								onChange={ ( value ) => { this.handleTextControlOnChange( value ); } }
+							/>
+							<Notice status="warning" isDismissible={ false }>
+								{ __(
+									'By entering some custom CSV post IDs, only those posts contents will be restored. Otherwise all converted posts will be restored.'
+								) }
+							</Notice>
+						</CardBody>
+						<CardFooter justify="flex-end">
+							<Button
+								isPrimary
+								onClick={ () => { this.handleRestoreContentOnClick() } }
+								disabled={ isRestoreButtonDisabled }
+							>
+								{ __( 'Restore content' ) }
+							</Button>
+						</CardFooter>
+					</Card>
+				</Fragment>
+			);
+		} else if ( true === restoredSuccessfully ) {
+			return (
+				<Fragment>
+					<div className="newspack-logo__wrapper">
+						<Button
+							href="https://newspack.com/"
+							target="_blank"
+							label={ __( 'By Newspack' ) }
+						>
+							<NewspackLogo />
+						</Button>
+					</div>
+					<Card>
+						<CardHeader isShady>
+						<FlexBlock>
+							<h2>{ __( 'Content restored' ) }</h2>
+							<p>{ __( 'Restoring content is now complete' ) }</p>
+						</FlexBlock>
+						</CardHeader>
+						<CardBody>
+							<Notice isDismissible={ false } status="success">
+								{ __( 'Content has been restored to before conversion.' ) }
+							</Notice>
+						</CardBody>
+						<CardFooter justify="flex-end">
+							<Button href="/wp-admin/" isSecondary>
+								{ __( 'Back to Dashboard' ) }
+							</Button>
+							<Button href="/wp-admin/admin.php?page=newspack-content-converter" isPrimary>
+								{ __( 'Back to Converter' ) }
+							</Button>
+						</CardFooter>
+					</Card>
+				</Fragment>
+			);
+		} else if ( false === restoredSuccessfully ) {
+			return (
+				<Fragment>
+					<div className="newspack-logo__wrapper">
+						<Button
+							href="https://newspack.com/"
+							target="_blank"
+							label={ __( 'By Newspack' ) }
+						>
+							<NewspackLogo />
+						</Button>
+					</div>
+					<Card>
+						<CardHeader isShady>
+							<FlexBlock>
+								<h2>{ __( 'Restore error' ) }</h2>
+								<p>{ __( 'An error occurred' ) }</p>
+							</FlexBlock>
+						</CardHeader>
+						<CardBody>
+							<Notice status="warning" isDismissible={ false }>
+								{ __(
+									'An error occurred while restoring posts to original content before conversion.'
+								) }
+							</Notice>
+						</CardBody>
+						<CardFooter justify="flex-end">
+							<Button href="/wp-admin/" isSecondary>
+								{ __( 'Back to Dashboard' ) }
+							</Button>
+							<Button href="/wp-admin/admin.php?page=newspack-content-converter" isPrimary>
+								{ __( 'Back to Converter' ) }
+							</Button>
+						</CardFooter>
+					</Card>
+				</Fragment>
+			);
+		}
 	}
 }
 
