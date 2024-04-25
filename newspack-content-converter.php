@@ -54,8 +54,6 @@ $processor = new ConversionProcessor(
 $controller = new ConverterController(
 	$processor
 );
-$installer = new Installer();
 $converter = new Converter(
-	$installer,
 	$controller
 );

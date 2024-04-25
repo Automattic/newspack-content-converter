@@ -24,6 +24,7 @@ import { NewspackLogo } from 'newspack-components';
  */
 import {
 	fetchConversionInfo,
+	fetchPrepareConversion,
 	fetchResetConversion,
 	downloadListConvertedIds,
 	downloadListUnsuccessfullyConvertedIds,
@@ -34,9 +35,9 @@ class Conversion extends Component {
 		super( props );
 
 		this.state = {
-			isConversionOngoing: false,
+			isConversionPrepared: false,
 			unconvertedCount: '...',
-			numberOfBatchesToBeConverted: '...',
+			totalNumberOfBatches: '...',
 			areThereSuccessfullyConvertedIds: false,
 			areThereUnsuccessfullyConvertedIds: false,
 		};
@@ -46,16 +47,16 @@ class Conversion extends Component {
 		return fetchConversionInfo().then( response => {
 			if ( response ) {
 				const {
-					isConversionOngoing,
+					isConversionPrepared,
 					unconvertedCount,
-					numberOfBatchesToBeConverted,
+					totalNumberOfBatches,
 					areThereSuccessfullyConvertedIds,
 					areThereUnsuccessfullyConvertedIds,
 				} = response;
 				this.setState( {
-					isConversionOngoing,
+					isConversionPrepared,
 					unconvertedCount,
-					numberOfBatchesToBeConverted,
+					totalNumberOfBatches,
 					areThereSuccessfullyConvertedIds,
 					areThereUnsuccessfullyConvertedIds,
 				} );
@@ -65,7 +66,11 @@ class Conversion extends Component {
 	}
 
 	handleOnClickRunConversion = () => {
-		window.parent.location = '/wp-admin/post-new.php?newspack-content-converter';
+		return fetchPrepareConversion().then( response => {
+			if ( response && response.success ) {
+				window.parent.location = '/wp-admin/post-new.php?newspack-content-converter';
+			}
+		} );
 	};
 
 	handleDownloadListConverted = () => {
@@ -86,14 +91,14 @@ class Conversion extends Component {
 
 	render() {
 		const {
-			isConversionOngoing,
+			isConversionPrepared,
 			unconvertedCount,
-			numberOfBatchesToBeConverted,
+			totalNumberOfBatches,
 			areThereSuccessfullyConvertedIds,
 			areThereUnsuccessfullyConvertedIds,
 		} = this.state;
 
-		if ( '1' == isConversionOngoing ) {
+		if ( '1' == isConversionPrepared ) {
 			return (
 				<Fragment>
 					<div className="newspack-logo__wrapper">
@@ -109,31 +114,18 @@ class Conversion extends Component {
 						<CardHeader isShady>
 							<FlexBlock>
 								<h2>{ __( 'Converting...' ) }</h2>
-								<p>{ __( 'The conversion is already running' ) }</p>
-							</FlexBlock>
-						</CardHeader>
-						<CardFooter isBorderless>
-							<p>
-								{ __( 'A designated browser tab has already started to convert your content.' ) }
-							</p>
-						</CardFooter>
-					</Card>
-					<Card>
-						<CardHeader isShady>
-							<FlexBlock>
-								<h2>{ __( 'Reset Conversion' ) }</h2>
-								<p>{ __( 'Start converting all over again' ) }</p>
+								<p>{ __( 'A conversion is already running' ) }</p>
 							</FlexBlock>
 						</CardHeader>
 						<CardBody>
 							<Notice status="warning" isDismissible={ false }>
 								{ __(
-									'This will enable you to restart the conversion, but any previous results may be lost.'
+									'A browser tab had already started converting your content. In case that it was unexpectedly terminated or closed, reset the converson here and you can start converting again.'
 								) }
 							</Notice>
 							<p>
 								{ __(
-									'In case that your active conversion browser tab has been closed by accident, or it has been interrupted and closed unexpectedly, you may reset the conversion status here.'
+									'Before attempting to see results on this page or to convert again, wait for the ongoing conversion to finish up.'
 								) }
 							</p>
 						</CardBody>
@@ -183,7 +175,7 @@ class Conversion extends Component {
 							<TextControl
 								label={ __( 'Total conversion batches' ) }
 								disabled={ true }
-								value={ numberOfBatchesToBeConverted }
+								value={ totalNumberOfBatches }
 							/>
 						</CardBody>
 							<CardBody>

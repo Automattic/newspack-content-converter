@@ -168,6 +168,12 @@ export function fetchConversionInfo() {
 	} ).then( response => Promise.resolve( response ) );
 }
 
+export function fetchPrepareConversion() {
+	return apiFetch( {
+		path: NEWSPACK_CONVERTER_API_BASE_URL + '/conversion/prepare',
+	} ).then( response => Promise.resolve( response ) );
+}
+
 export function fetchResetConversion() {
 	return apiFetch( {
 		path: NEWSPACK_CONVERTER_API_BASE_URL + '/conversion/reset',
@@ -228,6 +234,7 @@ export default {
 	fetchConversionBatch,
 	fetchSettingsInfo,
 	fetchConversionInfo,
+	fetchPrepareConversion,
 	fetchResetConversion,
 	downloadListConvertedIds,
 };

@@ -9,7 +9,6 @@ namespace NewspackContentConverter;
 
 use WP_CLI;
 use NewspackContentConverter\Config;
-use \NewspackContentConverter\Installer;
 
 /**
  * Class Config
@@ -32,13 +31,6 @@ class CLI {
 		WP_CLI::add_command(
 			'newspack-content-converter debug',
 			array( $this, 'cli_debug' ),
-		);
-		WP_CLI::add_command(
-			'newspack-content-converter reset',
-			array( $this, 'cli_reset' ),
-			array(
-				'shortdesc' => 'Resets the conversion queue: clears the current `ncc_wp_posts` table from previously added Posts, and adds new Posts which need conversion.',
-			)
 		);
 		WP_CLI::add_command(
 			'newspack-content-converter restore-content',
@@ -66,8 +58,6 @@ class CLI {
 	}
 
 	public function cli_debug() {
-		// $processor = \NewspackContentConverter\ConversionProcessor $conversion_processor;
-		// $controller = new \NewspackContentConverter\ConverterController();
 		$patch_handler = new ContentPatcher\PatchHandler(
 			array(
 				// Encode blocks as very first thing.
@@ -91,18 +81,11 @@ class CLI {
 		$processor = new ConversionProcessor(
 			$patch_handler
 		);
-		$a = $processor->get_all_unconverted_posts();
-	}
 
-	/**
-	 * Reset the Newspack Content Converter tables. This action is equivalent to uninstalling, deleting, and reinstaalling the plugin.
-	 */
-	public function cli_reset() {
-		Installer::uninstall_plugin( true );
-		WP_CLI::line( __( 'Uninstallation complete.', 'newspack-content-converter' ) );
-		Installer::install_plugin( true );
-		WP_CLI::line( __( 'Installation complete.', 'newspack-content-converter' ) );
-		WP_CLI::success( 'Reset complete.' );
+		// $controller = new \NewspackContentConverter\ConverterController( $processor );
+		// $controller->get_conversion_batch_data();
+
+		return;
 	}
 
 	/**

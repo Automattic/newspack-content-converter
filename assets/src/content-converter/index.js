@@ -36,9 +36,11 @@ class ContentConverter extends Component {
 
 		this.state = {
 			isActive: null,
-			postIds: null,
+			isConversionPrepared: null,
+			isConversionFinished: null,
+			ids: null,
 			thisBatch: null,
-			numberOfBatchesToBeConverted: null,
+			totalNumberOfBatches: null,
 		};
 	}
 
@@ -48,17 +50,22 @@ class ContentConverter extends Component {
 		return fetchConversionBatch()
 			.then( response => {
 				if ( response ) {
-					const { ids: postIds, thisBatch, numberOfBatchesToBeConverted } = response;
+					const { isConversionPrepared, isConversionFinished, ids, thisBatch, totalNumberOfBatches } = response;
 					// Starting conversion, setting isActive to true.
 					this.setState( {
-						postIds,
+						isConversionPrepared,
+						isConversionFinished,
+						ids,
 						thisBatch,
-						numberOfBatchesToBeConverted,
+						totalNumberOfBatches,
 						isActive: true,
 					} );
-					if ( postIds ) {
-						console.log( ' ----------------------- ABOUT TO CONVERT IDS: ' + postIds );
-						return runMultiplePosts( postIds );
+					// If conversion is not prepared and not finished, redirect to the plugin page.
+					if ( '0' == isConversionPrepared && '0' == isConversionFinished ) {
+						window.parent.location = '/wp-admin/admin.php?page=newspack-content-converter';
+					} else if ( ids ) {
+						console.log( ' ----------------------- ABOUT TO CONVERT BATCH: ' + thisBatch + ' IDS: ' + ids );
+						return runMultiplePosts( ids );
 					}
 				}
 
@@ -67,7 +74,7 @@ class ContentConverter extends Component {
 			.then( () => {
 				return new Promise( ( resolve, reject ) => {
 					console.log( ' ----------------------- FINISHED.' );
-					if ( this.state.postIds && this.state.postIds.length > 0 ) {
+					if ( this.state.ids && this.state.ids.length > 0 ) {
 						// Conversion hasn't started yet, so isActive is null before it's either true or false.
 						this.setState( { isActive: null } );
 						// This should disable the browser's "Reload page?" popup, although it doesn't always work as expected.
@@ -88,7 +95,7 @@ class ContentConverter extends Component {
 	 * render().
 	 */
 	render() {
-		const { isActive, thisBatch, numberOfBatchesToBeConverted } = this.state;
+		const { isActive, thisBatch, totalNumberOfBatches } = this.state;
 
 		if ( null == isActive ) {
 			// This is the initial state of the interface, before conversion has started (true) or finished (false).
@@ -111,7 +118,7 @@ class ContentConverter extends Component {
 							</FlexBlock>
 						</CardHeader>
 						<CardFooter justify="center" isBorderless>
-							<Spinner />
+							<Spinner /> { __( 'Fetching posts for conversion... ' ) }
 						</CardFooter>
 					</Card>
 				</div>
@@ -143,18 +150,22 @@ class ContentConverter extends Component {
 									'This page will occasionally automatically reload, and notify you when the conversion is complete.'
 								) }
 							</p>
-							<p>{ __( 'If asked to Reload, chose yes.' ) }</p>
+							<Notice status="warning" isDismissible={ false }>
+							{ __( 'If asked to Reload, chose yes.' ) }
+							</Notice>
 							<p>
 								<em>
 									{ __(
-										'You may also carefully open an additional tab to convert another batch in parallel.'
+										'To convert another batch in parallel and increase conversion speed (depending on your computer, no more than 10 max parallel browser tabs are recommended)'
 									) }
+									--
+									<a href="" target="_blank">open this page in a new tab</a>
 								</em>
 							</p>
 						</CardBody>
 						<CardFooter justify="center" className="newspack-content-converter__batch">
 								<Spinner />
-								<p>{ __( 'Now processing batch' ) } { thisBatch }/{ numberOfBatchesToBeConverted }</p>
+								<p>{ __( 'Now processing batch' ) } { thisBatch }/{ totalNumberOfBatches }</p>
 						</CardFooter>
 					</Card>
 				</div>
@@ -181,7 +192,7 @@ class ContentConverter extends Component {
 						</CardHeader>
 						<CardBody>
 							<Notice isDismissible={ false } status="success">
-								{ __( 'All queued content has been converted.' ) }
+								{ __( 'All content has been converted.' ) }
 							</Notice>
 						</CardBody>
 						<CardFooter justify="flex-end">

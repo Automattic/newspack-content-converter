@@ -8,7 +8,6 @@
 namespace NewspackContentConverter;
 
 use \NewspackContentConverter\ConverterController;
-use \NewspackContentConverter\Installer;
 
 /**
  * Content Converter.
@@ -16,35 +15,17 @@ use \NewspackContentConverter\Installer;
 class Converter {
 
 	/**
-	 * The installer service.
-	 *
-	 * @var Installer
-	 */
-	private $installer;
-
-	/**
 	 * Converter constructor.
 	 *
-	 * @param Installer           $installer The installer service.
 	 * @param ConverterController $controller The main Controller.
 	 */
-	public function __construct( Installer $installer, ConverterController $controller ) {
-		$this->installer  = $installer;
+	public function __construct( ConverterController $controller ) {
 		$this->controller = $controller;
 
-		$this->register_installation_hook();
 		$this->add_admin_menu();
 		add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_scripts' ] );
 		add_action( 'rest_api_init', [ $this->controller, 'register_routes' ] );
 		$this->disable_autosave_posts();
-	}
-
-	/**
-	 * Registers installation hook.
-	 */
-	public function register_installation_hook() {
-		register_activation_hook( NCC_PLUGIN_FILE, [ '\NewspackContentConverter\Installer', 'install_plugin' ] );
-		// uninstall.php is used instead of the uninstall hook, since 'WP_UNINSTALL_PLUGIN' is defined there.
 	}
 
 	/**
