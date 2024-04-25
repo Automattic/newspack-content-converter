@@ -23,7 +23,7 @@ import { NewspackLogo } from 'newspack-components';
 /**
  * Internal dependencies.
  */
-import { fetchRestoreInfo, fetchRestorePostContents } from '../utilities';
+import { fetchRestoreInfo, fetchRestorePostContents, fetchFlushAllMetaBackups } from '../utilities';
 
 class Restore extends Component {
 	/**
@@ -53,6 +53,14 @@ class Restore extends Component {
 
 	handleTextControlOnChange = (value) => {
 		this.setState( { ...this.state, idCsvs: value } );
+	}
+
+	handleFlushAllMetaBackupsOnClick() {
+		if (confirm("Are you sure you want to permanently delete any original content backups stored as postmeta for all converted posts?")) {
+			return fetchFlushAllMetaBackups().then( response => {
+				window.location.reload();
+			} );
+		}
 	}
 
 	handleRestoreContentOnClick() {
@@ -147,8 +155,17 @@ class Restore extends Component {
 									'By entering some custom CSV post IDs, only those posts contents will be restored. Otherwise all converted posts will be restored.'
 								) }
 							</Notice>
+							<p>
+								{ __( 'This plugin uses postmeta to store original content of each post before conversion. Click Flush meta to permanently delete all the content backups from the database.' ) }
+							</p>
 						</CardBody>
 						<CardFooter justify="flex-end">
+							<Button
+								isSecondary
+								onClick={ () => { this.handleFlushAllMetaBackupsOnClick() } }
+							>
+								{ __( 'Flush meta' ) }
+							</Button>
 							<Button
 								isPrimary
 								onClick={ () => { this.handleRestoreContentOnClick() } }

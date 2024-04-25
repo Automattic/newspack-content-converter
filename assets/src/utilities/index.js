@@ -200,6 +200,16 @@ export function fetchRestorePostContents( postIds ) {
 	} ).then( response => Promise.resolve( response ) );
 }
 
+/**
+ * Flush all meta backups.
+ * @returns {Promise<any> | Promise}
+ */
+export function fetchFlushAllMetaBackups() {
+	return apiFetch( {
+		path: NEWSPACK_CONVERTER_API_BASE_URL + '/conversion/flush-all-meta-backups',
+	} ).then( response => Promise.resolve( response ) );
+}
+
 export function downloadListConvertedIds() {
 	return apiFetch( {
 		path: NEWSPACK_CONVERTER_API_BASE_URL + '/conversion/get-all-converted-ids',

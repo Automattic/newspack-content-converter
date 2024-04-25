@@ -166,6 +166,16 @@ class ConverterController extends WP_REST_Controller {
 				'permission_callback' => [ $this, 'rest_permission' ],
 			]
 		);
+
+		register_rest_route(
+			$namespace,
+			'/conversion/flush-all-meta-backups',
+			[
+				'methods'             => WP_REST_Server::READABLE,
+				'callback'            => [ $this, 'flush_all_meta_backups' ],
+				'permission_callback' => [ $this, 'rest_permission' ],
+			]
+		);
 	}
 
 	/**
@@ -411,5 +421,17 @@ class ConverterController extends WP_REST_Controller {
 				'ids' => $ids_csv,
 			]
 		);
+	}
+
+	/**
+	 * Callback for the /get-all-unconverted-ids route.
+	 * Fetches unsuccessfully converted post IDs.
+	 *
+	 * @return array Unsuccessfully converted post IDs.
+	 */
+	public function flush_all_meta_backups() {
+		$ids = $this->conversion_processor->flush_all_meta_backups();
+
+		return rest_ensure_response( [ 'success' => true ] );
 	}
 }

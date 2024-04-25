@@ -361,4 +361,20 @@ class ConversionProcessor {
 
 		return (bool) $result;
 	}
+
+	/**
+	 * Flushes all meta backups.
+	 *
+	 * @return int Number of deleted rows.
+	 */
+	public function flush_all_meta_backups() {
+		global $wpdb;
+
+		$deleted = $wpdb->query( $wpdb->prepare(
+			"DELETE FROM {$wpdb->postmeta} WHERE meta_key = %s;",
+			self::POSTMETA_ORIGINAL_POST_CONTENT
+		) );
+
+		return $deleted;
+	}
 }
