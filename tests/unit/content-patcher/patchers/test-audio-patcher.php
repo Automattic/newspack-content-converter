@@ -47,7 +47,7 @@ class TestAudioPatcher extends WP_UnitTestCase {
 		$blocks_before_patching = $this->data_provider->get_lost_audio_blocks_before_patching();
 		$expected               = $this->data_provider->get_lost_audio_blocks_patched_expected();
 
-		$actual = $this->patcher->patch_blocks_contents( $html, $blocks_before_patching );
+		$actual  = $this->patcher->patch_blocks_contents( $blocks_before_patching, $html, 1 );
 
 		$this->assertSame( $expected, $actual );
 	}
@@ -60,7 +60,7 @@ class TestAudioPatcher extends WP_UnitTestCase {
 		$blocks_before_patching = $this->data_provider->get_inconsistent_sources_before_patching();
 		$expected               = $this->data_provider->get_inconsistent_sources_blocks_patched_expected();
 
-		$actual = $this->patcher->patch_blocks_contents( $html, $blocks_before_patching );
+		$actual  = $this->patcher->patch_blocks_contents( $blocks_before_patching, $html, 1 );
 
 		$this->assertSame( $expected, $actual );
 	}
@@ -73,7 +73,8 @@ class TestAudioPatcher extends WP_UnitTestCase {
 		$blocks_before_patching = $this->data_provider->get_html_is_non_pertinent_before_patching();
 		$expected               = $this->data_provider->get_html_is_non_pertinent_blocks_patched_expected();
 
-		$actual = $this->patcher->patch_blocks_contents( $html, $blocks_before_patching );
+		$actual  = $this->patcher->patch_blocks_contents( $blocks_before_patching, $html, 1 );
+
 
 		$this->assertSame( $expected, $actual );
 	}
@@ -86,7 +87,7 @@ class TestAudioPatcher extends WP_UnitTestCase {
 		$blocks_before_patching = $this->data_provider->get_multiple_audio_blocks_before_patching();
 		$expected               = $this->data_provider->get_multiple_audio_blocks_patched_expected();
 
-		$actual = $this->patcher->patch_blocks_contents( $html, $blocks_before_patching );
+		$actual  = $this->patcher->patch_blocks_contents( $blocks_before_patching, $html, 1 );
 
 		$this->assertSame( $expected, $actual );
 	}
@@ -99,7 +100,7 @@ class TestAudioPatcher extends WP_UnitTestCase {
 		$blocks_before_patching = $this->data_provider->get_some_skipped_audios_blocks_before_patching();
 		$expected               = $this->data_provider->get_some_skipped_audios_blocks_patched_expected();
 
-		$actual = $this->patcher->patch_blocks_contents( $html, $blocks_before_patching );
+		$actual  = $this->patcher->patch_blocks_contents( $blocks_before_patching, $html, 1 );
 
 		$this->assertSame( $expected, $actual );
 	}
@@ -112,7 +113,7 @@ class TestAudioPatcher extends WP_UnitTestCase {
 		$blocks_before_patching = $this->data_provider->get_some_invalid_audios_blocks_before_patching();
 		$expected               = $this->data_provider->get_some_invalid_audios_blocks_patched_expected();
 
-		$actual = $this->patcher->patch_blocks_contents( $html, $blocks_before_patching );
+		$actual  = $this->patcher->patch_blocks_contents( $blocks_before_patching, $html, 1 );
 
 		$this->assertSame( $expected, $actual );
 	}
@@ -126,7 +127,7 @@ class TestAudioPatcher extends WP_UnitTestCase {
 		$blocks_before_patching = $this->data_provider->get_some_audios_ok_blocks_before_patching();
 		$expected               = $this->data_provider->get_some_audios_ok_blocks_patched_expected();
 
-		$actual = $this->patcher->patch_blocks_contents( $html, $blocks_before_patching );
+		$actual  = $this->patcher->patch_blocks_contents( $blocks_before_patching, $html, 1 );
 
 		$this->assertSame( $expected, $actual );
 	}
@@ -139,7 +140,7 @@ class TestAudioPatcher extends WP_UnitTestCase {
 		$blocks_before_patching = $this->data_provider->get_comprehensive_blocks_before_patching();
 		$expected               = $this->data_provider->get_comprehensive_blocks_patched_expected();
 
-		$actual = $this->patcher->patch_blocks_contents( $html, $blocks_before_patching );
+		$actual  = $this->patcher->patch_blocks_contents( $blocks_before_patching, $html, 1 );
 
 		$this->assertSame( $expected, $actual );
 	}

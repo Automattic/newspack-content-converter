@@ -9,6 +9,7 @@ import queryString from 'query-string';
  */
 import ContentConverter from './content-converter';
 import Settings from './settings';
+import Restore from './restore';
 import Conversion from './conversion';
 import './style.scss';
 
@@ -29,10 +30,8 @@ const nccInsertRootAdjacentToElementByClass = function( className ) {
 
 const nccRenderRoot = function() {
 	window.onbeforeunload = function() {};
-
-	const getParams = queryString.parse( window.location.search );
 	render(
-		<ContentConverter retryFailedConversions={ 'retry-failed' in getParams } />,
+		<ContentConverter />,
 		document.getElementById( 'root' )
 	);
 };
@@ -60,12 +59,41 @@ function nccCallbackWithRetry( callback, callbackParam, maxAttempts = 10, timeou
 	} );
 }
 
+// Check if the root div is loaded, and if not alerts the user.
+const nccCheckRootDivIsLoaded = function() {
+	let retries = 0;
+	let maxRetries = 15;
+	let retryInterval = 1000;
+	const interval = setInterval(() => {
+		const root = document.getElementById("root");
+		if (root) {
+			// Stop if found.
+			clearInterval(interval);
+		} else {
+			retries++;
+			if (retries > (maxRetries - 1)) {
+				alert('It looks like something may be preventing the Newspack Content Converter from loading. Please try refreshing the page. If the problem persists, temporarily deactivate all other active plugins, and then try refreshing the page.');
+				// Stop.
+				clearInterval(interval);
+			}
+		}
+	}, retryInterval);
+}
+// If this is the conversion batch page (/wp-admin/post-new.php?newspack-content-converter), check if the root div is loaded.
+const isConversionPage = window.location.pathname === '/wp-admin/post-new.php' && window.location.search === '?newspack-content-converter';
+if ( isConversionPage ) {
+	nccCheckRootDivIsLoaded();
+}
+
 window.onload = function() {
 	const div_settings = document.getElementById( 'ncc-settings' );
+	const div_restore = document.getElementById( 'ncc-restore' );
 	const div_conversion = document.getElementById( 'ncc-conversion' );
 
 	if ( typeof div_settings != 'undefined' && div_settings != null ) {
 		render( <Settings />, div_settings );
+	} else if ( typeof div_restore != 'undefined' && div_restore != null ) {
+		render( <Restore />, div_restore );
 	} else if ( typeof div_conversion != 'undefined' && div_conversion != null ) {
 		render( <Conversion />, div_conversion );
 	} else {

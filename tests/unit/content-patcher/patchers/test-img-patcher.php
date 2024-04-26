@@ -47,7 +47,7 @@ class TestImgPatcher extends WP_UnitTestCase {
 		$blocks_before_patching = $this->data_provider->get_should_patch_height_attribute_for_image_element_blocks_before_patching();
 		$expected               = $this->data_provider->get_should_patch_height_attribute_for_image_element_patched_expected();
 
-		$actual = $this->img_patcher->patch_blocks_contents( $html, $blocks_before_patching );
+		$actual  = $this->img_patcher->patch_blocks_contents( $blocks_before_patching, $html, 1 );
 
 		$this->assertSame( $expected, $actual );
 	}
@@ -60,7 +60,7 @@ class TestImgPatcher extends WP_UnitTestCase {
 		$blocks_before_patching = $this->data_provider->get_patch_img_height_attribute_to_image_block_header_attribute_before_patching();
 		$expected               = $this->data_provider->get_patch_img_height_attribute_to_image_block_header_attribute_blocks_patched_expected();
 
-		$actual = $this->img_patcher->patch_blocks_contents( $html, $blocks_before_patching );
+		$actual  = $this->img_patcher->patch_blocks_contents( $blocks_before_patching, $html, 1 );
 
 		$this->assertSame( $expected, $actual );
 	}
@@ -74,7 +74,7 @@ class TestImgPatcher extends WP_UnitTestCase {
 		$blocks_before_patching = $this->data_provider->get_not_alter_height_attribute_to_block_if_already_there_before_patching();
 		$expected               = $this->data_provider->get_not_alter_height_attribute_to_block_if_already_there_blocks_patched_expected();
 
-		$actual = $this->img_patcher->patch_blocks_contents( $html, $blocks_before_patching );
+		$actual  = $this->img_patcher->patch_blocks_contents( $blocks_before_patching, $html, 1 );
 
 		$this->assertSame( $expected, $actual );
 	}
@@ -88,7 +88,7 @@ class TestImgPatcher extends WP_UnitTestCase {
 		$blocks_before_patching = $this->data_provider->get_update_block_height_attribute_to_correct_value_if_already_there_before_patching();
 		$expected               = $this->data_provider->get_update_block_height_attribute_to_correct_value_if_already_there_blocks_patched_expected();
 
-		$actual = $this->img_patcher->patch_blocks_contents( $html, $blocks_before_patching );
+		$actual  = $this->img_patcher->patch_blocks_contents( $blocks_before_patching, $html, 1 );
 
 		$this->assertSame( $expected, $actual );
 	}
@@ -102,7 +102,7 @@ class TestImgPatcher extends WP_UnitTestCase {
 		$blocks_before_patching = $this->data_provider->get_update_height_attribute_to_block_if_no_other_attributes_yet_present_before_patching();
 		$expected               = $this->data_provider->get_update_height_attribute_to_block_if_no_other_attributes_yet_present_blocks_patched_expected();
 
-		$actual = $this->img_patcher->patch_blocks_contents( $html, $blocks_before_patching );
+		$actual  = $this->img_patcher->patch_blocks_contents( $blocks_before_patching, $html, 1 );
 
 		$this->assertSame( $expected, $actual );
 	}
@@ -115,7 +115,7 @@ class TestImgPatcher extends WP_UnitTestCase {
 		$blocks_before_patching = $this->data_provider->get_patch_img_width_attribute_to_image_block_header_attribute_before_patching();
 		$expected               = $this->data_provider->get_patch_img_width_attribute_to_image_block_header_attribute_blocks_patched_expected();
 
-		$actual = $this->img_patcher->patch_blocks_contents( $html, $blocks_before_patching );
+		$actual  = $this->img_patcher->patch_blocks_contents( $blocks_before_patching, $html, 1 );
 
 		$this->assertSame( $expected, $actual );
 	}
@@ -129,7 +129,7 @@ class TestImgPatcher extends WP_UnitTestCase {
 		$blocks_before_patching = $this->data_provider->get_should_not_alter_width_attribute_to_block_if_already_there_before_patching();
 		$expected               = $this->data_provider->get_should_not_alter_width_attribute_to_block_if_already_there_blocks_patched_expected();
 
-		$actual = $this->img_patcher->patch_blocks_contents( $html, $blocks_before_patching );
+		$actual  = $this->img_patcher->patch_blocks_contents( $blocks_before_patching, $html, 1 );
 
 		$this->assertSame( $expected, $actual );
 	}
@@ -143,7 +143,7 @@ class TestImgPatcher extends WP_UnitTestCase {
 		$blocks_before_patching = $this->data_provider->get_update_block_width_attribute_to_correct_value_if_already_there_before_patching();
 		$expected               = $this->data_provider->get_update_block_width_attribute_to_correct_value_if_already_there_blocks_patched_expected();
 
-		$actual = $this->img_patcher->patch_blocks_contents( $html, $blocks_before_patching );
+		$actual  = $this->img_patcher->patch_blocks_contents( $blocks_before_patching, $html, 1 );
 
 		$this->assertSame( $expected, $actual );
 	}
@@ -157,7 +157,7 @@ class TestImgPatcher extends WP_UnitTestCase {
 		$blocks_before_patching = $this->data_provider->get_update_width_attribute_to_block_if_no_other_attributes_yet_present_before_patching();
 		$expected               = $this->data_provider->get_update_width_attribute_to_block_if_no_other_attributes_yet_present_blocks_patched_expected();
 
-		$actual = $this->img_patcher->patch_blocks_contents( $html, $blocks_before_patching );
+		$actual  = $this->img_patcher->patch_blocks_contents( $blocks_before_patching, $html, 1 );
 
 		$this->assertSame( $expected, $actual );
 	}
@@ -170,7 +170,7 @@ class TestImgPatcher extends WP_UnitTestCase {
 		$blocks_before_patching = $this->data_provider->get_should_not_set_isresized_class_to_figure_if_neither_height_nor_width_were_patched_before_patching();
 		$expected               = $this->data_provider->get_should_not_set_isresized_class_to_figure_if_neither_height_nor_width_were_patched_blocks_patched_expected();
 
-		$actual = $this->img_patcher->patch_blocks_contents( $html, $blocks_before_patching );
+		$actual  = $this->img_patcher->patch_blocks_contents( $blocks_before_patching, $html, 1 );
 
 		$this->assertSame( $expected, $actual );
 	}
@@ -184,7 +184,7 @@ class TestImgPatcher extends WP_UnitTestCase {
 		$blocks_before_patching = $this->data_provider->get_figure_element_should_get_isresized_class_before_patching();
 		$expected               = $this->data_provider->get_figure_element_should_get_isresized_class_blocks_patched_expected();
 
-		$actual = $this->img_patcher->patch_blocks_contents( $html, $blocks_before_patching );
+		$actual  = $this->img_patcher->patch_blocks_contents( $blocks_before_patching, $html, 1 );
 
 		$this->assertSame( $expected, $actual );
 	}
@@ -198,7 +198,7 @@ class TestImgPatcher extends WP_UnitTestCase {
 		$blocks_before_patching = $this->data_provider->get_figure_element_should_get_isresized_class_appended_to_other_classes_before_patching();
 		$expected               = $this->data_provider->get_figure_element_should_get_isresized_class_appended_to_other_classes_blocks_patched_expected();
 
-		$actual = $this->img_patcher->patch_blocks_contents( $html, $blocks_before_patching );
+		$actual  = $this->img_patcher->patch_blocks_contents( $blocks_before_patching, $html, 1 );
 
 		$this->assertSame( $expected, $actual );
 	}
@@ -212,7 +212,7 @@ class TestImgPatcher extends WP_UnitTestCase {
 		$blocks_before_patching = $this->data_provider->get_figure_element_should_not_get_isresized_class_if_already_present_before_patching();
 		$expected               = $this->data_provider->get_figure_element_should_not_get_isresized_class_if_already_present_blocks_patched_expected();
 
-		$actual = $this->img_patcher->patch_blocks_contents( $html, $blocks_before_patching );
+		$actual  = $this->img_patcher->patch_blocks_contents( $blocks_before_patching, $html, 1 );
 
 		$this->assertSame( $expected, $actual );
 	}
@@ -225,7 +225,7 @@ class TestImgPatcher extends WP_UnitTestCase {
 		$blocks_before_patching = $this->data_provider->get_inconsistent_sources_before_patching();
 		$expected               = $this->data_provider->get_inconsistent_sources_blocks_patched_expected();
 
-		$actual = $this->img_patcher->patch_blocks_contents( $html, $blocks_before_patching );
+		$actual  = $this->img_patcher->patch_blocks_contents( $blocks_before_patching, $html, 1 );
 
 		$this->assertSame( $expected, $actual );
 	}
@@ -238,7 +238,7 @@ class TestImgPatcher extends WP_UnitTestCase {
 		$blocks_before_patching = $this->data_provider->get_html_is_non_pertinent_before_patching();
 		$expected               = $this->data_provider->get_html_is_non_pertinent_blocks_patched_expected();
 
-		$actual = $this->img_patcher->patch_blocks_contents( $html, $blocks_before_patching );
+		$actual  = $this->img_patcher->patch_blocks_contents( $blocks_before_patching, $html, 1 );
 
 		$this->assertSame( $expected, $actual );
 	}
@@ -251,7 +251,7 @@ class TestImgPatcher extends WP_UnitTestCase {
 		$blocks_before_patching = $this->data_provider->get_multiple_imgs_blocks_before_patching();
 		$expected               = $this->data_provider->get_multiple_imgs_blocks_patched_expected();
 
-		$actual = $this->img_patcher->patch_blocks_contents( $html, $blocks_before_patching );
+		$actual  = $this->img_patcher->patch_blocks_contents( $blocks_before_patching, $html, 1 );
 
 		$this->assertSame( $expected, $actual );
 	}
@@ -264,7 +264,7 @@ class TestImgPatcher extends WP_UnitTestCase {
 		$blocks_before_patching = $this->data_provider->get_some_skipped_imgs_blocks_before_patching();
 		$expected               = $this->data_provider->get_some_skipped_imgs_blocks_patched_expected();
 
-		$actual = $this->img_patcher->patch_blocks_contents( $html, $blocks_before_patching );
+		$actual  = $this->img_patcher->patch_blocks_contents( $blocks_before_patching, $html, 1 );
 
 		$this->assertSame( $expected, $actual );
 	}
@@ -278,7 +278,7 @@ class TestImgPatcher extends WP_UnitTestCase {
 		$blocks_before_patching = $this->data_provider->get_some_imgs_ok_blocks_before_patching();
 		$expected               = $this->data_provider->get_some_imgs_ok_blocks_patched_expected();
 
-		$actual = $this->img_patcher->patch_blocks_contents( $html, $blocks_before_patching );
+		$actual  = $this->img_patcher->patch_blocks_contents( $blocks_before_patching, $html, 1 );
 
 		$this->assertSame( $expected, $actual );
 	}
@@ -291,7 +291,7 @@ class TestImgPatcher extends WP_UnitTestCase {
 		$blocks_before_patching = $this->data_provider->get_comprehensive_blocks_before_patching();
 		$expected               = $this->data_provider->get_comprehensive_blocks_patched_expected();
 
-		$actual = $this->img_patcher->patch_blocks_contents( $html, $blocks_before_patching );
+		$actual  = $this->img_patcher->patch_blocks_contents( $blocks_before_patching, $html, 1 );
 
 		$this->assertSame( $expected, $actual );
 	}
@@ -304,7 +304,7 @@ class TestImgPatcher extends WP_UnitTestCase {
 		$blocks_before_patching = $this->data_provider->get_should_patch_width_attribute_before_patching();
 		$expected               = $this->data_provider->get_should_patch_width_attribute_blocks_patched_expected();
 
-		$actual = $this->img_patcher->patch_blocks_contents( $html, $blocks_before_patching );
+		$actual  = $this->img_patcher->patch_blocks_contents( $blocks_before_patching, $html, 1 );
 
 		$this->assertSame( $expected, $actual );
 	}
@@ -317,7 +317,7 @@ class TestImgPatcher extends WP_UnitTestCase {
 		$blocks_before_patching = $this->data_provider->get_align_left_blocks_before_patching();
 		$expected               = $this->data_provider->get_align_left_blocks_patched_expected();
 
-		$actual = $this->img_patcher->patch_blocks_contents( $html, $blocks_before_patching );
+		$actual  = $this->img_patcher->patch_blocks_contents( $blocks_before_patching, $html, 1 );
 
 		$this->assertSame( $expected, $actual );
 	}
@@ -330,7 +330,7 @@ class TestImgPatcher extends WP_UnitTestCase {
 		$blocks_before_patching = $this->data_provider->get_align_right_blocks_before_patching();
 		$expected               = $this->data_provider->get_align_right_blocks_patched_expected();
 
-		$actual = $this->img_patcher->patch_blocks_contents( $html, $blocks_before_patching );
+		$actual  = $this->img_patcher->patch_blocks_contents( $blocks_before_patching, $html, 1 );
 
 		$this->assertSame( $expected, $actual );
 	}
@@ -343,7 +343,7 @@ class TestImgPatcher extends WP_UnitTestCase {
 		$blocks_before_patching = $this->data_provider->get_patch_align_and_append_to_existing_block_comment_attributes_blocks_before_patching();
 		$expected               = $this->data_provider->get_patch_align_and_append_to_existing_block_comment_attributes_blocks_patched_expected();
 
-		$actual = $this->img_patcher->patch_blocks_contents( $html, $blocks_before_patching );
+		$actual  = $this->img_patcher->patch_blocks_contents( $blocks_before_patching, $html, 1 );
 
 		$this->assertSame( $expected, $actual );
 	}
@@ -356,7 +356,7 @@ class TestImgPatcher extends WP_UnitTestCase {
 		$blocks_before_patching = $this->data_provider->get_skip_patching_unknown_align_value_blocks_before_patching();
 		$expected               = $this->data_provider->get_skip_patching_unknown_align_value_blocks_patched_expected();
 
-		$actual = $this->img_patcher->patch_blocks_contents( $html, $blocks_before_patching );
+		$actual  = $this->img_patcher->patch_blocks_contents( $blocks_before_patching, $html, 1 );
 
 		$this->assertSame( $expected, $actual );
 	}
@@ -369,7 +369,7 @@ class TestImgPatcher extends WP_UnitTestCase {
 		$blocks_before_patching = $this->data_provider->get_skip_patching_align_already_in_header_and_figure_class_blocks_before_patching();
 		$expected               = $this->data_provider->get_skip_patching_align_already_in_header_and_figure_class_blocks_patched_expected();
 
-		$actual = $this->img_patcher->patch_blocks_contents( $html, $blocks_before_patching );
+		$actual  = $this->img_patcher->patch_blocks_contents( $blocks_before_patching, $html, 1 );
 
 		$this->assertSame( $expected, $actual );
 	}
@@ -382,7 +382,7 @@ class TestImgPatcher extends WP_UnitTestCase {
 		$blocks_before_patching = $this->data_provider->get_skip_patching_align_already_in_figure_class_blocks_before_patching();
 		$expected               = $this->data_provider->get_skip_patching_align_already_in_figure_class_blocks_patched_expected();
 
-		$actual = $this->img_patcher->patch_blocks_contents( $html, $blocks_before_patching );
+		$actual  = $this->img_patcher->patch_blocks_contents( $blocks_before_patching, $html, 1 );
 
 		$this->assertSame( $expected, $actual );
 	}
@@ -395,7 +395,7 @@ class TestImgPatcher extends WP_UnitTestCase {
 		$blocks_before_patching = $this->data_provider->get_skip_patching_align_already_in_header_blocks_before_patching();
 		$expected               = $this->data_provider->get_skip_patching_align_already_in_header_blocks_patched_expected();
 
-		$actual = $this->img_patcher->patch_blocks_contents( $html, $blocks_before_patching );
+		$actual  = $this->img_patcher->patch_blocks_contents( $blocks_before_patching, $html, 1 );
 
 		$this->assertSame( $expected, $actual );
 	}
@@ -408,7 +408,7 @@ class TestImgPatcher extends WP_UnitTestCase {
 		$blocks_before_patching = $this->data_provider->get_should_strip_double_align_from_div_before_patching();
 		$expected               = $this->data_provider->get_should_strip_double_align_from_div_blocks_patched_expected();
 
-		$actual = $this->img_patcher->patch_blocks_contents( $html, $blocks_before_patching );
+		$actual  = $this->img_patcher->patch_blocks_contents( $blocks_before_patching, $html, 1 );
 
 		$this->assertSame( $expected, $actual );
 	}
@@ -421,7 +421,7 @@ class TestImgPatcher extends WP_UnitTestCase {
 		$blocks_before_patching = $this->data_provider->get_skip_patchgin_if_inconsistent_sources_blocks_before_patching();
 		$expected               = $this->data_provider->get_skip_patchgin_if_inconsistent_sources_blocks_patched_expected();
 
-		$actual = $this->img_patcher->patch_blocks_contents( $html, $blocks_before_patching );
+		$actual  = $this->img_patcher->patch_blocks_contents( $blocks_before_patching, $html, 1 );
 
 		$this->assertSame( $expected, $actual );
 	}
@@ -434,7 +434,7 @@ class TestImgPatcher extends WP_UnitTestCase {
 		$blocks_before_patching = $this->data_provider->get_patch_align_with_preserved_existing_elements_attributes_blocks_before_patching();
 		$expected               = $this->data_provider->get_patch_align_with_preserved_existing_elements_attributes_blocks_patched_expected();
 
-		$actual = $this->img_patcher->patch_blocks_contents( $html, $blocks_before_patching );
+		$actual  = $this->img_patcher->patch_blocks_contents( $blocks_before_patching, $html, 1 );
 		$this->assertSame( $expected, $actual );
 	}
 
@@ -446,7 +446,7 @@ class TestImgPatcher extends WP_UnitTestCase {
 		$blocks_before_patching = $this->data_provider->get_should_patch_only_imgs_in_img_blocks_before_patching();
 		$expected               = $this->data_provider->get_should_patch_only_imgs_in_img_blocks_blocks_patched_expected();
 
-		$actual = $this->img_patcher->patch_blocks_contents( $html, $blocks_before_patching );
+		$actual  = $this->img_patcher->patch_blocks_contents( $blocks_before_patching, $html, 1 );
 
 		$this->assertSame( $expected, $actual );
 	}
@@ -459,7 +459,7 @@ class TestImgPatcher extends WP_UnitTestCase {
 		$blocks_before_patching = $this->data_provider->get_should_patch_only_imgs_in_img_blocks_example_two_before_patching();
 		$expected               = $this->data_provider->get_should_patch_only_imgs_in_img_blocks_example_two_blocks_patched_expected();
 
-		$actual = $this->img_patcher->patch_blocks_contents( $html, $blocks_before_patching );
+		$actual  = $this->img_patcher->patch_blocks_contents( $blocks_before_patching, $html, 1 );
 
 		$this->assertSame( $expected, $actual );
 	}

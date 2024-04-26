@@ -7,9 +7,10 @@
 
 namespace NewspackContentConverter;
 
-use \WP_REST_Controller;
-use \WP_REST_Server;
-use \NewspackContentConverter\ConversionProcessor;
+use WP_Error;
+use WP_REST_Controller;
+use WP_REST_Server;
+use NewspackContentConverter\ConversionProcessor;
 
 /**
  * Class ConverterController
@@ -62,13 +63,24 @@ class ConverterController extends WP_REST_Controller {
 			]
 		);
 
-		// Initializes the conversion queue.
+		// Fetches info for the restore page.
 		register_rest_route(
 			$namespace,
-			'/conversion/initialize',
+			'/restore/get-info',
 			[
 				'methods'             => WP_REST_Server::READABLE,
-				'callback'            => [ $this, 'initialize_conversion' ],
+				'callback'            => [ $this, 'get_restore_info' ],
+				'permission_callback' => [ $this, 'rest_permission' ],
+			]
+		);
+
+		// Initializes and prepare batches to start being converted.
+		register_rest_route(
+			$namespace,
+			'/conversion/prepare',
+			[
+				'methods'             => WP_REST_Server::READABLE,
+				'callback'            => [ $this, 'prepare_conversion' ],
 				'permission_callback' => [ $this, 'rest_permission' ],
 			]
 		);
@@ -80,28 +92,6 @@ class ConverterController extends WP_REST_Controller {
 			[
 				'methods'             => WP_REST_Server::READABLE,
 				'callback'            => [ $this, 'get_conversion_batch_data' ],
-				'permission_callback' => [ $this, 'rest_permission' ],
-			]
-		);
-
-		// Initializes retry converting failed posts.
-		register_rest_route(
-			$namespace,
-			'/conversion-retry-failed/initialize',
-			[
-				'methods'             => WP_REST_Server::READABLE,
-				'callback'            => [ $this, 'initialize_conversion_retry_failed' ],
-				'permission_callback' => [ $this, 'rest_permission' ],
-			]
-		);
-
-		// Fetches a batch of failed posts to retry conversion.
-		register_rest_route(
-			$namespace,
-			'/conversion-retry-failed/get-batch-data',
-			[
-				'methods'             => WP_REST_Server::READABLE,
-				'callback'            => [ $this, 'get_conversion_retry_failed_batch_data' ],
 				'permission_callback' => [ $this, 'rest_permission' ],
 			]
 		);
@@ -124,7 +114,13 @@ class ConverterController extends WP_REST_Controller {
 			[
 				'methods'             => WP_REST_Server::READABLE,
 				'callback'            => [ $this, 'get_post_content' ],
-				'args'                => [ 'id' ],
+				'args'                => [
+					'id' => [
+						'validate_callback' => function ( $param, $request, $key ) {
+							return is_numeric( $param );
+						},
+					],
+				],
 				'permission_callback' => [ $this, 'rest_permission' ],
 			]
 		);
@@ -139,6 +135,47 @@ class ConverterController extends WP_REST_Controller {
 				'permission_callback' => [ $this, 'rest_permission' ],
 			]
 		);
+
+		// Updates the converted Post content.
+		register_rest_route(
+			$namespace,
+			'/restore/restore-post-contents',
+			[
+				'methods'             => WP_REST_Server::CREATABLE,
+				'callback'            => [ $this, 'restore_post_contents' ],
+				'permission_callback' => [ $this, 'rest_permission' ],
+			]
+		);
+
+		register_rest_route(
+			$namespace,
+			'/conversion/get-all-converted-ids',
+			[
+				'methods'             => WP_REST_Server::READABLE,
+				'callback'            => [ $this, 'get_all_converted_ids' ],
+				'permission_callback' => [ $this, 'rest_permission' ],
+			]
+		);
+
+		register_rest_route(
+			$namespace,
+			'/conversion/get-all-unconverted-ids',
+			[
+				'methods'             => WP_REST_Server::READABLE,
+				'callback'            => [ $this, 'get_all_unconverted_ids' ],
+				'permission_callback' => [ $this, 'rest_permission' ],
+			]
+		);
+
+		register_rest_route(
+			$namespace,
+			'/conversion/flush-all-meta-backups',
+			[
+				'methods'             => WP_REST_Server::READABLE,
+				'callback'            => [ $this, 'flush_all_meta_backups' ],
+				'permission_callback' => [ $this, 'rest_permission' ],
+			]
+		);
 	}
 
 	/**
@@ -148,7 +185,6 @@ class ConverterController extends WP_REST_Controller {
 	 */
 	public function rest_permission() {
 		$is_user_authorized = current_user_can( 'edit_others_posts' );
-
 		if ( ! $is_user_authorized ) {
 			return new WP_Error( 'newspack_content_converter_rest_invalid_permission', __( 'Unauthorized access.' ) );
 		}
@@ -165,10 +201,8 @@ class ConverterController extends WP_REST_Controller {
 	public function get_settings_info() {
 		return rest_ensure_response(
 			[
-				'conversionContentTypesCsv'    => $this->conversion_processor->get_conversion_content_types(),
-				'conversionContentStatusesCsv' => $this->conversion_processor->get_conversion_content_statuses(),
-				'conversionBatchSize'          => $this->conversion_processor->get_conversion_batch_size(),
-				'queuedEntries'                => $this->conversion_processor->get_queued_entries_total_number(),
+				'conversionContentTypesCsv'    => $this->conversion_processor->get_conversion_post_types(),
+				'conversionContentStatusesCsv' => $this->conversion_processor->get_conversion_post_statuses(),
 			]
 		);
 	}
@@ -180,108 +214,146 @@ class ConverterController extends WP_REST_Controller {
 	 * @return array Info for the settings page.
 	 */
 	public function get_conversion_info() {
-		$is_conversion_ongoing = $this->conversion_processor->is_queued_conversion()
-									|| $this->conversion_processor->is_queued_conversion_retry_failed()
-			? '1' : '0';
-		$queued_entries        = $this->conversion_processor->get_queued_entries_total_number();
-		if ( $this->conversion_processor->is_queued_conversion() ) {
-			$max_batch = $this->conversion_processor->get_conversion_max_batch();
-		} elseif ( $this->conversion_processor->is_queued_conversion_retry_failed() ) {
-			$max_batch = $this->conversion_processor->get_conversion_retry_failed_max_batch();
-		} else {
-			$max_batch = $this->conversion_processor->get_conversion_max_batch();
-		}
-		$posts_converted_count   = $this->conversion_processor->get_posts_converted_count();
-		$has_converted_posts     = ! is_null( $posts_converted_count ) && $posts_converted_count > 0 ? true : false;
-		$has_failed_conversions  = ! $this->conversion_processor->is_queued_conversion()
-									&& $has_converted_posts
-									&& $this->conversion_processor->has_incomplete_conversions();
-		$count_failed_converting = $this->conversion_processor->get_incomplete_conversions_count();
+		$is_conversion_prepared               = $this->conversion_processor->is_conversion_prepared() ? '1' : '0';
+		$unconverted_count                    = count( $this->conversion_processor->get_all_unconverted_ids() );
+		$total_number_of_batches              = ceil( $unconverted_count / $this->conversion_processor->get_conversion_batch_size() );
+		$are_there_successfully_converted_ids = count( $this->conversion_processor->get_all_converted_ids() ) > 0;
+		$are_there_unconverted_ids            = $unconverted_count > 0;
+
+		$response = rest_ensure_response(
+			[
+				'isConversionPrepared'             => $is_conversion_prepared,
+				'unconvertedCount'                 => $unconverted_count,
+				'totalNumberOfBatches'             => $total_number_of_batches,
+				'areThereSuccessfullyConvertedIds' => $are_there_successfully_converted_ids,
+				'areThereUnconvertedIds'           => $are_there_unconverted_ids,
+			]
+		);
+		return $response;
+	}
+
+	/**
+	 * Callback for the /restore/get-info route.
+	 *
+	 * @return array Info for the restore page.
+	 */
+	public function get_restore_info() {
+		$number_of_converted_ids = count( $this->conversion_processor->get_all_converted_ids() );
 
 		return rest_ensure_response(
 			[
-				'isConversionOngoing'   => $is_conversion_ongoing,
-				'queuedEntries'         => $queued_entries,
-				'maxBatch'              => $max_batch,
-				'hasConvertedPosts'     => $has_converted_posts,
-				'hasFailedConversions'  => $has_failed_conversions,
-				'countFailedConverting' => $count_failed_converting,
+				'numberOfConvertedIds' => $number_of_converted_ids,
 			]
 		);
 	}
 
 	/**
-	 * Callback for the /conversion/initialize route.
-	 * Initializes the conversion queue.
+	 * Callback for the /restore/restore-post-contents route.
 	 *
-	 * @return array Null or formatted response -- key 'result', value 'queued'.
+	 * @param WP_REST_Request $params Request parameters.
+	 * @return WP_REST_Response|WP_Error Response.
 	 */
-	public function initialize_conversion() {
-		$initialized = $this->conversion_processor->initialize_conversion();
+	public function restore_post_contents( $params ) {
+		$post_ids_csv = $params['post_ids'] ?? null;
 
-		return ( true === $initialized ) ? rest_ensure_response( [ 'result' => 'queued' ] ) : null;
+		// Sanitize input values and get array of post IDs.
+		$post_ids = [];
+		$values   = explode( ',', $post_ids_csv );
+		foreach ( $values as $value ) {
+			$trimmed_value = trim( $value );
+			if ( ctype_digit( $trimmed_value ) ) {
+				$post_ids[] = (int) $trimmed_value;
+			}
+		}
+
+		// Restore content.
+		$success = $this->conversion_processor->restore_post_contents_to_before_conversion( $post_ids );
+
+		return rest_ensure_response( [ 'success' => $success ] );
+	}
+
+	/**
+	 * Callback for the /conversion/prepare route.
+
+	 * @return WP_REST_Response|WP_Error Response.
+	 */
+	public function prepare_conversion() {
+		$this->conversion_processor->prepare_conversion();
+
+		return rest_ensure_response( [ 'success' => true ] );
 	}
 
 	/**
 	 * Callback for the /conversion/get-batch-data route.
-	 * Fetches a batch to be converted to blocks.
 	 *
-	 * @return array Conversion batch data.
+	 * Fetches a batch of posts to be converted to blocks.
+	 * Once the last batch of posts is converted, the conversion is finalized and disabled (otherwise in a
+	 * specific use case te conversion tabs which auto-reload might continue picking up posts indefinitely).
+	 *
+	 * @return WP_REST_Response|WP_Error Response.
 	 */
 	public function get_conversion_batch_data() {
-		$ids                        = $this->conversion_processor->set_next_conversion_batch_to_queue();
-		$has_incomplete_conversions = ! $this->conversion_processor->is_queued_conversion() && $this->conversion_processor->has_incomplete_conversions();
-		$queued_batches             = $this->conversion_processor->get_conversion_queued_batches();
-		$this_batch                 = ! empty( $queued_batches ) ? max( $queued_batches ) : null;
+
+		// Check if conversion has been prepared and the next batch can be converted.
+		$is_conversion_prepared = $this->conversion_processor->is_conversion_prepared();
+		if ( false === $is_conversion_prepared ) {
+			return rest_ensure_response(
+				[
+					'isConversionPrepared' => '0',
+				]
+			);
+		}
+
+		$total_number_of_batches = $this->conversion_processor->get_total_number_of_batches();
+		/**
+		 * Get and set a new batch number. Note that if there are no more batches, $this_batch will be returned null
+		 * and all conversion options will be deleted, i.e. $this->conversion_processor->is_conversion_prepared()
+		 * will start returning false if called again.
+		 */
+		$this_batch = $this->conversion_processor->get_and_set_next_batch_to_queue();
+		$ids        = $this_batch ? $this->conversion_processor->get_ids_for_batch( $this_batch ) : [];
+
+		/**
+		 * Conversion is finished if there's no new batch to process.
+		 */
+		if ( empty( $ids ) || ( null === $this_batch ) || ( $this_batch > $total_number_of_batches ) ) {
+
+			// Flush the cache.
+			wp_cache_flush();
+
+			return rest_ensure_response(
+				[
+					'isConversionPrepared' => '0',
+					'isConversionFinished' => '1',
+					'ids'                  => [],
+					'thisBatch'            => null,
+					'totalNumberOfBatches' => null,
+				]
+			);
+		}
 
 		return rest_ensure_response(
 			[
-				'ids'                      => $ids,
-				'thisBatch'                => $this_batch,
-				'maxBatch'                 => $this->conversion_processor->get_conversion_max_batch(),
-				'hasIncompleteConversions' => $has_incomplete_conversions,
+				'isConversionPrepared' => '1',
+				'isConversionFinished' => '0',
+				'ids'                  => $ids,
+				'thisBatch'            => $this_batch,
+				'totalNumberOfBatches' => $total_number_of_batches,
 			]
 		);
 	}
 
 	/**
-	 * Callback for the /conversion-retry-failed/initialize route.
-	 * Initializes the retry converting failed Posts queue.
-	 *
-	 * @return array Null or formatted response -- key 'result', value 'queued'.
-	 */
-	public function initialize_conversion_retry_failed() {
-		$initialized = $this->conversion_processor->initialize_conversion_retry_failed();
-
-		return ( true === $initialized ) ? rest_ensure_response( [ 'result' => 'queued' ] ) : null;
-	}
-
-	/**
-	 * Callback for the /conversion-retry-failed/get-batch-data route.
-	 * Fetches a batch of previously failed to convert posts to retry converting.
-	 *
-	 * @return array Conversion retry failed posts batch data.
-	 */
-	public function get_conversion_retry_failed_batch_data() {
-		$has_incomplete_conversions = ! $this->conversion_processor->is_queued_conversion() && $this->conversion_processor->has_incomplete_conversions();
-
-		return rest_ensure_response(
-			[
-				'ids'                      => $this->conversion_processor->set_next_retry_conversion_failed_batch_to_queue(),
-				'thisBatch'                => max( $this->conversion_processor->get_conversion_retry_failed_queued_batches() ),
-				'maxBatch'                 => $this->conversion_processor->get_conversion_retry_failed_max_batch(),
-				'hasIncompleteConversions' => $has_incomplete_conversions,
-			]
-		);
-	}
-
-	/**
-	 * Resets any ongoing conversion queue.
+	 * Resets any ongoing conversion queue
 	 *
 	 * @return bool
 	 */
 	public function reset_conversion() {
-		$this->conversion_processor->reset_ongoing_conversion();
+		/**
+		 * By removing the option, we clear any ongoing conversion queue (which might have been unwillingly
+		 * terminated and needs to be reset). After it's been reset, the conversion can now be started again.
+		 */
+		$this->conversion_processor->delete_all_conversion_options();
 
 		return true;
 	}
@@ -291,33 +363,73 @@ class ConverterController extends WP_REST_Controller {
 	 * Fetches post_content.
 	 *
 	 * @param WP_REST_Request $params Request parameters.
-	 * @return array Post content.
+	 *
+	 * @return WP_REST_Response|WP_Error Response.
 	 */
 	public function get_post_content( $params ) {
-		$post_id = $params['id'];
+		$post_id      = $params['id'];
+		$post_content = $this->conversion_processor->get_post_content( $post_id );
 
-		return rest_ensure_response( $this->conversion_processor->get_post_content( $post_id ) );
+		return rest_ensure_response( $post_content );
 	}
 
 	/**
 	 * Callable for /conversion/update-post API endpoint.
 	 * Updates the converted Post content.
 	 *
-	 * @param WP_REST_Request $params Params: 'id' Post ID, 'content' Post content.
+	 * @param WP_REST_Request $request Params: 'id' Post ID, 'content_html' and 'content_blocks'.
 	 * @return bool Success.
 	 */
-	public function update_post_content( $params ) {
-		$json_params    = $params->get_json_params();
-		$post_id        = isset( $json_params['post_id'] ) ? $json_params['post_id'] : null;
-		$content_html   = isset( $json_params['content_html'] ) ? $json_params['content_html'] : null;
-		$content_blocks = isset( $json_params['content_blocks'] ) ? $json_params['content_blocks'] : null;
+	public function update_post_content( $request ) {
+		$params         = $request->get_json_params();
+		$post_id        = isset( $params['post_id'] ) ? $params['post_id'] : null;
+		$content_html   = isset( $params['content_html'] ) ? $params['content_html'] : null;
+		$content_blocks = isset( $params['content_blocks'] ) ? $params['content_blocks'] : null;
 
 		if ( ! $post_id || ! $content_html || ! $content_blocks ) {
 			return;
 		}
 
-		$this->conversion_processor->save_converted_post_content( $post_id, $content_html, $content_blocks );
+		$this->conversion_processor->update_converted_post( $post_id, $content_html, $content_blocks );
 
 		return true;
+	}
+
+	/**
+	 * Callback for the /conversion/get-all-converted-ids route.
+	 * Fetches successfully converted post IDs.
+	 *
+	 * @return WP_REST_Response|WP_Error Response.
+	 */
+	public function get_all_converted_ids() {
+		$converted_ids     = $this->conversion_processor->get_all_converted_ids();
+		$converted_ids_csv = implode( ',', $converted_ids );
+
+		return rest_ensure_response( [ 'ids' => $converted_ids_csv ] );
+	}
+
+	/**
+	 * Callback for the /get-all-unconverted-ids route.
+	 * Fetches unsuccessfully converted post IDs.
+	 *
+	 * @return WP_REST_Response|WP_Error Response.
+	 */
+	public function get_all_unconverted_ids() {
+		$ids     = $this->conversion_processor->get_all_unconverted_ids();
+		$ids_csv = implode( ',', $ids );
+
+		return rest_ensure_response( [ 'ids' => $ids_csv ] );
+	}
+
+	/**
+	 * Callback for the /get-all-unconverted-ids route.
+	 * Fetches unsuccessfully converted post IDs.
+	 *
+	 * @return WP_REST_Response|WP_Error Response.
+	 */
+	public function flush_all_meta_backups() {
+		$ids = $this->conversion_processor->flush_all_meta_backups();
+
+		return rest_ensure_response( [ 'success' => true ] );
 	}
 }

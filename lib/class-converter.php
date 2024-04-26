@@ -7,8 +7,8 @@
 
 namespace NewspackContentConverter;
 
-use \NewspackContentConverter\ConverterController;
-use \NewspackContentConverter\Installer;
+use NewspackContentConverter\ConverterController;
+use NewspackContentConverter\ContentPatcher\PatchHandlerInterface;
 
 /**
  * Content Converter.
@@ -16,35 +16,76 @@ use \NewspackContentConverter\Installer;
 class Converter {
 
 	/**
-	 * The installer service.
+	 * The main Controller.
 	 *
-	 * @var Installer
+	 * @var ConverterController $controller The main Controller.
 	 */
-	private $installer;
+	private $controller;
 
 	/**
 	 * Converter constructor.
 	 *
-	 * @param Installer           $installer The installer service.
 	 * @param ConverterController $controller The main Controller.
 	 */
-	public function __construct( Installer $installer, ConverterController $controller ) {
-		$this->installer  = $installer;
+	public function __construct( ConverterController $controller ) {
+
 		$this->controller = $controller;
 
-		$this->register_installation_hook();
 		$this->add_admin_menu();
 		add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_scripts' ] );
 		add_action( 'rest_api_init', [ $this->controller, 'register_routes' ] );
 		$this->disable_autosave_posts();
+		$this->register_filters();
 	}
 
 	/**
-	 * Registers installation hook.
+	 * Registers filters.
+	 *
+	 * @return void
 	 */
-	public function register_installation_hook() {
-		register_activation_hook( NCC_PLUGIN_FILE, [ '\NewspackContentConverter\Installer', 'install_plugin' ] );
-		// uninstall.php is used instead of the uninstall hook, since 'WP_UNINSTALL_PLUGIN' is defined there.
+	public function register_filters() {
+
+		/**
+		 * Filters to run on HTML content before the conversion.
+		 */
+		$preconversion_filters = [
+			// Encode blocks as very first thing.
+			[ ContentPatcher\Patchers\BlockEncodePatcher::class, 'patch_html_source' ],
+			[ ContentPatcher\Patchers\WpFiltersPatcher::class, 'patch_html_source' ],
+			[ ContentPatcher\Patchers\ShortcodePreconversionPatcher::class, 'patch_html_source' ],
+		];
+		foreach ( $preconversion_filters as $preconversion_filter ) {
+			$class  = $preconversion_filter[0];
+			$method = $preconversion_filter[1];
+			if ( class_exists( $class ) && method_exists( $class, $method ) ) {
+				$object = new $class();
+				add_filter( 'ncc_filter_html_before_conversion', [ $object, $method ], 10, 2 );
+			}
+		}
+
+		/**
+		 * Filters to run on Blocks content after the conversion, and before getting saved to DB.
+		 */
+		$postconversion_filters = [
+			[ ContentPatcher\Patchers\ImgPatcher::class, 'patch_blocks_contents' ],
+			[ ContentPatcher\Patchers\CaptionImgPatcher::class, 'patch_blocks_contents' ],
+			[ ContentPatcher\Patchers\ParagraphPatcher::class, 'patch_blocks_contents' ],
+			[ ContentPatcher\Patchers\BlockquotePatcher::class, 'patch_blocks_contents' ],
+			[ ContentPatcher\Patchers\VideoPatcher::class, 'patch_blocks_contents' ],
+			[ ContentPatcher\Patchers\AudioPatcher::class, 'patch_blocks_contents' ],
+			[ ContentPatcher\Patchers\ShortcodeModulePatcher::class, 'patch_blocks_contents' ],
+			[ ContentPatcher\Patchers\ShortcodePullquotePatcher::class, 'patch_blocks_contents' ],
+			// Decode blocks as the very last thing.
+			[ ContentPatcher\Patchers\BlockDecodePatcher::class, 'patch_blocks_contents' ],
+		];
+		foreach ( $postconversion_filters as $ostconversion_filter ) {
+			$class  = $ostconversion_filter[0];
+			$method = $ostconversion_filter[1];
+			if ( class_exists( $class ) && method_exists( $class, $method ) ) {
+				$object = new $class();
+				add_filter( 'ncc_filter_blocks_after_conversion', [ $object, $method ], 10, 3 );
+			}
+		}
 	}
 
 	/**
@@ -97,6 +138,17 @@ class Converter {
 
 				add_submenu_page(
 					'newspack-content-converter',
+					__( 'Restore content' ),
+					__( 'Restore content' ),
+					'manage_options',
+					'newspack-content-converter-restore',
+					function () {
+						echo '<div id="ncc-restore"></div>';
+					}
+				);
+
+				add_submenu_page(
+					'newspack-content-converter',
 					__( 'Settings' ),
 					__( 'Settings' ),
 					'manage_options',
@@ -105,7 +157,6 @@ class Converter {
 						echo '<div id="ncc-settings"></div>';
 					}
 				);
-
 			}
 		);
 	}

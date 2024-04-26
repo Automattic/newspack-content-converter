@@ -19,10 +19,15 @@ class BlockEncodePatcher extends PreconversionPatcherAbstract {
 	public const ENCODED_ANCHOR = '[BLOCK-ENCODED:';
 
 	/**
-	 * @inheritDoc
+	 * Patch HTML source.
+	 *
+	 * @param string $html_content  HTML source, original content before conversion.
+	 * @param int    $post_id       Post ID.
 	 */
-	public function patch_html_source( $html_content ) {
-		return $this->encode_post_content( $html_content );
+	public function patch_html_source( $html_content, $post_id ) {
+		$html_content_patched = $this->encode_post_content( $html_content );
+
+		return $html_content_patched;
 	}
 
 	/**
@@ -58,7 +63,7 @@ class BlockEncodePatcher extends PreconversionPatcherAbstract {
 	private function encode_block( array $block ): array {
 		$as_string = serialize_block( $block );
 
-		$anchor = self::ENCODED_ANCHOR . base64_encode( $as_string ) . ']';
+		$anchor  = self::ENCODED_ANCHOR . base64_encode( $as_string ) . ']';
 		$content = "<p>{$anchor}</p>";
 
 		return [
@@ -69,5 +74,4 @@ class BlockEncodePatcher extends PreconversionPatcherAbstract {
 			'innerContent' => [ $content ],
 		];
 	}
-
 }

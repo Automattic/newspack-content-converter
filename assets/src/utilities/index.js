@@ -41,7 +41,7 @@ export function runSinglePost( postId ) {
 		.then( html => getAllBlocksContents( postId, html ) )
 		.then( ( [ blocks, html ] ) => updatePost( postId, blocks, html ) )
 		.catch( error => {
-			console.error( 'A conversion error occured:' );
+			console.error( 'A conversion error occured in runSinglePost:' );
 			console.error( error );
 		} );
 }
@@ -99,7 +99,8 @@ export function dispatchConvertClassicToBlocks( html ) {
 			.getBlocks()
 			.forEach( function( block, blockIndex ) {
 				if ( block.name === 'core/freeform' ) {
-					dispatch( 'core/editor' ).replaceBlocks(
+					// Previously here used now deprecated `dispatch( 'core/editor' ).replaceBlocks()`.
+					wp.data.dispatch( 'core/block-editor' ).replaceBlocks(
 						block.clientId,
 						rawHandler( {
 							HTML: getBlockContent( block ),
@@ -139,7 +140,6 @@ export function updatePost( postId, blocks, html ) {
 	if ( ! blocks ) {
 		throw new Error( 'No resulting blocks content.' );
 	}
-
 	return apiFetch( {
 		path: NEWSPACK_CONVERTER_API_BASE_URL + '/conversion/update-post',
 		method: 'POST',
@@ -157,15 +157,15 @@ export function fetchConversionBatch() {
 	} ).then( response => Promise.resolve( response ) );
 }
 
-export function fetchRetryFailedConversionsBatch() {
-	return apiFetch( {
-		path: NEWSPACK_CONVERTER_API_BASE_URL + '/conversion-retry-failed/get-batch-data',
-	} ).then( response => Promise.resolve( response ) );
-}
-
 export function fetchSettingsInfo() {
 	return apiFetch( {
 		path: NEWSPACK_CONVERTER_API_BASE_URL + '/settings/get-info',
+	} ).then( response => Promise.resolve( response ) );
+}
+
+export function fetchRestoreInfo() {
+	return apiFetch( {
+		path: NEWSPACK_CONVERTER_API_BASE_URL + '/restore/get-info',
 	} ).then( response => Promise.resolve( response ) );
 }
 
@@ -175,15 +175,9 @@ export function fetchConversionInfo() {
 	} ).then( response => Promise.resolve( response ) );
 }
 
-export function fetchInitializeConversion() {
+export function fetchPrepareConversion() {
 	return apiFetch( {
-		path: NEWSPACK_CONVERTER_API_BASE_URL + '/conversion/initialize',
-	} ).then( response => Promise.resolve( response ) );
-}
-
-export function fetchInitializeRetryFailedConversion() {
-	return apiFetch( {
-		path: NEWSPACK_CONVERTER_API_BASE_URL + '/conversion-retry-failed/initialize',
+		path: NEWSPACK_CONVERTER_API_BASE_URL + '/conversion/prepare',
 	} ).then( response => Promise.resolve( response ) );
 }
 
@@ -193,14 +187,87 @@ export function fetchResetConversion() {
 	} ).then( response => Promise.resolve( response ) );
 }
 
+/**
+ * Restores post contents.
+ * @returns {Promise<any> | Promise}
+ */
+export function fetchRestorePostContents( postIds ) {
+	return apiFetch( {
+		path: NEWSPACK_CONVERTER_API_BASE_URL + '/restore/restore-post-contents',
+		method: 'POST',
+		data: {
+			post_ids: postIds,
+		},
+	} ).then( response => Promise.resolve( response ) );
+}
+
+/**
+ * Flush all meta backups.
+ * @returns {Promise<any> | Promise}
+ */
+export function fetchFlushAllMetaBackups() {
+	return apiFetch( {
+		path: NEWSPACK_CONVERTER_API_BASE_URL + '/conversion/flush-all-meta-backups',
+	} ).then( response => Promise.resolve( response ) );
+}
+
+export function downloadListConvertedIds() {
+	return apiFetch( {
+		path: NEWSPACK_CONVERTER_API_BASE_URL + '/conversion/get-all-converted-ids',
+	} ).then( response => {
+		console.log(response);
+		if ( response && response.ids ) {
+			// Create a Blob from the CSV content with an URL.
+			const blob = new Blob([response.ids], { type: 'text/csv;charset=utf-8;' });
+			const url = URL.createObjectURL(blob);
+
+			// Create a temporary anchor element with URL and filename.
+			const link = document.createElement('a');
+			link.href = url;
+			link.download = 'converted_ids.csv';
+
+			// Click the anchor to start download.
+			link.click();
+
+			// Clean up.
+			URL.revokeObjectURL(url);
+		}
+	});
+}
+
+export function downloadListUnsuccessfullyConvertedIds() {
+	return apiFetch( {
+		path: NEWSPACK_CONVERTER_API_BASE_URL + '/conversion/get-all-unconverted-ids',
+	} ).then( response => {
+		console.log(response);
+		if ( response && response.ids ) {
+			// Create a Blob from the CSV content with an URL.
+			const blob = new Blob([response.ids], { type: 'text/csv;charset=utf-8;' });
+			const url = URL.createObjectURL(blob);
+
+			// Create a temporary anchor element with URL and filename.
+			const link = document.createElement('a');
+			link.href = url;
+			link.download = 'unconverted_ids.csv';
+
+			// Click the anchor to start download.
+			link.click();
+
+			// Clean up.
+			URL.revokeObjectURL(url);
+		}
+	});
+}
+
 export default {
 	runSinglePost,
 	runMultiplePosts,
 	fetchConversionBatch,
-	fetchRetryFailedConversionsBatch,
 	fetchSettingsInfo,
+	fetchRestoreInfo,
 	fetchConversionInfo,
-	fetchInitializeConversion,
-	fetchInitializeRetryFailedConversion,
+	fetchPrepareConversion,
 	fetchResetConversion,
+	fetchRestorePostContents,
+	downloadListConvertedIds,
 };
