@@ -58,7 +58,7 @@ class BlockEncodePatcher extends PreconversionPatcherAbstract {
 	private function encode_block( array $block ): array {
 		$as_string = serialize_block( $block );
 
-		$anchor = self::ENCODED_ANCHOR . base64_encode( $as_string ) . ']';
+		$anchor  = self::ENCODED_ANCHOR . base64_encode( $as_string ) . ']';
 		$content = "<p>{$anchor}</p>";
 
 		return [
@@ -69,5 +69,4 @@ class BlockEncodePatcher extends PreconversionPatcherAbstract {
 			'innerContent' => [ $content ],
 		];
 	}
-
 }

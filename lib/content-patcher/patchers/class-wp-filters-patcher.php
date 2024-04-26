@@ -28,5 +28,4 @@ class WpFiltersPatcher extends PreconversionPatcherAbstract {
 
 		return $html_content;
 	}
-
 }

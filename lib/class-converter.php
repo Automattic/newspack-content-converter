@@ -7,7 +7,7 @@
 
 namespace NewspackContentConverter;
 
-use \NewspackContentConverter\ConverterController;
+use NewspackContentConverter\ConverterController;
 
 /**
  * Content Converter.
@@ -97,7 +97,6 @@ class Converter {
 						echo '<div id="ncc-settings"></div>';
 					}
 				);
-
 			}
 		);
 	}

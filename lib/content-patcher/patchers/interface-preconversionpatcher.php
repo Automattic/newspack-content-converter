@@ -24,5 +24,4 @@ interface PreconversionPatcherInterface {
 	 * @return string Patched HTML source which is about to be converted to Blocks.
 	 */
 	public function patch_html_source( $html_content );
-
 }

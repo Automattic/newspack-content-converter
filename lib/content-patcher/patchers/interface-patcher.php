@@ -25,5 +25,4 @@ interface PatcherInterface {
 	 * @return string Patched block content.
 	 */
 	public function patch_blocks_contents( $html_content, $block_content );
-
 }

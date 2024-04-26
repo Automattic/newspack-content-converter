@@ -24,12 +24,12 @@ if ( ! defined( 'NCC_PLUGIN_FILE' ) ) {
 }
 
 if ( defined( 'WP_CLI' ) && WP_CLI ) {
-	(new CLI)->register_commands();
+	( new CLI() )->register_commands();
 }
 
 // Construct the app with a dependency graph, without the use of a service container.
 $patch_handler = new ContentPatcher\PatchHandler(
-	array(
+	[
 		// Encode blocks as very first thing.
 		new ContentPatcher\Patchers\BlockEncodePatcher(),
 		new ContentPatcher\Patchers\WpFiltersPatcher(),
@@ -46,14 +46,14 @@ $patch_handler = new ContentPatcher\PatchHandler(
 		new ContentPatcher\Patchers\ShortcodePullquotePatcher(),
 		// Decode blocks as the very last thing.
 		new ContentPatcher\Patchers\BlockDecodePatcher(),
-	)
+	]
 );
-$processor = new ConversionProcessor(
+$processor     = new ConversionProcessor(
 	$patch_handler
 );
-$controller = new ConverterController(
+$controller    = new ConverterController(
 	$processor
 );
-$converter = new Converter(
+$converter     = new Converter(
 	$controller
 );

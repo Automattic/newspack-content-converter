@@ -7,10 +7,10 @@
 
 namespace NewspackContentConverter;
 
-use \WP_Error;
-use \WP_REST_Controller;
-use \WP_REST_Server;
-use \NewspackContentConverter\ConversionProcessor;
+use WP_Error;
+use WP_REST_Controller;
+use WP_REST_Server;
+use NewspackContentConverter\ConversionProcessor;
 
 /**
  * Class ConverterController
@@ -116,7 +116,7 @@ class ConverterController extends WP_REST_Controller {
 				'callback'            => [ $this, 'get_post_content' ],
 				'args'                => [
 					'id' => [
-						'validate_callback' => function( $param, $request, $key ) {
+						'validate_callback' => function ( $param, $request, $key ) {
 							return is_numeric( $param );
 						},
 					],
@@ -214,19 +214,19 @@ class ConverterController extends WP_REST_Controller {
 	 * @return array Info for the settings page.
 	 */
 	public function get_conversion_info() {
-		$is_conversion_prepared                 = $this->conversion_processor->is_conversion_prepared() ? '1' : '0';
-		$unconverted_count                      = count( $this->conversion_processor->get_all_unconverted_ids() );
-		$total_number_of_batches                = ceil( $unconverted_count / $this->conversion_processor->get_conversion_batch_size() );
-		$are_there_successfully_converted_ids   = count( $this->conversion_processor->get_all_converted_ids() ) > 0;
-		$are_there_unconverted_ids              = $unconverted_count > 0;
+		$is_conversion_prepared               = $this->conversion_processor->is_conversion_prepared() ? '1' : '0';
+		$unconverted_count                    = count( $this->conversion_processor->get_all_unconverted_ids() );
+		$total_number_of_batches              = ceil( $unconverted_count / $this->conversion_processor->get_conversion_batch_size() );
+		$are_there_successfully_converted_ids = count( $this->conversion_processor->get_all_converted_ids() ) > 0;
+		$are_there_unconverted_ids            = $unconverted_count > 0;
 
 		$response = rest_ensure_response(
 			[
-				'isConversionPrepared'                => $is_conversion_prepared,
-				'unconvertedCount'                   => $unconverted_count,
-				'totalNumberOfBatches'  => $total_number_of_batches,
-				'areThereSuccessfullyConvertedIds'   => $are_there_successfully_converted_ids,
-				'areThereUnconvertedIds' => $are_there_unconverted_ids,
+				'isConversionPrepared'             => $is_conversion_prepared,
+				'unconvertedCount'                 => $unconverted_count,
+				'totalNumberOfBatches'             => $total_number_of_batches,
+				'areThereSuccessfullyConvertedIds' => $are_there_successfully_converted_ids,
+				'areThereUnconvertedIds'           => $are_there_unconverted_ids,
 			]
 		);
 		return $response;
@@ -257,11 +257,11 @@ class ConverterController extends WP_REST_Controller {
 
 		// Sanitize input values and get array of post IDs.
 		$post_ids = [];
-		$values = explode( ',', $post_ids_csv );
+		$values   = explode( ',', $post_ids_csv );
 		foreach ( $values as $value ) {
 			$trimmed_value = trim( $value );
-			if ( ctype_digit($trimmed_value) ) {
-				$post_ids[] = (int)$trimmed_value;
+			if ( ctype_digit( $trimmed_value ) ) {
+				$post_ids[] = (int) $trimmed_value;
 			}
 		}
 
@@ -309,8 +309,8 @@ class ConverterController extends WP_REST_Controller {
 		 * and all conversion options will be deleted, i.e. $this->conversion_processor->is_conversion_prepared()
 		 * will start returning false if called again.
 		 */
-		$this_batch              = $this->conversion_processor->get_and_set_next_batch_to_queue();
-		$ids                     = $this_batch ? $this->conversion_processor->get_ids_for_batch( $this_batch ) : []	;
+		$this_batch = $this->conversion_processor->get_and_set_next_batch_to_queue();
+		$ids        = $this_batch ? $this->conversion_processor->get_ids_for_batch( $this_batch ) : [];
 
 		/**
 		 * Conversion is finished if there's no new batch to process.
@@ -322,10 +322,10 @@ class ConverterController extends WP_REST_Controller {
 
 			return rest_ensure_response(
 				[
-					'isConversionPrepared'          => '0',
-					'isConversionFinished'          => '1',
-					'ids'                          => [],
-					'thisBatch'                    => null,
+					'isConversionPrepared' => '0',
+					'isConversionFinished' => '1',
+					'ids'                  => [],
+					'thisBatch'            => null,
 					'totalNumberOfBatches' => null,
 				]
 			);
@@ -334,9 +334,9 @@ class ConverterController extends WP_REST_Controller {
 		return rest_ensure_response(
 			[
 				'isConversionPrepared' => '1',
-				'isConversionFinished'          => '0',
-				'ids'                          => $ids,
-				'thisBatch'                    => $this_batch,
+				'isConversionFinished' => '0',
+				'ids'                  => $ids,
+				'thisBatch'            => $this_batch,
 				'totalNumberOfBatches' => $total_number_of_batches,
 			]
 		);
@@ -365,7 +365,7 @@ class ConverterController extends WP_REST_Controller {
 	 * @return array Post content.
 	 */
 	public function get_post_content( $params ) {
-		$post_id = $params['id'];
+		$post_id      = $params['id'];
 		$post_content = $this->conversion_processor->get_post_content( $post_id );
 
 		return rest_ensure_response( $post_content );
@@ -400,7 +400,7 @@ class ConverterController extends WP_REST_Controller {
 	 * @return array Successfully converted post IDs.
 	 */
 	public function get_all_converted_ids() {
-		$converted_ids = $this->conversion_processor->get_all_converted_ids();
+		$converted_ids     = $this->conversion_processor->get_all_converted_ids();
 		$converted_ids_csv = implode( ',', $converted_ids );
 
 		return rest_ensure_response(
@@ -417,7 +417,7 @@ class ConverterController extends WP_REST_Controller {
 	 * @return array Unsuccessfully converted post IDs.
 	 */
 	public function get_all_unconverted_ids() {
-		$ids = $this->conversion_processor->get_all_unconverted_ids();
+		$ids     = $this->conversion_processor->get_all_unconverted_ids();
 		$ids_csv = implode( ',', $ids );
 
 		return rest_ensure_response(

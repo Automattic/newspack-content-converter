@@ -1,6 +1,6 @@
 {
     "name": "automattic/newspack-content-converter",
-    "description": "Plugin that enables mass conversion of pre-Gutenberg post content to the Gutenberg Blocks content.",
+    "description": "Mass conversion of pre-Gutenberg Classic HTML post content to the Gutenberg blocks content.",
     "license": "GPL-2.0-or-later",
     "autoload": {
       "classmap": [
@@ -9,13 +9,13 @@
       ]
     },
     "require": {
-        "composer/installers": "^1.6"
+        "composer/installers": "^1.7"
     },
     "require-dev": {
-        "automattic/vipwpcs": "^2.0.0",
-        "wp-coding-standards/wpcs": "*",
-        "dealerdirect/phpcodesniffer-composer-installer": "*",
-        "phpcompatibility/phpcompatibility-wp": "*",
+        "automattic/vipwpcs": "^3.0.0",
+        "wp-coding-standards/wpcs": "^3.0",
+        "dealerdirect/phpcodesniffer-composer-installer": "^0.7.0",
+        "phpcompatibility/phpcompatibility-wp": "^2.1",
         "yoast/phpunit-polyfills": "^1.0",
         "phpunit/phpunit": "^9.5"
     },

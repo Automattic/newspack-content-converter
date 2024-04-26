@@ -96,11 +96,11 @@ class ShortcodePullquotePatcher extends PatcherAbstract implements PatcherInterf
 		$shortcode         = $shortcode_matches[0][0][0];
 
 		// Get content.
-		$allowed_tags = array(
-			'a' => array(
-				'href' => array(),
-			),
-		);
+		$allowed_tags = [
+			'a' => [
+				'href' => [],
+			],
+		];
 		$content      = $this->square_brackets_element_manipulator->get_inner_text( 'pullquote', $shortcode );
 		$content      = trim( wp_kses( $content, $allowed_tags ) );
 

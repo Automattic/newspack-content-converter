@@ -7,7 +7,7 @@
 
 namespace NewspackContentConverter;
 
-use \NewspackContentConverter\ContentPatcher\PatchHandlerInterface;
+use NewspackContentConverter\ContentPatcher\PatchHandlerInterface;
 
 /**
  * Class ConversionProcessor
@@ -29,6 +29,7 @@ class ConversionProcessor {
 	/**
 	 * Batches here are just integer numbers, i.e. 1st, 2nd, 3rd batch, ... When a browser tab starts converting IDs in a batch, that batch gets added to this option
 	 * so the app can tell which batches have already started running.
+	 *
 	 * @var string self::OPTION_CONVERSION_BATCHES_RUNNING CSV of batch numbers that have started converting.
 	 */
 	const OPTION_CONVERSION_BATCHES_RUNNING = 'ncc_conversion_batches_csv_queue';
@@ -88,10 +89,10 @@ class ConversionProcessor {
 	public function get_all_unconverted_ids() {
 		global $wpdb;
 
-		$post_types    = $this->get_conversion_post_types();
-		$types_placeholders    = implode( ',', array_fill( 0, count( $post_types ), '%s' ) );
+		$post_types         = $this->get_conversion_post_types();
+		$types_placeholders = implode( ',', array_fill( 0, count( $post_types ), '%s' ) );
 
-		$post_statuses = $this->get_conversion_post_statuses();
+		$post_statuses         = $this->get_conversion_post_statuses();
 		$statuses_placeholders = implode( ',', array_fill( 0, count( $post_statuses ), '%s' ) );
 
 		// Get unconverted IDs. Exclude posts that begin with block code.
@@ -177,7 +178,7 @@ class ConversionProcessor {
 		}
 
 		// Immediately add this batch to the queue.
-		$new_queued_batches     = array_merge( $batches_in_queue, [ $next_batch ] );
+		$new_queued_batches = array_merge( $batches_in_queue, [ $next_batch ] );
 		update_option( self::OPTION_CONVERSION_BATCHES_RUNNING, implode( ',', $new_queued_batches ) );
 
 		return $next_batch;
@@ -192,10 +193,12 @@ class ConversionProcessor {
 		delete_option( self::OPTION_TOTAL_BATCHES );
 		delete_option( self::OPTION_TOTAL_IDS );
 		delete_option( self::OPTION_CONVERSION_BATCHES_RUNNING );
-		$wpdb->query( $wpdb->prepare(
-			"DELETE FROM {$wpdb->options} WHERE option_name LIKE %s;",
-			sprintf( self::OPTION_QUEUED_BATCHES_SPRINTF, '%' )
-		) );
+		$wpdb->query(
+			$wpdb->prepare(
+				"DELETE FROM {$wpdb->options} WHERE option_name LIKE %s;",
+				sprintf( self::OPTION_QUEUED_BATCHES_SPRINTF, '%' )
+			) 
+		);
 	}
 
 	/**
@@ -220,11 +223,11 @@ class ConversionProcessor {
 		add_option( self::OPTION_TOTAL_BATCHES, $total_batches );
 
 		// Split IDs into batches.
-		$ids_batches = [];
-		$batch_size = $this->get_conversion_batch_size();
+		$ids_batches  = [];
+		$batch_size   = $this->get_conversion_batch_size();
 		$batch_number = 0;
-		for ($i = 0; $i < count( $ids ); $i += $batch_size) {
-			$batch_number++;
+		for ( $i = 0; $i < count( $ids ); $i += $batch_size ) {
+			++$batch_number;
 			$ids_batches[ $batch_number ] = array_slice( $ids, $i, $batch_size );
 		}
 
@@ -243,8 +246,8 @@ class ConversionProcessor {
 	public function is_conversion_prepared() {
 		// Check if option
 		$exists_option_batches_running = false !== get_option( self::OPTION_CONVERSION_BATCHES_RUNNING );
-		$exists_option_total_batches = (bool) get_option( self::OPTION_TOTAL_BATCHES );
-		$exists_option_total_ids = (bool) get_option( self::OPTION_TOTAL_IDS );
+		$exists_option_total_batches   = (bool) get_option( self::OPTION_TOTAL_BATCHES );
+		$exists_option_total_ids       = (bool) get_option( self::OPTION_TOTAL_IDS );
 
 		if ( $exists_option_batches_running && $exists_option_total_batches && $exists_option_total_ids ) {
 			return true;
@@ -274,8 +277,8 @@ class ConversionProcessor {
 
 	public function get_ids_for_batch( int $batch ): array {
 		$option_name = sprintf( self::OPTION_QUEUED_BATCHES_SPRINTF, $batch );
-		$ids_csv = get_option( $option_name );
-		$ids = explode( ',', $ids_csv );
+		$ids_csv     = get_option( $option_name );
+		$ids         = explode( ',', $ids_csv );
 
 		return $ids;
 	}
@@ -291,7 +294,10 @@ class ConversionProcessor {
 		global $wpdb;
 
 		$post_content = $wpdb->get_var( $wpdb->prepare( "SELECT post_content FROM {$wpdb->posts} WHERE ID = %d;", $post_id ) );
+
+		// TODOfilter
 		$post_content_filtered = $this->patcher_handler->run_all_preconversion_patches( $post_content );
+		// $post_content_filtered = $post_content;
 
 		return $post_content_filtered;
 	}
@@ -313,10 +319,12 @@ class ConversionProcessor {
 
 		$current_post_content = $wpdb->get_var( $wpdb->prepare( "SELECT post_content FROM {$wpdb->posts} WHERE ID = %d;", $post_id ) );
 
+		// TODOfilter
 		$blocks_content_patched = $this->patcher_handler->run_all_patches( $html_content, $blocks_content );
+		// $blocks_content_patched = $blocks_content;
 
-		// Only update if resulting blocks content is not empty.
-		if ( ! empty( $blocks_content_patched ) ) {
+		// Only update if resulting blocks content is not empty and has been modified.
+		if ( ! empty( $blocks_content_patched ) && ( $html_content != $blocks_content_patched ) ) {
 			// Back up original post_content as post meta.
 			add_post_meta( $post_id, self::POSTMETA_ORIGINAL_POST_CONTENT, $current_post_content );
 
@@ -337,11 +345,11 @@ class ConversionProcessor {
 
 		$where_post_ids_in_clause = '';
 		if ( ! empty( $post_ids ) ) {
-			$post_ids_placeholders = array_fill( 0, count( $post_ids ), '%d' );
+			$post_ids_placeholders    = array_fill( 0, count( $post_ids ), '%d' );
 			$where_post_ids_in_clause = sprintf( ' WHERE wp.ID IN ( %s ) ', implode( ',', $post_ids_placeholders ) );
 		}
 
-		$query = $wpdb->prepare(
+		$query  = $wpdb->prepare(
 			"UPDATE {$wpdb->posts} wp
 			JOIN (
 				-- In case there are multiple metas for same post_id, use the most recent one.
@@ -370,10 +378,12 @@ class ConversionProcessor {
 	public function flush_all_meta_backups() {
 		global $wpdb;
 
-		$deleted = $wpdb->query( $wpdb->prepare(
-			"DELETE FROM {$wpdb->postmeta} WHERE meta_key = %s;",
-			self::POSTMETA_ORIGINAL_POST_CONTENT
-		) );
+		$deleted = $wpdb->query(
+			$wpdb->prepare(
+				"DELETE FROM {$wpdb->postmeta} WHERE meta_key = %s;",
+				self::POSTMETA_ORIGINAL_POST_CONTENT
+			) 
+		);
 
 		return $deleted;
 	}
