@@ -52,6 +52,7 @@ class PatchHandler implements PatchHandlerInterface {
 	 * See the \NewspackContentConverter\ContentPatcher\PatchHandlerInterface::run_all_preconversion_patches.
 	 *
 	 * @param string $html_content HTML content.
+	 * @param int    $post_id      Post ID.
 	 *
 	 * @return string|null Patched HTML content.
 	 */

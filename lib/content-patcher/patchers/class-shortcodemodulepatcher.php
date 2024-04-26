@@ -45,8 +45,9 @@ class ShortcodeModulePatcher extends PatcherAbstract implements PatcherInterface
 	/**
 	 * See the \NewspackContentConverter\ContentPatcher\Patchers\PatcherInterface::patch_blocks_contents for description.
 	 *
-	 * @param string $source_html   HTML source, original content being converted.
-	 * @param string $source_blocks Block content as result of Gutenberg "conversion to blocks".
+	 * @param string $source_blocks Block content after conversion to blocks.
+	 * @param string $source_html   HTML source, original content before conversion.
+	 * @param int    $post_id       Post ID.
 	 *
 	 * @return string|false
 	 */
@@ -87,7 +88,7 @@ class ShortcodeModulePatcher extends PatcherAbstract implements PatcherInterface
 		$shortcode         = $shortcode_matches[0][0][0];
 
 		$alignment = $this->square_brackets_element_manipulator->get_attribute_value( 'align', $shortcode );
-		$alignment = ( $alignment && 'left' === $alignment || 'right' === $alignment ) ? $alignment : '';
+		$alignment = ( $alignment && ( 'left' === $alignment || 'right' === $alignment ) ) ? $alignment : '';
 
 		// Get content.
 		$allowed_tags = [

@@ -44,8 +44,9 @@ class ShortcodePullquotePatcher extends PatcherAbstract implements PatcherInterf
 	/**
 	 * See the \NewspackContentConverter\ContentPatcher\Patchers\PatcherInterface::patch_blocks_contents for description.
 	 *
-	 * @param string $source_html   HTML source, original content being converted.
-	 * @param string $source_blocks Block content as result of Gutenberg "conversion to blocks".
+	 * @param string $source_blocks Block content after conversion to blocks.
+	 * @param string $source_html   HTML source, original content before conversion.
+	 * @param int    $post_id       Post ID.
 	 *
 	 * @return string|false
 	 */

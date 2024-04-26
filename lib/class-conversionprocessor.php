@@ -87,6 +87,7 @@ class ConversionProcessor {
 		$statuses_placeholders = implode( ',', array_fill( 0, count( $post_statuses ), '%s' ) );
 
 		// Get unconverted IDs. Exclude posts that begin with block code.
+		// phpcs:disable -- WordPress.DB.PreparedSQLPlaceholders.LikeWildcardsInQuery.
 		$ids = $wpdb->get_col(
 			$wpdb->prepare(
 				"SELECT ID
@@ -100,6 +101,7 @@ class ConversionProcessor {
 				array_merge( $post_types, $post_statuses )
 			)
 		);
+		// phpcs:enable
 
 		return $ids;
 	}
@@ -107,9 +109,7 @@ class ConversionProcessor {
 	/**
 	 * Gets successfully converted post IDs from postmeta (ordered DESC).
 	 *
-	 * @param array $post_statuses
-	 * @param array $post_types
-	 * @return void
+	 * @return array Post IDs.
 	 */
 	public function get_all_ids_with_original_content_meta() {
 		global $wpdb;
@@ -129,6 +129,11 @@ class ConversionProcessor {
 		return $ids;
 	}
 
+	/**
+	 * Gets all converted post IDs.
+	 *
+	 * @return array Converted post IDs.
+	 */
 	public function get_all_converted_ids() {
 		/**
 		 * If a post was converted and then restored, the postmeta with original content will be attached to it, even though
@@ -217,7 +222,7 @@ class ConversionProcessor {
 		$ids_batches  = [];
 		$batch_size   = $this->get_conversion_batch_size();
 		$batch_number = 0;
-		for ( $i = 0; $i < count( $ids ); $i += $batch_size ) {
+		for ( $i = 0; $i < $total_ids; $i += $batch_size ) {
 			++$batch_number;
 			$ids_batches[ $batch_number ] = array_slice( $ids, $i, $batch_size );
 		}
@@ -235,7 +240,6 @@ class ConversionProcessor {
 	 * @return boolean
 	 */
 	public function is_conversion_prepared() {
-		// Check if option
 		$exists_option_batches_running = false !== get_option( self::OPTION_CONVERSION_BATCHES_RUNNING );
 		$exists_option_total_batches   = (bool) get_option( self::OPTION_TOTAL_BATCHES );
 		$exists_option_total_ids       = (bool) get_option( self::OPTION_TOTAL_IDS );
@@ -262,10 +266,21 @@ class ConversionProcessor {
 		return false;
 	}
 
+	/**
+	 * Gets total number of batches to be converted.
+	 *
+	 * @return int|false Total number of batches to be converted, or false if conversion is not prepared.
+	 */
 	public function get_total_number_of_batches() {
 		return get_option( self::OPTION_TOTAL_BATCHES );
 	}
 
+	/**
+	 * Gets the IDs for a batch.
+	 *
+	 * @param integer $batch Batch number.
+	 * @return array IDs for the batch.
+	 */
 	public function get_ids_for_batch( int $batch ): array {
 		$option_name = sprintf( self::OPTION_QUEUED_BATCHES_SPRINTF, $batch );
 		$ids_csv     = get_option( $option_name );
@@ -286,6 +301,12 @@ class ConversionProcessor {
 
 		$post_content = $wpdb->get_var( $wpdb->prepare( "SELECT post_content FROM {$wpdb->posts} WHERE ID = %d;", $post_id ) );
 
+		/**
+		 * Filters HTML $post_content before conversion to blocks.
+		 *
+		 * @var string $post_content HTML content before conversion.
+		 * @var int    $post_id      Post ID.
+		 */
 		$post_content_filtered = apply_filters( 'ncc_filter_html_before_conversion', $post_content, $post_id );
 
 		return $post_content_filtered;
@@ -308,6 +329,13 @@ class ConversionProcessor {
 
 		$current_post_content = $wpdb->get_var( $wpdb->prepare( "SELECT post_content FROM {$wpdb->posts} WHERE ID = %d;", $post_id ) );
 
+		/**
+		 * Filter $blocks_content after conversion to blocks.
+		 *
+		 * @var string $blocks_content       Converted blocks content.
+		 * @var string $current_post_content HTML content before conversion.
+		 * @var int    $post_id              Post ID.
+		 */
 		$blocks_content_patched = apply_filters( 'ncc_filter_blocks_after_conversion', $blocks_content, $current_post_content, $post_id );
 
 		// Only update if resulting blocks content is not empty and has been modified.
@@ -319,6 +347,8 @@ class ConversionProcessor {
 			$wpdb->update( $wpdb->posts, [ 'post_content' => $blocks_content_patched ], [ 'ID' => $post_id ] );
 
 			/**
+			 * Fires after post content has been updated.
+			 *
 			 * @var int    $post_id                Post ID.
 			 * @var string $blocks_content_patched Blocks content after filtering.
 			 * @var string $blocks_content         Blocks content before filtering.
@@ -344,6 +374,7 @@ class ConversionProcessor {
 			$where_post_ids_in_clause = sprintf( ' WHERE wp.ID IN ( %s ) ', implode( ',', $post_ids_placeholders ) );
 		}
 
+		// phpcs:disable -- WordPress.DB.PreparedSQL.NotPrepared Query is prepared.
 		$query  = $wpdb->prepare(
 			"UPDATE {$wpdb->posts} wp
 			JOIN (
@@ -361,6 +392,7 @@ class ConversionProcessor {
 			array_merge( [ self::POSTMETA_ORIGINAL_POST_CONTENT ], $post_ids )
 		);
 		$result = $wpdb->query( $query );
+		// phpcs:enable
 
 		return (bool) $result;
 	}

@@ -23,10 +23,6 @@ if ( ! defined( 'NCC_PLUGIN_FILE' ) ) {
 	define( 'NCC_PLUGIN_FILE', __FILE__ );
 }
 
-if ( defined( 'WP_CLI' ) && WP_CLI ) {
-	( new CLI() )->register_commands();
-}
-
 $converter = new Converter(
 	new ConverterController(
 		new ConversionProcessor()

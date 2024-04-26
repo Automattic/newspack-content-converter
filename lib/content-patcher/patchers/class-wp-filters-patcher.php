@@ -17,6 +17,7 @@ class WpFiltersPatcher extends PreconversionPatcherAbstract {
 	 * See the \NewspackContentConverter\ContentPatcher\Patchers\PreconversionPatcherInterface::patch_html_source for description.
 	 *
 	 * @param string $html_content HTML source before conversion to blocks.
+	 * @param int    $post_id      Post ID.
 	 *
 	 * @return string Patched HTML source before conversion to blocks.
 	 */

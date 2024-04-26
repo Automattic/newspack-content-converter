@@ -250,7 +250,8 @@ class ConverterController extends WP_REST_Controller {
 	/**
 	 * Callback for the /restore/restore-post-contents route.
 	 *
-	 * @return array
+	 * @param WP_REST_Request $params Request parameters.
+	 * @return WP_REST_Response|WP_Error Response.
 	 */
 	public function restore_post_contents( $params ) {
 		$post_ids_csv = $params['post_ids'] ?? null;
@@ -274,7 +275,7 @@ class ConverterController extends WP_REST_Controller {
 	/**
 	 * Callback for the /conversion/prepare route.
 
-	 * @return void
+	 * @return WP_REST_Response|WP_Error Response.
 	 */
 	public function prepare_conversion() {
 		$this->conversion_processor->prepare_conversion();
@@ -289,7 +290,7 @@ class ConverterController extends WP_REST_Controller {
 	 * Once the last batch of posts is converted, the conversion is finalized and disabled (otherwise in a
 	 * specific use case te conversion tabs which auto-reload might continue picking up posts indefinitely).
 	 *
-	 * @return array Conversion batch data.
+	 * @return WP_REST_Response|WP_Error Response.
 	 */
 	public function get_conversion_batch_data() {
 
@@ -362,7 +363,8 @@ class ConverterController extends WP_REST_Controller {
 	 * Fetches post_content.
 	 *
 	 * @param WP_REST_Request $params Request parameters.
-	 * @return array Post content.
+	 *
+	 * @return WP_REST_Response|WP_Error Response.
 	 */
 	public function get_post_content( $params ) {
 		$post_id      = $params['id'];
@@ -397,41 +399,33 @@ class ConverterController extends WP_REST_Controller {
 	 * Callback for the /conversion/get-all-converted-ids route.
 	 * Fetches successfully converted post IDs.
 	 *
-	 * @return array Successfully converted post IDs.
+	 * @return WP_REST_Response|WP_Error Response.
 	 */
 	public function get_all_converted_ids() {
 		$converted_ids     = $this->conversion_processor->get_all_converted_ids();
 		$converted_ids_csv = implode( ',', $converted_ids );
 
-		return rest_ensure_response(
-			[
-				'ids' => $converted_ids_csv,
-			]
-		);
+		return rest_ensure_response( [ 'ids' => $converted_ids_csv ] );
 	}
 
 	/**
 	 * Callback for the /get-all-unconverted-ids route.
 	 * Fetches unsuccessfully converted post IDs.
 	 *
-	 * @return array Unsuccessfully converted post IDs.
+	 * @return WP_REST_Response|WP_Error Response.
 	 */
 	public function get_all_unconverted_ids() {
 		$ids     = $this->conversion_processor->get_all_unconverted_ids();
 		$ids_csv = implode( ',', $ids );
 
-		return rest_ensure_response(
-			[
-				'ids' => $ids_csv,
-			]
-		);
+		return rest_ensure_response( [ 'ids' => $ids_csv ] );
 	}
 
 	/**
 	 * Callback for the /get-all-unconverted-ids route.
 	 * Fetches unsuccessfully converted post IDs.
 	 *
-	 * @return array Unsuccessfully converted post IDs.
+	 * @return WP_REST_Response|WP_Error Response.
 	 */
 	public function flush_all_meta_backups() {
 		$ids = $this->conversion_processor->flush_all_meta_backups();

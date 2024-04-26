@@ -19,7 +19,10 @@ class BlockEncodePatcher extends PreconversionPatcherAbstract {
 	public const ENCODED_ANCHOR = '[BLOCK-ENCODED:';
 
 	/**
-	 * @inheritDoc
+	 * Patch HTML source.
+	 *
+	 * @param string $html_content  HTML source, original content before conversion.
+	 * @param int    $post_id       Post ID.
 	 */
 	public function patch_html_source( $html_content, $post_id ) {
 		$html_content_patched = $this->encode_post_content( $html_content );
