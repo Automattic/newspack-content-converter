@@ -21,8 +21,10 @@ class BlockEncodePatcher extends PreconversionPatcherAbstract {
 	/**
 	 * @inheritDoc
 	 */
-	public function patch_html_source( $html_content ) {
-		return $this->encode_post_content( $html_content );
+	public function patch_html_source( $html_content, $post_id ) {
+		$html_content_patched = $this->encode_post_content( $html_content );
+
+		return $html_content_patched;
 	}
 
 	/**

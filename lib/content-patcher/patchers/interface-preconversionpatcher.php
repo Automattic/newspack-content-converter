@@ -20,8 +20,9 @@ interface PreconversionPatcherInterface {
 	 * Patcher's main method which updates the HTML source before it's piped to be converted to Blocks.
 	 *
 	 * @param string $html_content HTML source, original Post content.
+	 * @param int    $post_id      Post ID.
 	 *
 	 * @return string Patched HTML source which is about to be converted to Blocks.
 	 */
-	public function patch_html_source( $html_content );
+	public function patch_html_source( $html_content, $post_id );
 }

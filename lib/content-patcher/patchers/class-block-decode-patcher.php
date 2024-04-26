@@ -17,7 +17,7 @@ class BlockDecodePatcher extends PatcherAbstract {
 	/*
 	 * @inheritDoc
 	 */
-	public function patch_blocks_contents( $html_content, $block_content ) {
+	public function patch_blocks_contents( $block_content, $html_content, $post_id ) {
 		return $this->decode_post_content( $block_content );
 	}
 

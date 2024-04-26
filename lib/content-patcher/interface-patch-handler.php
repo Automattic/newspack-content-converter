@@ -26,5 +26,5 @@ interface PatchHandlerInterface {
 	 *
 	 * @return string Patched block content.
 	 */
-	public function run_all_patches( $html_content, $block_content );
+	public function run_all_postconversion_patches( $html_content, $block_content );
 }

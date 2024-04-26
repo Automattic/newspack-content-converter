@@ -48,15 +48,6 @@ class ConversionProcessor {
 	private $patcher_handler;
 
 	/**
-	 * ConversionProcessor constructor.
-	 *
-	 * @param PatchHandlerInterface $patcher_handler Patcher handler.
-	 */
-	public function __construct( PatchHandlerInterface $patcher_handler ) {
-		$this->patcher_handler = $patcher_handler;
-	}
-
-	/**
 	 * Gets content types to be processed by the plugin.
 	 *
 	 * @return array Content types.
@@ -197,7 +188,7 @@ class ConversionProcessor {
 			$wpdb->prepare(
 				"DELETE FROM {$wpdb->options} WHERE option_name LIKE %s;",
 				sprintf( self::OPTION_QUEUED_BATCHES_SPRINTF, '%' )
-			) 
+			)
 		);
 	}
 
@@ -295,9 +286,7 @@ class ConversionProcessor {
 
 		$post_content = $wpdb->get_var( $wpdb->prepare( "SELECT post_content FROM {$wpdb->posts} WHERE ID = %d;", $post_id ) );
 
-		// TODOfilter
-		$post_content_filtered = $this->patcher_handler->run_all_preconversion_patches( $post_content );
-		// $post_content_filtered = $post_content;
+		$post_content_filtered = apply_filters( 'ncc_filter_html_before_conversion', $post_content, $post_id );
 
 		return $post_content_filtered;
 	}
@@ -319,9 +308,7 @@ class ConversionProcessor {
 
 		$current_post_content = $wpdb->get_var( $wpdb->prepare( "SELECT post_content FROM {$wpdb->posts} WHERE ID = %d;", $post_id ) );
 
-		// TODOfilter
-		$blocks_content_patched = $this->patcher_handler->run_all_patches( $html_content, $blocks_content );
-		// $blocks_content_patched = $blocks_content;
+		$blocks_content_patched = apply_filters( 'ncc_filter_blocks_after_conversion', $blocks_content, $current_post_content, $post_id );
 
 		// Only update if resulting blocks content is not empty and has been modified.
 		if ( ! empty( $blocks_content_patched ) && ( $html_content != $blocks_content_patched ) ) {
@@ -382,7 +369,7 @@ class ConversionProcessor {
 			$wpdb->prepare(
 				"DELETE FROM {$wpdb->postmeta} WHERE meta_key = %s;",
 				self::POSTMETA_ORIGINAL_POST_CONTENT
-			) 
+			)
 		);
 
 		return $deleted;

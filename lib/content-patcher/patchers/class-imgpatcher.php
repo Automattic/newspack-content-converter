@@ -68,7 +68,7 @@ class ImgPatcher extends PatcherAbstract implements PatcherInterface {
 	 *
 	 * @return string|false
 	 */
-	public function patch_blocks_contents( $source_html, $source_blocks ) {
+	public function patch_blocks_contents( $source_blocks, $source_html, $post_id ) {
 
 		// --- Looping over individual <img> elements
 		$matches_html = $this->html_element_manipulator->match_elements_with_self_closing_tags( 'img', $source_html );

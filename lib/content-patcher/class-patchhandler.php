@@ -55,13 +55,13 @@ class PatchHandler implements PatchHandlerInterface {
 	 *
 	 * @return string|null Patched HTML content.
 	 */
-	public function run_all_preconversion_patches( $html_content ) {
+	public function run_all_preconversion_patches( $html_content, $post_id ) {
 		if ( empty( $this->preconversion_patchers ) ) {
 			return $html_content;
 		}
 
 		foreach ( $this->preconversion_patchers as $patcher ) {
-			$html_content = $patcher->patch_html_source( $html_content );
+			$html_content = $patcher->patch_html_source( $html_content, $post_id );
 		}
 
 		return $html_content;
@@ -75,7 +75,7 @@ class PatchHandler implements PatchHandlerInterface {
 	 *
 	 * @return string|null Patched Blocks content.
 	 */
-	public function run_all_patches( $html_content, $block_content ) {
+	public function run_all_postconversion_patches( $html_content, $block_content ) {
 		if ( empty( $this->patchers ) ) {
 			return $block_content;
 		}

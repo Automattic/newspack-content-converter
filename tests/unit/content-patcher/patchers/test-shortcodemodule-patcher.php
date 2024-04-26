@@ -46,7 +46,7 @@ class TestModuleShortcodePatcher extends WP_UnitTestCase {
 		$blocks_before_patching = $this->data_provider->get_unpatched_block_left();
 		$expected               = $this->data_provider->get_patched_block_left_expected();
 
-		$actual = $this->patcher->patch_blocks_contents( '', $blocks_before_patching );
+		$actual = $this->patcher->patch_blocks_contents( $blocks_before_patching, '', 1 );
 		$this->assertSame( $expected, $actual );
 	}
 
@@ -57,7 +57,7 @@ class TestModuleShortcodePatcher extends WP_UnitTestCase {
 		$blocks_before_patching = $this->data_provider->get_unpatched_block_right();
 		$expected               = $this->data_provider->get_patched_block_right_expected();
 
-		$actual = $this->patcher->patch_blocks_contents( '', $blocks_before_patching );
+		$actual = $this->patcher->patch_blocks_contents( $blocks_before_patching, '', 1 );
 		$this->assertSame( $expected, $actual );
 	}
 
@@ -68,7 +68,7 @@ class TestModuleShortcodePatcher extends WP_UnitTestCase {
 		$blocks_before_patching = $this->data_provider->get_unpatched_blocks_center();
 		$expected               = $this->data_provider->get_patched_blocks_center_expected();
 
-		$actual = $this->patcher->patch_blocks_contents( '', $blocks_before_patching );
+		$actual = $this->patcher->patch_blocks_contents( $blocks_before_patching, '', 1 );
 		$this->assertSame( $expected, $actual );
 	}
 
@@ -79,7 +79,7 @@ class TestModuleShortcodePatcher extends WP_UnitTestCase {
 		$blocks_before_patching = $this->data_provider->get_unpatched_block_unsupported_tags();
 		$expected               = $this->data_provider->get_patched_block_unsupported_tags_expected();
 
-		$actual = $this->patcher->patch_blocks_contents( '', $blocks_before_patching );
+		$actual = $this->patcher->patch_blocks_contents( $blocks_before_patching, '', 1 );
 		$this->assertSame( $expected, $actual );
 	}
 
@@ -90,7 +90,7 @@ class TestModuleShortcodePatcher extends WP_UnitTestCase {
 		$blocks_before_patching = $this->data_provider->get_unpatched_blocks_non_pertinent();
 		$expected               = $this->data_provider->get_patched_blocks_non_pertinent_expected();
 
-		$actual = $this->patcher->patch_blocks_contents( '', $blocks_before_patching );
+		$actual = $this->patcher->patch_blocks_contents( $blocks_before_patching, '', 1 );
 		$this->assertSame( $expected, $actual );
 	}
 }

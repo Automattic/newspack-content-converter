@@ -50,7 +50,7 @@ class ShortcodeModulePatcher extends PatcherAbstract implements PatcherInterface
 	 *
 	 * @return string|false
 	 */
-	public function patch_blocks_contents( $source_html, $source_blocks ) {
+	public function patch_blocks_contents( $source_blocks, $source_html, $post_id ) {
 		$matches_blocks = $this->wp_block_manipulator->match_wp_block( 'wp:shortcode', $source_blocks );
 		if ( ! $matches_blocks ) {
 			return $source_blocks;

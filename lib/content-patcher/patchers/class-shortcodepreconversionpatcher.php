@@ -22,7 +22,7 @@ class ShortcodePreconversionPatcher extends PreconversionPatcherAbstract {
 	 *
 	 * @return string Patched HTML source before conversion to blocks.
 	 */
-	public function patch_html_source( $html ) {
+	public function patch_html_source( $html, $post_id ) {
 		$html_patched = $this->break_shortcodes_to_new_line( $html );
 
 		return $html_patched;
