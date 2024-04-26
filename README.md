@@ -39,6 +39,7 @@ It also lets you delete all this custom postmeta from your database, which will 
 
 ### Development
 
+- use PHP 8.1 or greater
 - `composer install`
 - `nvm use 16`
 - `npm ci`
