@@ -317,6 +317,14 @@ class ConversionProcessor {
 
 			// Update post_content.
 			$wpdb->update( $wpdb->posts, [ 'post_content' => $blocks_content_patched ], [ 'ID' => $post_id ] );
+
+			/**
+			 * @var int    $post_id                Post ID.
+			 * @var string $blocks_content_patched Blocks content after filtering.
+			 * @var string $blocks_content         Blocks content before filtering.
+			 * @var string $current_post_content   HTML post content before update.
+			 */
+			do_action( 'ncc_after_post_content_updated', $post_id, $blocks_content_patched, $blocks_content, $current_post_content );
 		}
 	}
 
