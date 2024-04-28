@@ -1,5 +1,5 @@
 # newspack-content-converter
-Mass-conversion of pre-Gutenberg Classic HTML Posts and Pages to the Gutenberg Blocks.
+Mass-conversion of pre-Gutenberg Classic HTML Posts and Pages to Gutenberg Blocks.
 
 ### Disclaimer
 
