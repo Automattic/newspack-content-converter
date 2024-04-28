@@ -71,7 +71,7 @@ class ConversionProcessor {
 	 * @return int Number of posts/content processed by a conversion batch.
 	 */
 	public function get_conversion_batch_size() {
-		return 4;
+		return 100;
 	}
 
 	/**
