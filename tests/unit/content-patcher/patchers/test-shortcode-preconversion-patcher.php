@@ -46,7 +46,8 @@ class TestShortcodePreconversionPatcher extends WP_UnitTestCase {
 		$html_before_patching = $this->data_provider->get_html_with_gallery_shortcodes_mixed();
 		$expected             = $this->data_provider->get_html_with_gallery_shortcodes_mixed_expected();
 
-		$actual = $this->patcher->patch_html_source( $html_before_patching );
+		$post_id = 1;
+		$actual = $this->patcher->patch_html_source( $html_before_patching, $post_id );
 		$this->assertSame( $expected, $actual );
 	}
 }

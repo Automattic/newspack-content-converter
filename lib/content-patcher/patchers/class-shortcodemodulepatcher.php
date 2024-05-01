@@ -45,12 +45,13 @@ class ShortcodeModulePatcher extends PatcherAbstract implements PatcherInterface
 	/**
 	 * See the \NewspackContentConverter\ContentPatcher\Patchers\PatcherInterface::patch_blocks_contents for description.
 	 *
-	 * @param string $source_html   HTML source, original content being converted.
-	 * @param string $source_blocks Block content as result of Gutenberg "conversion to blocks".
+	 * @param string $source_blocks Block content after conversion to blocks.
+	 * @param string $source_html   HTML source, original content before conversion.
+	 * @param int    $post_id       Post ID.
 	 *
 	 * @return string|false
 	 */
-	public function patch_blocks_contents( $source_html, $source_blocks ) {
+	public function patch_blocks_contents( $source_blocks, $source_html, $post_id ) {
 		$matches_blocks = $this->wp_block_manipulator->match_wp_block( 'wp:shortcode', $source_blocks );
 		if ( ! $matches_blocks ) {
 			return $source_blocks;
@@ -87,14 +88,14 @@ class ShortcodeModulePatcher extends PatcherAbstract implements PatcherInterface
 		$shortcode         = $shortcode_matches[0][0][0];
 
 		$alignment = $this->square_brackets_element_manipulator->get_attribute_value( 'align', $shortcode );
-		$alignment = ( $alignment && 'left' === $alignment || 'right' === $alignment ) ? $alignment : '';
+		$alignment = ( $alignment && ( 'left' === $alignment || 'right' === $alignment ) ) ? $alignment : '';
 
 		// Get content.
-		$allowed_tags = array(
-			'a' => array(
-				'href' => array(),
-			),
-		);
+		$allowed_tags = [
+			'a' => [
+				'href' => [],
+			],
+		];
 		$content      = $this->square_brackets_element_manipulator->get_inner_text( 'module', $shortcode );
 		$content      = trim( wp_kses( $content, $allowed_tags ) );
 

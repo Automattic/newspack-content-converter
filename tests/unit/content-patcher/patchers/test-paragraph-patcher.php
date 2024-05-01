@@ -47,7 +47,7 @@ class TestParagraphPatcher extends WP_UnitTestCase {
 		$blocks_before_patching = '<p>AAA</p>';
 		$expected               = '<p dir="ltr">AAA</p>';
 
-		$actual = $this->patcher->patch_blocks_contents( $html, $blocks_before_patching );
+		$actual = $this->patcher->patch_blocks_contents( $blocks_before_patching, $html, 1 );
 
 		$this->assertSame( $expected, $actual );
 
@@ -61,7 +61,7 @@ class TestParagraphPatcher extends WP_UnitTestCase {
 		$blocks_before_patching = $this->data_provider->get_inconsistent_sources_before_patching();
 		$expected               = $this->data_provider->get_inconsistent_sources_blocks_patched_expected();
 
-		$actual = $this->patcher->patch_blocks_contents( $html, $blocks_before_patching );
+		$actual = $this->patcher->patch_blocks_contents( $blocks_before_patching, $html, 1 );
 
 		$this->assertSame( $expected, $actual );
 	}
@@ -74,7 +74,7 @@ class TestParagraphPatcher extends WP_UnitTestCase {
 		$blocks_before_patching = $this->data_provider->get_html_is_non_pertinent_before_patching();
 		$expected               = $this->data_provider->get_html_is_non_pertinent_blocks_patched_expected();
 
-		$actual = $this->patcher->patch_blocks_contents( $html, $blocks_before_patching );
+		$actual = $this->patcher->patch_blocks_contents( $blocks_before_patching, $html, 1 );
 
 		$this->assertSame( $expected, $actual );
 	}
@@ -87,7 +87,7 @@ class TestParagraphPatcher extends WP_UnitTestCase {
 		$blocks_before_patching = $this->data_provider->get_multiple_paragraphs_blocks_before_patching();
 		$expected               = $this->data_provider->get_multiple_paragraphs_blocks_patched_expected();
 
-		$actual = $this->patcher->patch_blocks_contents( $html, $blocks_before_patching );
+		$actual = $this->patcher->patch_blocks_contents( $blocks_before_patching, $html, 1 );
 
 		$this->assertSame( $expected, $actual );
 	}
@@ -100,7 +100,7 @@ class TestParagraphPatcher extends WP_UnitTestCase {
 		$blocks_before_patching = $this->data_provider->get_some_skipped_paragraphs_blocks_before_patching();
 		$expected               = $this->data_provider->get_some_skipped_paragraphs_blocks_patched_expected();
 
-		$actual = $this->patcher->patch_blocks_contents( $html, $blocks_before_patching );
+		$actual = $this->patcher->patch_blocks_contents( $blocks_before_patching, $html, 1 );
 
 		$this->assertSame( $expected, $actual );
 	}
@@ -114,7 +114,7 @@ class TestParagraphPatcher extends WP_UnitTestCase {
 		$blocks_before_patching = $this->data_provider->get_some_paragraphs_ok_blocks_before_patching();
 		$expected               = $this->data_provider->get_some_paragraphs_ok_blocks_patched_expected();
 
-		$actual = $this->patcher->patch_blocks_contents( $html, $blocks_before_patching );
+		$actual = $this->patcher->patch_blocks_contents( $blocks_before_patching, $html, 1 );
 
 		$this->assertSame( $expected, $actual );
 	}
@@ -127,7 +127,7 @@ class TestParagraphPatcher extends WP_UnitTestCase {
 		$blocks_before_patching = $this->data_provider->get_comprehensive_blocks_before_patching();
 		$expected               = $this->data_provider->get_comprehensive_blocks_patched_expected();
 
-		$actual = $this->patcher->patch_blocks_contents( $html, $blocks_before_patching );
+		$actual = $this->patcher->patch_blocks_contents( $blocks_before_patching, $html, 1 );
 
 		$this->assertSame( $expected, $actual );
 	}

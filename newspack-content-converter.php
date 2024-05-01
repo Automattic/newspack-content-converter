@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Newspack Content Converter
  * Description: Mass converts pre-Gutenberg HTML content to Gutenberg Blocks.
- * Version: 0.1.3
+ * Version: 1.0.1
  * Author: Automattic
  * Author URI: https://newspack.blog/
  * License: GPL2
@@ -23,35 +23,8 @@ if ( ! defined( 'NCC_PLUGIN_FILE' ) ) {
 	define( 'NCC_PLUGIN_FILE', __FILE__ );
 }
 
-if ( defined( 'WP_CLI' ) && WP_CLI ) {
-	(new CLI)->register_commands();
-}
-
-// Construct the app with a dependency graph, without the use of a service container.
-new Converter(
-	new Installer(),
+$converter = new Converter(
 	new ConverterController(
-		new ConversionProcessor(
-			new ContentPatcher\PatchHandler(
-				array(
-					// Encode blocks as very first thing.
-					new ContentPatcher\Patchers\BlockEncodePatcher(),
-					new ContentPatcher\Patchers\WpFiltersPatcher(),
-					// Pre-conversion Patchers.
-					new ContentPatcher\Patchers\ShortcodePreconversionPatcher(),
-					// Patchers.
-					new ContentPatcher\Patchers\ImgPatcher(),
-					new ContentPatcher\Patchers\CaptionImgPatcher(),
-					new ContentPatcher\Patchers\ParagraphPatcher(),
-					new ContentPatcher\Patchers\BlockquotePatcher(),
-					new ContentPatcher\Patchers\VideoPatcher(),
-					new ContentPatcher\Patchers\AudioPatcher(),
-					new ContentPatcher\Patchers\ShortcodeModulePatcher(),
-					new ContentPatcher\Patchers\ShortcodePullquotePatcher(),
-					// Decode blocks as the very last thing.
-					new ContentPatcher\Patchers\BlockDecodePatcher(),
-				)
-			)
-		)
+		new ConversionProcessor()
 	)
 );

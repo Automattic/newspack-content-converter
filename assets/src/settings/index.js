@@ -59,7 +59,7 @@ class Settings extends Component {
 			<Fragment>
 				<div className="newspack-logo__wrapper">
 					<Button
-						href="https://newspack.pub/"
+						href="https://newspack.com/"
 						target="_blank"
 						label={ __( 'By Newspack' ) }
 					>
@@ -82,12 +82,12 @@ class Settings extends Component {
 							) }
 						</p>
 						<TextControl
-							label={ __( 'Content types' ) }
+							label={ __( 'Content types CSV' ) }
 							disabled={ true }
 							value={ conversionContentTypesCsv }
 						/>
 						<TextControl
-							label={ __( 'Content statuses' ) }
+							label={ __( 'Content statuses CSV' ) }
 							disabled={ true }
 							value={ conversionContentStatusesCsv }
 						/>

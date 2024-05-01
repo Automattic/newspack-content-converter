@@ -7,8 +7,6 @@
 
 namespace NewspackContentConverter\ContentPatcher\Patchers;
 
-use NewspackContentConverter\ContentPatcher\Patchers\PreconversionPatcherAbstract;
-
 /**
  * Pre-conversion Patcher that base64 encodes GB blocks in the post content, so they don't get mangled by the conversion process.
  *
@@ -19,9 +17,12 @@ class BlockEncodePatcher extends PreconversionPatcherAbstract {
 	public const ENCODED_ANCHOR = '[BLOCK-ENCODED:';
 
 	/**
-	 * @inheritDoc
+	 * Patch HTML source.
+	 *
+	 * @param string $html_content  HTML source, original content before conversion.
+	 * @param int    $post_id       Post ID.
 	 */
-	public function patch_html_source( $html_content ) {
+	public function patch_html_source( $html_content, $post_id ) {
 		return $this->encode_post_content( $html_content );
 	}
 
@@ -60,6 +61,7 @@ class BlockEncodePatcher extends PreconversionPatcherAbstract {
 
 		$anchor = self::ENCODED_ANCHOR . base64_encode( $as_string ) . ']';
 		$content = '<pre class="wp-block-preformatted">' . $anchor . '</pre>' . str_repeat( PHP_EOL, 2 );
+
 		return [
 			'blockName'    => null, // On purpose.
 			'attrs'        => [],
@@ -68,5 +70,4 @@ class BlockEncodePatcher extends PreconversionPatcherAbstract {
 			'innerContent' => [ $content ],
 		];
 	}
-
 }

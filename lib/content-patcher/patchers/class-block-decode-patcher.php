@@ -14,10 +14,14 @@ namespace NewspackContentConverter\ContentPatcher\Patchers;
  */
 class BlockDecodePatcher extends PatcherAbstract {
 
-	/*
-	 * @inheritDoc
+	/**
+	 * Patch blocks contents.
+	 *
+	 * @param string $block_content Block content after conversion to blocks.
+	 * @param string $html_content  HTML source, original content before conversion.
+	 * @param int    $post_id       Post ID.
 	 */
-	public function patch_blocks_contents( $html_content, $block_content ) {
+	public function patch_blocks_contents( $block_content, $html_content, $post_id ) {
 		return $this->decode_post_content( $block_content );
 	}
 

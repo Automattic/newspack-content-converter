@@ -92,14 +92,14 @@ class WpBlockManipulator {
 		$block_element_lines    = explode( "\n", $block_element );
 		$block_element_1st_line = $block_element_lines[0];
 
-		$curly_open_pos = strpos( $block_element_1st_line, '{' );
+		$curly_open_pos  = strpos( $block_element_1st_line, '{' );
 		$curly_close_pos = strpos( $block_element_1st_line, '}' );
 		if ( false === $curly_open_pos || false === $curly_close_pos ) {
 			return null;
 		}
 
 		$attributes_json = substr( $block_element_1st_line, $curly_open_pos, $curly_close_pos - $curly_open_pos + 1 );
-		$attributes = json_decode( $attributes_json, true );
+		$attributes      = json_decode( $attributes_json, true );
 
 		return $attributes[ $attribute_name ] ?? null;
 	}

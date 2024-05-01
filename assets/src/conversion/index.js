@@ -24,9 +24,10 @@ import { NewspackLogo } from 'newspack-components';
  */
 import {
 	fetchConversionInfo,
-	fetchInitializeConversion,
-	fetchInitializeRetryFailedConversion,
+	fetchPrepareConversion,
 	fetchResetConversion,
+	downloadListConvertedIds,
+	downloadListUnsuccessfullyConvertedIds,
 } from '../utilities';
 
 class Conversion extends Component {
@@ -34,12 +35,11 @@ class Conversion extends Component {
 		super( props );
 
 		this.state = {
-			isConversionOngoing: false,
-			queuedEntries: '...',
-			maxBatch: '...',
-			hasConvertedPosts: false,
-			hasFailedConversions: false,
-			countFailedConverting: '...',
+			isConversionPrepared: false,
+			unconvertedCount: '...',
+			totalNumberOfBatches: '...',
+			areThereSuccessfullyConvertedIds: false,
+			areThereUnconvertedIds: false,
 		};
 	}
 
@@ -47,46 +47,38 @@ class Conversion extends Component {
 		return fetchConversionInfo().then( response => {
 			if ( response ) {
 				const {
-					isConversionOngoing,
-					queuedEntries,
-					maxBatch,
-					hasConvertedPosts,
-					hasFailedConversions,
-					countFailedConverting,
+					isConversionPrepared,
+					unconvertedCount,
+					totalNumberOfBatches,
+					areThereSuccessfullyConvertedIds,
+					areThereUnconvertedIds,
 				} = response;
 				this.setState( {
-					isConversionOngoing,
-					queuedEntries,
-					maxBatch,
-					hasConvertedPosts,
-					hasFailedConversions,
-					countFailedConverting,
+					isConversionPrepared,
+					unconvertedCount,
+					totalNumberOfBatches,
+					areThereSuccessfullyConvertedIds,
+					areThereUnconvertedIds,
 				} );
 			}
 			return new Promise( ( resolve, reject ) => resolve() );
 		} );
 	}
 
-	handleOnClickInitializeConversion = () => {
-		return fetchInitializeConversion().then( response => {
-			if ( ! response || ! response.result || 'queued' != response.result ) {
-				return;
+	handleOnClickRunConversion = () => {
+		return fetchPrepareConversion().then( response => {
+			if ( response && response.success ) {
+				window.parent.location = '/wp-admin/post-new.php?newspack-content-converter';
 			}
-
-			// Redirect to Converter app to begin conversion.
-			window.parent.location = '/wp-admin/post-new.php?newspack-content-converter';
 		} );
 	};
 
-	handleOnClickInitializeRetryFailed = () => {
-		return fetchInitializeRetryFailedConversion().then( response => {
-			if ( ! response || ! response.result || 'queued' != response.result ) {
-				return;
-			}
+	handleDownloadListConverted = () => {
+		downloadListConvertedIds();
+	};
 
-			// Redirect to Converter app to begin conversion.
-			window.parent.location = '/wp-admin/post-new.php?newspack-content-converter&retry-failed';
-		} );
+	handleDownloadListUnsuccessfullyConverted = () => {
+		downloadListUnsuccessfullyConvertedIds();
 	};
 
 	handleOnClickResetConversion = () => {
@@ -99,21 +91,18 @@ class Conversion extends Component {
 
 	render() {
 		const {
-			isConversionOngoing,
-			queuedEntries,
-			maxBatch,
-			hasConvertedPosts,
-			hasFailedConversions,
-			countFailedConverting,
+			isConversionPrepared,
+			unconvertedCount,
+			totalNumberOfBatches,
+			areThereSuccessfullyConvertedIds,
+			areThereUnconvertedIds,
 		} = this.state;
-		const someConversionsFailed = true === hasConvertedPosts && true === hasFailedConversions;
-
-		if ( '1' == isConversionOngoing ) {
+		if ( '1' == isConversionPrepared ) {
 			return (
 				<Fragment>
 					<div className="newspack-logo__wrapper">
 						<Button
-							href="https://newspack.pub/"
+							href="https://newspack.com/"
 							target="_blank"
 							label={ __( 'By Newspack' ) }
 						>
@@ -124,31 +113,18 @@ class Conversion extends Component {
 						<CardHeader isShady>
 							<FlexBlock>
 								<h2>{ __( 'Converting...' ) }</h2>
-								<p>{ __( 'The conversion is already running' ) }</p>
-							</FlexBlock>
-						</CardHeader>
-						<CardFooter isBorderless>
-							<p>
-								{ __( 'A designated browser tab has already started to convert your content.' ) }
-							</p>
-						</CardFooter>
-					</Card>
-					<Card>
-						<CardHeader isShady>
-							<FlexBlock>
-								<h2>{ __( 'Reset Conversion' ) }</h2>
-								<p>{ __( 'Start converting all over again' ) }</p>
+								<p>{ __( 'A conversion is already running' ) }</p>
 							</FlexBlock>
 						</CardHeader>
 						<CardBody>
 							<Notice status="warning" isDismissible={ false }>
 								{ __(
-									'This will enable you to restart the conversion, but any previous results may be lost.'
+									'Conversion of your content has already been started in a designated browser tab. In case it was terminated or closed unexpectedly, you can reset the converson here and resume converting again.'
 								) }
 							</Notice>
 							<p>
 								{ __(
-									'In case that your active conversion browser tab has been closed by accident, or it has been interrupted and closed unexpectedly, you may reset the conversion status here.'
+									'Before attempting to see results on this page or to convert again, wait for the ongoing conversion to finish up.'
 								) }
 							</p>
 						</CardBody>
@@ -165,44 +141,13 @@ class Conversion extends Component {
 				<Fragment>
 					<div className="newspack-logo__wrapper">
 						<Button
-							href="https://newspack.pub/"
+							href="https://newspack.com/"
 							target="_blank"
 							label={ __( 'By Newspack' ) }
 						>
 							<NewspackLogo />
 						</Button>
 					</div>
-					{ !! someConversionsFailed && (
-						<Card>
-							<CardHeader isShady>
-								<FlexBlock>
-									<h2>{ __( 'Conversion Error' ) }</h2>
-									<p>
-										{ __( 'Retry converting the failed entries' ) }
-									</p>
-								</FlexBlock>
-							</CardHeader>
-							<CardBody>
-								<FlexBlock>
-									<Notice status="error" isDismissible={ false }>
-										{ __(
-											"Looks like some entries weren't converted properly."
-										) }
-									</Notice>
-									<TextControl
-										label={ __( 'Number of failed entries' ) }
-										disabled={ true }
-										value={ countFailedConverting }
-									/>
-								</FlexBlock>
-							</CardBody>
-							<CardFooter justify="flex-end">
-								<Button isPrimary onClick={ this.handleOnClickInitializeRetryFailed }>
-									{ __( 'Retry Conversion' ) }
-								</Button>
-							</CardFooter>
-						</Card>
-					) }
 					<Card>
 						<CardHeader isShady>
 							<FlexBlock>
@@ -215,31 +160,38 @@ class Conversion extends Component {
 						<CardBody>
 							<Notice status="warning" isDismissible={ false }>
 								{ __(
-									'Once started, the conversion should not be interrupted! Your browser page needs to remain active until conversion is complete.'
+									'Once started, the conversion should not be interrupted! Your browser tab needs to remain active until conversion is complete.'
 								) }
 							</Notice>
 							<h4>
-								{ __( 'This page will automatically reload for every batch.' ) }
+								{ __( 'Conversion permanently modifies content so it is recommended to perform a full database backup before running it.' ) }
 							</h4>
 							<TextControl
-								label={ __( 'Number of entries to be converted' ) }
+								label={ __( 'Number of unconverted entries' ) }
 								disabled={ true }
-								value={ queuedEntries }
+								value={ unconvertedCount }
 							/>
 							<TextControl
 								label={ __( 'Total conversion batches' ) }
 								disabled={ true }
-								value={ maxBatch }
+								value={ totalNumberOfBatches }
 							/>
 						</CardBody>
+						{ ( areThereSuccessfullyConvertedIds || areThereUnconvertedIds )&& (
+							<CardBody>
+								{ areThereSuccessfullyConvertedIds && (
+									<a href="#" onClick={ this.handleDownloadListConverted }>{ __( 'Download IDs of all converted entries' ) }</a>
+								) }
+								{ areThereSuccessfullyConvertedIds && areThereUnconvertedIds && (
+									<br/>
+								) }
+								{ areThereUnconvertedIds && (
+									<a href="#" onClick={ this.handleDownloadListUnsuccessfullyConverted }>{ __( 'Download IDs of unconverted entries' ) }</a>
+								) }
+							</CardBody>
+						) }
 						<CardFooter justify="flex-end">
-							<Button
-								isSecondary
-								href="/wp-admin/admin.php?page=newspack-content-converter-settings"
-							>
-								{ __( 'Settings' ) }
-							</Button>
-							<Button isPrimary onClick={ this.handleOnClickInitializeConversion }>
+							<Button isPrimary onClick={ this.handleOnClickRunConversion } disabled={ ( true == areThereUnconvertedIds ) ? false : true } >
 								{ __( 'Run Conversion' ) }
 							</Button>
 						</CardFooter>

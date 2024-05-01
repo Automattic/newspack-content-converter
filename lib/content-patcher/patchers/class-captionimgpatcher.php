@@ -53,12 +53,13 @@ class CaptionImgPatcher extends PatcherAbstract implements PatcherInterface {
 	/**
 	 * See the \NewspackContentConverter\ContentPatcher\Patchers\PatcherInterface::patch_blocks_contents for description.
 	 *
-	 * @param string $source_html   HTML source, original content being converted.
-	 * @param string $source_blocks Block content as result of Gutenberg "conversion to blocks".
+	 * @param string $source_blocks Block content after conversion to blocks.
+	 * @param string $source_html   HTML source, original content before conversion.
+	 * @param int    $post_id       Post ID.
 	 *
 	 * @return string|false
 	 */
-	public function patch_blocks_contents( $source_html, $source_blocks ) {
+	public function patch_blocks_contents( $source_blocks, $source_html, $post_id ) {
 
 		$matches_html = $this->square_brackets_element_manipulator->match_elements_with_closing_tags( 'caption', $source_html );
 		if ( ! $matches_html ) {
