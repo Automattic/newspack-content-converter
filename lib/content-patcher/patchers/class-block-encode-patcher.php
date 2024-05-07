@@ -34,6 +34,10 @@ class BlockEncodePatcher extends PreconversionPatcherAbstract {
 	 * @return string The string with all blocks base64 encoded.
 	 */
 	private function encode_post_content( $html ) {
+		if ( ! str_contains( $html, '<!-- ' ) ) {
+			return $html;
+		}
+
 		$blocks        = parse_blocks( $html );
 		$actual_blocks = array_filter( $blocks, fn( $block ) => ! empty( $block['blockName'] ) && ! str_contains( $block['innerHTML'], self::ENCODED_ANCHOR ) );
 
@@ -59,7 +63,7 @@ class BlockEncodePatcher extends PreconversionPatcherAbstract {
 	private function encode_block( array $block ): array {
 		$as_string = serialize_block( $block );
 
-		$anchor = self::ENCODED_ANCHOR . base64_encode( $as_string ) . ']';
+		$anchor  = self::ENCODED_ANCHOR . base64_encode( $as_string ) . ']';
 		$content = '<pre class="wp-block-preformatted">' . $anchor . '</pre>' . str_repeat( PHP_EOL, 2 );
 
 		return [
