@@ -40,6 +40,8 @@ class Conversion extends Component {
 			totalNumberOfBatches: '...',
 			areThereSuccessfullyConvertedIds: false,
 			areThereUnconvertedIds: false,
+			minIdToProcess: -1,
+			maxIdToProcess: -1,
 		};
 	}
 
@@ -52,6 +54,8 @@ class Conversion extends Component {
 					totalNumberOfBatches,
 					areThereSuccessfullyConvertedIds,
 					areThereUnconvertedIds,
+					minIdToProcess,
+					maxIdToProcess,
 				} = response;
 				this.setState( {
 					isConversionPrepared,
@@ -59,6 +63,8 @@ class Conversion extends Component {
 					totalNumberOfBatches,
 					areThereSuccessfullyConvertedIds,
 					areThereUnconvertedIds,
+					minIdToProcess,
+					maxIdToProcess,
 				} );
 			}
 			return new Promise( ( resolve, reject ) => resolve() );
@@ -96,6 +102,8 @@ class Conversion extends Component {
 			totalNumberOfBatches,
 			areThereSuccessfullyConvertedIds,
 			areThereUnconvertedIds,
+			minIdToProcess,
+			maxIdToProcess,
 		} = this.state;
 		if ( '1' == isConversionPrepared ) {
 			return (
@@ -177,6 +185,12 @@ class Conversion extends Component {
 								value={ totalNumberOfBatches }
 							/>
 						</CardBody>
+						{ ( maxIdToProcess > 0 || minIdToProcess > 0 )&& (
+							<CardBody>
+								{ ( minIdToProcess > 0 ) && ( <p>{ sprintf( __( 'Min post ID to process is set to %d' ), minIdToProcess) } </p> ) }
+								{ ( maxIdToProcess > 0 ) && ( <p>{ sprintf( __( 'Max post ID to process is set to %d' ), maxIdToProcess) } </p> ) }
+							</CardBody>
+						) }
 						{ ( areThereSuccessfullyConvertedIds || areThereUnconvertedIds )&& (
 							<CardBody>
 								{ areThereSuccessfullyConvertedIds && (

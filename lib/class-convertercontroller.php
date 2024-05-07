@@ -219,6 +219,8 @@ class ConverterController extends WP_REST_Controller {
 		$total_number_of_batches              = ceil( $unconverted_count / $this->conversion_processor->get_conversion_batch_size() );
 		$are_there_successfully_converted_ids = count( $this->conversion_processor->get_all_converted_ids() ) > 0;
 		$are_there_unconverted_ids            = $unconverted_count > 0;
+		$min_id_to_process                    = get_option( 'ncc_min_post_id_to_process', -1 );
+		$max_id_to_process                    = get_option( 'ncc_max_post_id_to_process', -1 );
 
 		$response = rest_ensure_response(
 			[
@@ -227,6 +229,8 @@ class ConverterController extends WP_REST_Controller {
 				'totalNumberOfBatches'             => $total_number_of_batches,
 				'areThereSuccessfullyConvertedIds' => $are_there_successfully_converted_ids,
 				'areThereUnconvertedIds'           => $are_there_unconverted_ids,
+				'minIdToProcess'                   => $min_id_to_process,
+				'maxIdToProcess'                   => $max_id_to_process,
 			]
 		);
 		return $response;
