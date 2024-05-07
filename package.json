@@ -1,7 +1,10 @@
 {
   "name": "newspack-content-converter",
-  "version": "0.1.0",
-  "private": true,
+  "version": "1.0.1",
+		"engines": {
+		"node": "16",
+		"npm": "8"
+	},
   "dependencies": {
     "@wordpress/base-styles": "^3.3.2",
     "@wordpress/components": "^12.0.5",

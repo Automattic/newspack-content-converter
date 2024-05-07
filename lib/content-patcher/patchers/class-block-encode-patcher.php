@@ -7,8 +7,6 @@
 
 namespace NewspackContentConverter\ContentPatcher\Patchers;
 
-use NewspackContentConverter\ContentPatcher\Patchers\PreconversionPatcherAbstract;
-
 /**
  * Pre-conversion Patcher that base64 encodes GB blocks in the post content, so they don't get mangled by the conversion process.
  *
@@ -25,9 +23,7 @@ class BlockEncodePatcher extends PreconversionPatcherAbstract {
 	 * @param int    $post_id       Post ID.
 	 */
 	public function patch_html_source( $html_content, $post_id ) {
-		$html_content_patched = $this->encode_post_content( $html_content );
-
-		return $html_content_patched;
+		return $this->encode_post_content( $html_content );
 	}
 
 	/**
@@ -54,20 +50,20 @@ class BlockEncodePatcher extends PreconversionPatcherAbstract {
 	}
 
 	/**
-	 * Encode a block's content as base64 string inside a paragraph block.
+	 * Encode a block's content as base64 string inside a block.
 	 *
 	 * @param array $block block to encode.
 	 *
-	 * @return array Paragraph block with the encoded block as innerHTML.
+	 * @return array "Empty" block with the encoded block as innerHTML.
 	 */
 	private function encode_block( array $block ): array {
 		$as_string = serialize_block( $block );
 
-		$anchor  = self::ENCODED_ANCHOR . base64_encode( $as_string ) . ']';
-		$content = "<p>{$anchor}</p>";
+		$anchor = self::ENCODED_ANCHOR . base64_encode( $as_string ) . ']';
+		$content = '<pre class="wp-block-preformatted">' . $anchor . '</pre>' . str_repeat( PHP_EOL, 2 );
 
 		return [
-			'blockName'    => 'core/paragraph',
+			'blockName'    => null, // On purpose.
 			'attrs'        => [],
 			'innerBlocks'  => [],
 			'innerHTML'    => $content,

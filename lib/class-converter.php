@@ -7,9 +7,6 @@
 
 namespace NewspackContentConverter;
 
-use NewspackContentConverter\ConverterController;
-use NewspackContentConverter\ContentPatcher\PatchHandlerInterface;
-
 /**
  * Content Converter.
  */
