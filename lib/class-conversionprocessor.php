@@ -53,7 +53,7 @@ class ConversionProcessor {
 	 * @return array Content types.
 	 */
 	public function get_conversion_post_types() {
-		return [ 'post' ];
+		return apply_filters('ncc_filter_conversion_post_types', [ 'post' ] );
 	}
 
 	/**
@@ -62,7 +62,7 @@ class ConversionProcessor {
 	 * @return array Content statuses.
 	 */
 	public function get_conversion_post_statuses() {
-		return [ 'publish' ];
+		return apply_filters('ncc_filter_conversion_post_statuses', [ 'publish' ] );
 	}
 
 	/**
