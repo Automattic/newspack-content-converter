@@ -53,7 +53,9 @@ class ConversionProcessor {
 	 * @return array Content types.
 	 */
 	public function get_conversion_post_types() {
-		return apply_filters( 'ncc_filter_conversion_post_types', [ 'post' ] );
+		$post_types_option = get_option( 'ncc_conversion_post_types', ['post'] );
+		// Even though filtering could happen on the option too, we keep this filter for legacy reasons.
+		return apply_filters( 'ncc_filter_conversion_post_types', $post_types_option );
 	}
 
 	/**
@@ -62,7 +64,9 @@ class ConversionProcessor {
 	 * @return array Content statuses.
 	 */
 	public function get_conversion_post_statuses() {
-		return apply_filters( 'ncc_filter_conversion_post_statuses', [ 'publish' ] );
+		$post_statuses_option = get_option( 'ncc_conversion_post_statuses', ['publish'] );
+		// Even though filtering could happen on the option too, we keep this filter for legacy reasons.
+		return apply_filters( 'ncc_filter_conversion_post_statuses', $post_statuses_option );
 	}
 
 	/**
