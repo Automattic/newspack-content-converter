@@ -90,6 +90,9 @@ class ConversionProcessor {
 		$post_statuses         = $this->get_conversion_post_statuses();
 		$statuses_placeholders = implode( ',', array_fill( 0, count( $post_statuses ), '%s' ) );
 
+		$min_post_id_to_process = get_option( 'ncc_min_post_id_to_process', 0 );
+		$max_post_id_to_process = get_option( 'ncc_max_post_id_to_process', PHP_INT_MAX );
+
 		// Get unconverted IDs. Exclude posts that begin with block code.
 		// phpcs:disable -- WordPress.DB.PreparedSQLPlaceholders.LikeWildcardsInQuery.
 		$ids = $wpdb->get_col(
@@ -99,10 +102,16 @@ class ConversionProcessor {
 				-- Select desired post types.
 				WHERE post_type IN ( {$types_placeholders} )
 				AND post_status IN ( {$statuses_placeholders} )
+				AND ID BETWEEN %d AND %d
 				-- Filter out post which are already in blocks.
 				AND post_content NOT LIKE '<!-- wp:%'
 				ORDER BY ID DESC ;",
-				array_merge( $post_types, $post_statuses )
+				[
+					...$post_types,
+					...$post_statuses,
+					$min_post_id_to_process,
+					$max_post_id_to_process,
+				]
 			)
 		);
 		// phpcs:enable
