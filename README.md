@@ -44,4 +44,4 @@ It also lets you delete all this custom postmeta from your database, which will 
 - `nvm use 16`
 - `npm ci`
 - `npm run build` for a single build or `npm start` to compile the JS files and start the file watcher
-- `npm run release:archive` to package a release. The archive will be created in `assets/release/newspack-content-converter.zip`
+- `npm run release` to package a release. The archive will be created in `assets/release/newspack-content-converter.zip`
