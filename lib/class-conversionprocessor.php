@@ -107,7 +107,7 @@ class ConversionProcessor {
 	}
 
 	/**
-	 * Gets successfully converted post IDs from postmeta (ordered DESC).
+	 * Gets successfully converted post IDs from postmeta (ordered DESC) – it would be posts that has a POSTMETA_ORIGINAL_POST_CONTENT postmeta entry.
 	 *
 	 * @return array Post IDs.
 	 */
@@ -116,8 +116,8 @@ class ConversionProcessor {
 
 		$ids = $wpdb->get_col(
 			$wpdb->prepare(
-				// If there are multiple backups in postmeta, get the most recent one with MAX(meta_value).
-				"SELECT wpm.post_id, MAX( wpm.meta_value ) as meta_value
+				// In case there are multiple metas for same post_id, use the most recent one with the max meta id.
+				"SELECT wpm.post_id, MAX( wpm.meta_id )
 				FROM {$wpdb->postmeta} wpm
 				WHERE wpm.meta_key = %s
 				GROUP BY wpm.post_id
