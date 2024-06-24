@@ -42,6 +42,7 @@ class Conversion extends Component {
 			areThereUnconvertedIds: false,
 			minIdToProcess: -1,
 			maxIdToProcess: -1,
+			pluginVersion: '',
 		};
 	}
 
@@ -56,6 +57,7 @@ class Conversion extends Component {
 					areThereUnconvertedIds,
 					minIdToProcess,
 					maxIdToProcess,
+					pluginVersion,
 				} = response;
 				this.setState( {
 					isConversionPrepared,
@@ -65,6 +67,7 @@ class Conversion extends Component {
 					areThereUnconvertedIds,
 					minIdToProcess,
 					maxIdToProcess,
+					pluginVersion,
 				} );
 			}
 			return new Promise( ( resolve, reject ) => resolve() );
@@ -104,6 +107,7 @@ class Conversion extends Component {
 			areThereUnconvertedIds,
 			minIdToProcess,
 			maxIdToProcess,
+			pluginVersion,
 		} = this.state;
 		if ( '1' == isConversionPrepared ) {
 			return (
@@ -127,7 +131,7 @@ class Conversion extends Component {
 						<CardBody>
 							<Notice status="warning" isDismissible={ false }>
 								{ __(
-									'Conversion of your content has already been started in a designated browser tab. In case it was terminated or closed unexpectedly, you can reset the converson here and resume converting again.'
+									'Conversion of your content has already been started in a designated browser tab. In case it was terminated or closed unexpectedly, you can reset the conversion here and resume converting again.'
 								) }
 							</Notice>
 							<p>
@@ -162,6 +166,9 @@ class Conversion extends Component {
 								<h2>{ __( 'Newspack Content Converter' ) }</h2>
 								<p>
 									{ __( 'Convert classic HTML to Gutenberg blocks' ) }
+								</p>
+								<p>
+									{ __('Plugin version: ') + pluginVersion }
 								</p>
 							</FlexBlock>
 						</CardHeader>

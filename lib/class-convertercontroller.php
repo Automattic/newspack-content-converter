@@ -211,7 +211,7 @@ class ConverterController extends WP_REST_Controller {
 	 * Callback for the /conversion/get-info route.
 	 * Fetches info for the conversion page.
 	 *
-	 * @return array Info for the settings page.
+	 * @return \WP_REST_Response|\WP_Error Info for the settings page.
 	 */
 	public function get_conversion_info() {
 		$is_conversion_prepared               = $this->conversion_processor->is_conversion_prepared() ? '1' : '0';
@@ -222,6 +222,12 @@ class ConverterController extends WP_REST_Controller {
 		$min_id_to_process                    = get_option( 'ncc_min_post_id_to_process', -1 );
 		$max_id_to_process                    = get_option( 'ncc_max_post_id_to_process', -1 );
 
+		// Include the necessary WordPress file if not already included.
+		if ( ! function_exists( 'get_plugin_data' ) ) {
+			require_once( ABSPATH . 'wp-admin/includes/plugin.php' );
+		}
+		$plugin_data = get_plugin_data( plugin_dir_path( __DIR__ ) . '/newspack-content-converter.php' );
+
 		$response = rest_ensure_response(
 			[
 				'isConversionPrepared'             => $is_conversion_prepared,
@@ -231,8 +237,10 @@ class ConverterController extends WP_REST_Controller {
 				'areThereUnconvertedIds'           => $are_there_unconverted_ids,
 				'minIdToProcess'                   => $min_id_to_process,
 				'maxIdToProcess'                   => $max_id_to_process,
+				'pluginVersion'                    => $plugin_data['Version'] ?? 'unknown',
 			]
 		);
+
 		return $response;
 	}
 
