@@ -90,6 +90,9 @@ export function insertClassicBlockWithContent( html ) {
 
 /**
  * Triggers conversion of all Classic Blocks found in the Block Editor into Gutenberg Blocks.
+ * 
+ * Gallery Blocks need to have their attachments data pulled from REST API and their inner blocks
+ * need to be populated after that with the correct image data.
  *
  * @param String html HTML source before conversion.
  * @returns {Promise<any> | Promise}
@@ -98,21 +101,17 @@ export function dispatchConvertClassicToBlocks( html ) {
 	return new Promise( async function( resolve, reject ) {
 		const blocks = select( 'core/block-editor' ).getBlocks();
 
-		for (let block of blocks) {
-			if ( block.name !== 'core/freeform' ) {
-				continue;
-			}
+		const classicBlocks = blocks.filter( ( block ) => block.name === 'core/freeform' );
 
-			const newBlocks = rawHandler( {
-				HTML: serialize( block ),
+		for ( let classicBlock of classicBlocks ) {
+			const convertedBlocks = rawHandler( {
+				HTML: serialize( classicBlock ),
 			} );
 
-			for (let newBlock of newBlocks) {
-				if ( newBlock.name !== 'core/gallery' ) {
-					continue;
-				}
+			const galleryBlocks = convertedBlocks.filter( ( block ) => block.name === 'core/gallery' );
 
-				const attachmentIds = newBlock.innerBlocks
+			for ( let galleryBlock of galleryBlocks ) {
+				const attachmentIds = galleryBlock.innerBlocks
 					.filter( ( imageBlock ) => imageBlock.attributes.id !== undefined )
 					.map( ( imageBlock ) => imageBlock.attributes.id );
 
@@ -123,14 +122,12 @@ export function dispatchConvertClassicToBlocks( html ) {
 					orderby: 'include',
 				} );
 
-				for (let galleryImageBlockIndex = 0; galleryImageBlockIndex < newBlock.innerBlocks.length; galleryImageBlockIndex++) {
-					const galleryImageBlock = newBlock.innerBlocks[galleryImageBlockIndex];
-
-					const { sizeSlug, linkTo } = newBlock.attributes;
+				galleryBlock.innerBlocks.forEach( ( galleryImageBlock, galleryImageBlockIndex ) => {
+					const { sizeSlug, linkTo } = galleryBlock.attributes;
 					const { id } = galleryImageBlock.attributes;
-
+	
 					const attachment = attachments.find( ( attachment ) => attachment.id === id );
-
+	
 					const imageBlock = createBlock( 'core/image', {
 						url: attachment?.source_url,
 						id: id ? parseInt( id, 10 ) : null,
@@ -139,19 +136,19 @@ export function dispatchConvertClassicToBlocks( html ) {
 						linkDestination: linkTo,
 						caption: attachment?.caption?.raw,
 					} );
-
+	
 					wp.data.dispatch( 'core/block-editor' ).replaceBlocks(
 						galleryImageBlock.clientId,
 						imageBlock
 					);
-
-					newBlock.innerBlocks[ galleryImageBlockIndex ] = imageBlock;
-				}
+	
+					galleryBlock.innerBlocks[ galleryImageBlockIndex ] = imageBlock;
+				} );
 			}
 
 			wp.data.dispatch( 'core/block-editor' ).replaceBlocks(
-				block.clientId,
-				newBlocks
+				classicBlock.clientId,
+				convertedBlocks
 			);
 		}
 
