@@ -80,7 +80,7 @@ export function getPostContentById( id ) {
  */
 export function insertClassicBlockWithContent( html ) {
 	return new Promise( function( resolve, reject ) {
-		const block = parse(html);
+		const block = parse( html );
 
 		dispatch( 'core/block-editor' ).insertBlocks( block );
 
