@@ -2,8 +2,9 @@
  * WordPress dependencies.
  */
 import apiFetch from '@wordpress/api-fetch';
-import { createBlock, getBlockContent, rawHandler } from '@wordpress/blocks';
-import { dispatch, select } from '@wordpress/data';
+import { createBlock, parse, rawHandler, serialize } from '@wordpress/blocks';
+import { dispatch, select, resolveSelect } from '@wordpress/data';
+import { store as coreStore } from '@wordpress/core-data';
 
 const NEWSPACK_CONVERTER_API_BASE_URL = '/newspack-content-converter';
 
@@ -79,35 +80,78 @@ export function getPostContentById( id ) {
  */
 export function insertClassicBlockWithContent( html ) {
 	return new Promise( function( resolve, reject ) {
-		const block = createBlock( 'core/freeform' );
-		block.attributes.content = html;
+		const block = parse( html );
+
 		dispatch( 'core/block-editor' ).insertBlocks( block );
-		// --- OR: let block = wp.blocks.createBlock( "core/freeform", { content: 'test' } );
+
 		resolve( html );
 	} );
 }
 
 /**
  * Triggers conversion of all Classic Blocks found in the Block Editor into Gutenberg Blocks.
+ * 
+ * Gallery Blocks need to have their attachments data pulled from REST API and their inner blocks
+ * need to be populated after that with the correct image data.
  *
  * @param String html HTML source before conversion.
  * @returns {Promise<any> | Promise}
  */
 export function dispatchConvertClassicToBlocks( html ) {
-	return new Promise( function( resolve, reject ) {
-		select( 'core/block-editor' )
-			.getBlocks()
-			.forEach( function( block, blockIndex ) {
-				if ( block.name === 'core/freeform' ) {
-					// Previously here used now deprecated `dispatch( 'core/editor' ).replaceBlocks()`.
-					wp.data.dispatch( 'core/block-editor' ).replaceBlocks(
-						block.clientId,
-						rawHandler( {
-							HTML: getBlockContent( block ),
-						} )
-					);
-				}
+	return new Promise( async function( resolve, reject ) {
+		const blocks = select( 'core/block-editor' ).getBlocks();
+
+		const classicBlocks = blocks.filter( ( block ) => block.name === 'core/freeform' );
+
+		for ( let classicBlock of classicBlocks ) {
+			const convertedBlocks = rawHandler( {
+				HTML: serialize( classicBlock ),
 			} );
+
+			const galleryBlocks = convertedBlocks.filter( ( block ) => block.name === 'core/gallery' );
+
+			for ( let galleryBlock of galleryBlocks ) {
+				const attachmentIds = galleryBlock.innerBlocks
+					.filter( ( imageBlock ) => imageBlock.attributes.id !== undefined )
+					.map( ( imageBlock ) => imageBlock.attributes.id );
+
+				// Fetch Image Data from API
+				const attachments = await resolveSelect( coreStore ).getMediaItems( {
+					include: attachmentIds,
+					per_page: -1,
+					orderby: 'include',
+				} );
+
+				galleryBlock.innerBlocks.forEach( ( galleryImageBlock, galleryImageBlockIndex ) => {
+					const { sizeSlug, linkTo } = galleryBlock.attributes;
+					const { id } = galleryImageBlock.attributes;
+	
+					const attachment = attachments.find( ( attachment ) => attachment.id === id );
+	
+					const imageBlock = createBlock( 'core/image', {
+						url: attachment?.source_url,
+						id: id ? parseInt( id, 10 ) : null,
+						alt: attachment?.alt_text,
+						sizeSlug: sizeSlug,
+						linkDestination: linkTo,
+						caption: attachment?.caption?.raw,
+					} );
+	
+					wp.data.dispatch( 'core/block-editor' ).replaceBlocks(
+						galleryImageBlock.clientId,
+						imageBlock
+					);
+	
+					galleryBlock.innerBlocks[ galleryImageBlockIndex ] = imageBlock;
+				} );
+			}
+
+			wp.data.dispatch( 'core/block-editor' ).replaceBlocks(
+				classicBlock.clientId,
+				convertedBlocks
+			);
+		}
+
 		resolve( html );
 	} );
 }
