@@ -112,7 +112,7 @@ export function dispatchConvertClassicToBlocks( html ) {
 
 			for ( let galleryBlock of galleryBlocks ) {
 				const attachmentIds = galleryBlock.innerBlocks
-					.filter( ( imageBlock ) => imageBlock.attributes.id !== undefined )
+					.filter( ( imageBlock ) => Number.isInteger( imageBlock.attributes.id ) )
 					.map( ( imageBlock ) => imageBlock.attributes.id );
 
 				// Fetch Image Data from API
@@ -125,24 +125,29 @@ export function dispatchConvertClassicToBlocks( html ) {
 				galleryBlock.innerBlocks.forEach( ( galleryImageBlock, galleryImageBlockIndex ) => {
 					const { sizeSlug, linkTo } = galleryBlock.attributes;
 					const { id } = galleryImageBlock.attributes;
-	
-					const attachment = attachments.find( ( attachment ) => attachment.id === id );
-	
-					const imageBlock = createBlock( 'core/image', {
-						url: attachment?.source_url,
-						id: id ? parseInt( id, 10 ) : null,
-						alt: attachment?.alt_text,
-						sizeSlug: sizeSlug,
-						linkDestination: linkTo,
-						caption: attachment?.caption?.raw,
-					} );
-	
-					wp.data.dispatch( 'core/block-editor' ).replaceBlocks(
-						galleryImageBlock.clientId,
-						imageBlock
-					);
-	
-					galleryBlock.innerBlocks[ galleryImageBlockIndex ] = imageBlock;
+
+					if ( ! id ) {
+						// Image Block has an empty ID and needs to be removed
+						galleryBlock.innerBlocks.splice( galleryImageBlockIndex, 1 );
+					} else {
+						const attachment = attachments.find( ( attachment ) => attachment.id === id );
+
+						const imageBlock = createBlock( 'core/image', {
+							url: attachment?.source_url,
+							id: id ? parseInt( id, 10 ) : null,
+							alt: attachment?.alt_text,
+							sizeSlug: sizeSlug,
+							linkDestination: linkTo,
+							caption: attachment?.caption?.raw,
+						} );
+
+						wp.data.dispatch( 'core/block-editor' ).replaceBlocks(
+							galleryImageBlock.clientId,
+							imageBlock
+						);
+
+						galleryBlock.innerBlocks[ galleryImageBlockIndex ] = imageBlock;
+					}
 				} );
 			}
 
