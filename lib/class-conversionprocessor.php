@@ -104,6 +104,7 @@ class ConversionProcessor {
 				AND post_status IN ( {$statuses_placeholders} )
 				AND ID BETWEEN %d AND %d
 				-- Filter out post which are already in blocks.
+				AND post_content != ''
 				AND post_content NOT LIKE '<!-- wp:%'
 				ORDER BY ID DESC ;",
 				[
