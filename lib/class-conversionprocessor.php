@@ -357,8 +357,15 @@ class ConversionProcessor {
 			// Back up original post_content as post meta.
 			add_post_meta( $post_id, self::POSTMETA_ORIGINAL_POST_CONTENT, $current_post_content );
 
+			// Store revision before the content has been updated.
+			// No need to store revision after update since the update triggers that.
+			wp_save_post_revision( $post_id );
+
 			// Update post_content.
-			$wpdb->update( $wpdb->posts, [ 'post_content' => $blocks_content_patched ], [ 'ID' => $post_id ] );
+			wp_update_post( [
+				'ID' => $post_id,
+				'post_content' => $blocks_content_patched,
+			] );
 
 			/**
 			 * Fires after post content has been updated.
