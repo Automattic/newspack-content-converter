@@ -2,7 +2,6 @@
  * WordPress dependencies.
  */
 import { render } from '@wordpress/element';
-import queryString from 'query-string';
 
 /**
  * Internal dependencies.
