@@ -1,10 +1,6 @@
 {
   "name": "newspack-content-converter",
   "version": "1.2.0",
-  "engines": {
-    "node": "16",
-    "npm": "8"
-  },
   "dependencies": {
     "@wordpress/components": "^12.0.5",
     "newspack-components": "^3.1.0",
@@ -12,20 +8,16 @@
     "sass": "^1.67.0"
   },
   "scripts": {
-    "build:js": "calypso-build",
-    "build": "newspack-scripts build",
-    "build-old": "run-p \"build:*\"",
     "clean": "rm -rf assets/dist/",
-    "dev:js": "calypso-build --watch",
-    "dev": "run-p \"dev:*\"",
-    "start": "npm run dev",
+    "build": "npm run clean && newspack-scripts wp-scripts build --output-path assets/dist",
+    "start": "npm run clean && newspack-scripts wp-scripts start --output-path assets/dist",
     "release:build-all": "composer install --no-dev && NODE_ENV=production run-p \"build\"",
     "release:archive": "mkdir -p assets/release && zip -r assets/release/newspack-content-converter.zip . -x assets/release/\\* bin/\\* tests/\\* node_modules/\\* .git/\\* .github/\\* .cache/\\* .gitignore .editorconfig .prettierrc phpcs.xml phpunit.xml.dist .DS_Store",
     "release": "run-p \"clean\" && run-p \"release:build-all\" && run-p \"release:archive\""
   },
   "devDependencies": {
     "eslint": "^7.32.0",
-    "newspack-scripts": "^5.3.0",
+    "newspack-scripts": "^5.5.2",
     "prettier": "npm:wp-prettier@^2.6.2-beta-1"
   }
 }

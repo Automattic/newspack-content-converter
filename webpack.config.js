@@ -3,14 +3,11 @@
  */
 /* eslint-disable import/no-nodejs-modules */
 
-const getBaseWebpackConfig = require( '@automattic/calypso-build/webpack.config.js' );
-const path = require( 'path' );
+const getBaseWebpackConfig = require( 'newspack-scripts/config/getWebpackConfig' );
 
 const webpackConfig = getBaseWebpackConfig(
-	{ WP: true },
 	{
 		entry: './assets/src/',
-		'output-path': path.join( __dirname, 'assets', 'dist' ),
 	}
 );
 
