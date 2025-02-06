@@ -2,7 +2,7 @@
   "name": "newspack-content-converter",
   "version": "1.2.0",
   "dependencies": {
-    "@wordpress/components": "^12.0.5",
+    "@wordpress/components": "^29.3.0",
     "newspack-components": "^3.1.0",
     "npm-run-all": "^4.1.5",
     "sass": "^1.67.0"
