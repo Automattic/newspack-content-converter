@@ -8,8 +8,6 @@ import {
 	Card,
 	CardBody,
 	CardFooter,
-	CardHeader,
-	FlexBlock,
 	Notice,
 	Spinner
 } from '@wordpress/components';
@@ -17,7 +15,7 @@ import {
 /**
  * Newspack dependencies.
  */
-import { NewspackLogo } from 'newspack-components';
+import { NewspackIcon } from 'newspack-components';
 
 /**
  * Internal dependencies.
@@ -45,7 +43,7 @@ class ContentConverter extends Component {
 	}
 
 	componentDidMount() {
-		document.title = "Newspack Content Converter";
+		document.title = "Content Converter";
 
 		// Run a batch of conversions.
 		return fetchConversionBatch()
@@ -102,22 +100,14 @@ class ContentConverter extends Component {
 			// This is the initial state of the interface, before conversion has started (true) or finished (false).
 			return (
 				<div className="newspack-content-converter__wrapper">
-					<div className="newspack-logo__wrapper">
-						<Button
-							href="https://newspack.com/"
-							target="_blank"
-							label={ __( 'By Newspack' ) }
-						>
-							<NewspackLogo />
-						</Button>
+					<div className="newspack-header">
+						<NewspackIcon />
+						<h2>{ __( 'Content Converter / Converting...' ) }</h2>
 					</div>
 					<Card>
-						<CardHeader isShady>
-							<FlexBlock>
-								<h2>{ __( 'Converting...' ) }</h2>
-								<p>{ __( 'Conversion to Gutenberg blocks is in progress' ) }</p>
-							</FlexBlock>
-						</CardHeader>
+						<CardBody>
+							<p>{ __( 'Conversion to Gutenberg blocks is in progress' ) }</p>
+						</CardBody>
 						<CardFooter justify="center" isBorderless>
 							<Spinner /> { __( 'Fetching posts for conversion... ' ) }
 						</CardFooter>
@@ -128,24 +118,14 @@ class ContentConverter extends Component {
 			// Conversion is running.
 			return (
 				<div className="newspack-content-converter__wrapper is-active">
-					<div className="newspack-logo__wrapper">
-						<Button
-							href="https://newspack.com/"
-							target="_blank"
-							label={ __( 'By Newspack' ) }
-						>
-							<NewspackLogo />
-						</Button>
+					<div className="newspack-header">
+						<NewspackIcon />
+						<h2>{ __( 'Content Converter / Converting...' ) }</h2>
 					</div>
 					<Card>
-						<CardHeader isShady>
-							<FlexBlock>
-								<h2>{ __( 'Converting...' ) }</h2>
-								<p>{ __( 'Conversion to Gutenberg blocks is in progress' ) }</p>
-							</FlexBlock>
-						</CardHeader>
 						<CardBody>
 							<h4>{ __( 'Do not close this page!' ) }</h4>
+							<p>{ __( 'Conversion to Gutenberg blocks is in progress' ) }</p>
 							<p>
 								{ __(
 									'This page will occasionally automatically reload, and notify you when the conversion is complete.'
@@ -174,22 +154,11 @@ class ContentConverter extends Component {
 			// Conversion has finished.
 			return (
 				<div className="newspack-content-converter__wrapper">
-					<div className="newspack-logo__wrapper">
-						<Button
-							href="https://newspack.com/"
-							target="_blank"
-							label={ __( 'By Newspack' ) }
-						>
-							<NewspackLogo />
-						</Button>
+					<div className="newspack-header">
+						<NewspackIcon />
+						<h2>{ __( 'Content Converter / Conversion completed' ) }</h2>
 					</div>
 					<Card>
-						<CardHeader isShady>
-							<FlexBlock>
-								<h2>{ __( 'Finished' ) }</h2>
-								<p>{ __( 'Conversion to Gutenberg blocks is now complete' ) }</p>
-							</FlexBlock>
-						</CardHeader>
 						<CardBody>
 							<Notice isDismissible={ false } status="success">
 								{ __( 'All content has been converted.' ) }

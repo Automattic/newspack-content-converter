@@ -112,14 +112,14 @@ class Converter {
 			function () {
 
 				add_menu_page(
-					__( 'Newspack Content Converter' ),
-					__( 'Newspack Content Converter' ),
+					__( 'Content Converter' ),
+					__( 'Content Converter' ),
 					'manage_options',
 					'newspack-content-converter',
 					function () {
 						echo '<div id="ncc-conversion"></div>';
 					},
-					'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZD0iTTcgNy4yaDguMkwxMy41IDlsMS4xIDEuMSAzLjYtMy42LTMuNS00LTEuMSAxIDEuOSAyLjNIN2MtLjkgMC0xLjcuMy0yLjMuOS0xLjQgMS41LTEuNCA0LjItMS40IDUuNnYuMmgxLjV2LS4zYzAtMS4xIDAtMy41IDEtNC41LjMtLjMuNy0uNSAxLjItLjV6bTEzLjggNFYxMWgtMS41di4zYzAgMS4xIDAgMy41LTEgNC41LS4zLjMtLjcuNS0xLjMuNUg4LjhsMS43LTEuNy0xLjEtMS4xTDUuOSAxN2wzLjUgNCAxLjEtMS0xLjktMi4zSDE3Yy45IDAgMS43LS4zIDIuMy0uOSAxLjUtMS40IDEuNS00LjIgMS41LTUuNnoiIGZpbGw9IndoaXRlIi8+PC9zdmc+Cg=='
+					'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgZmlsbD0ibm9uZSI+PHBhdGggZmlsbD0iI2ZmZiIgZD0iTTE1LjM5MiAxMC41MmgzLjI0OGMuNDg3IDAgLjgxMi0uMzI1LjgxMi0uODEyVjYuNDZjMC0uNDg3LS4zMjUtLjgxMi0uODEyLS44MTJoLTMuMjQ4Yy0uNDg3IDAtLjgxMi4zMjUtLjgxMi44MTJ2My4yNDhjMCAuNDg3LjMyNS44MTIuODEyLjgxMlptLTYuNDk2IDMuMjQ4SDUuNjQ4Yy0uNDg3IDAtLjgxMi4zMjQtLjgxMi44MTJ2My4yNDhjMCAuNDg3LjMyNS44MTIuODEyLjgxMmgzLjI0OGMuNDg3IDAgLjgxMi0uMzI1LjgxMi0uODEyVjE0LjU4YzAtLjQ4OC0uMzI1LS44MTItLjgxMi0uODEyWm04LjEyLTIuMTExLTIuODQyIDIuOTIzLjg5My44OTMgMS4zOC0xLjM4Yy0uMDguODkzLS4yNDMgMS44NjctLjczIDIuMzU0LS4yNDQuMjQ0LS41NjkuNDA2LTEuMDU2LjQwNmgtMy42NTR2MS4yMThoMy41NzNjLjczIDAgMS4zOC0uMjQzIDEuODY3LS43My44MTItLjgxMyAxLjA1Ni0yLjE5MyAxLjEzNy0zLjI0OWwxLjQ2MiAxLjQ2Mi44OTMtLjg5My0yLjkyMy0zLjAwNFptLTkuMDk1LTEuMzhjLjA4Mi0uODk0LjI0NC0xLjg2OC43MzEtMi4zNTYuMzI1LS4zMjQuNjUtLjQ4NyAxLjA1Ni0uNDg3aDMuNjU0VjYuMjk4SDkuNzA4Yy0uNzMxIDAtMS4zOC4yNDMtMS44NjguNzMtLjgxMi44MTItMS4wNTUgMi4xOTMtMS4xMzYgMy4yNDhsLTEuNDYyLTEuMzgtLjgxMi44MTIgMi44NDIgMi45MjMgMi44NDItMi45MjMtLjgxMi0uODEyLTEuMzggMS4zOFoiLz48L3N2Zz4=',
 				);
 
 				add_submenu_page(

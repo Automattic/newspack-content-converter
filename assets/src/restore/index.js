@@ -8,8 +8,6 @@ import {
 	Card,
 	CardBody,
 	CardFooter,
-	CardHeader,
-	FlexBlock,
 	Notice,
 	TextControl,
 	TextareaControl
@@ -18,7 +16,7 @@ import {
 /**
  * Newspack dependencies.
  */
-import { NewspackLogo } from 'newspack-components';
+import { NewspackIcon } from 'newspack-components';
 
 /**
  * Internal dependencies.
@@ -111,24 +109,11 @@ class Restore extends Component {
 		if ( null === restoredSuccessfully ) {
 			return (
 				<Fragment>
-					<div className="newspack-logo__wrapper">
-						<Button
-							href="https://newspack.com/"
-							target="_blank"
-							label={ __( 'By Newspack' ) }
-						>
-							<NewspackLogo />
-						</Button>
+					<div className="newspack-header">
+						<NewspackIcon />
+						<h2>{ __( 'Content Converter / Restore content' ) }</h2>
 					</div>
 					<Card>
-						<CardHeader isShady>
-							<FlexBlock>
-								<h2>{ __( 'Restore content' ) }</h2>
-								<p>
-									{ __( 'Restore post content to original content before conversion.' ) }
-								</p>
-							</FlexBlock>
-						</CardHeader>
 						<CardBody>
 							<p>
 								{ __(
@@ -180,22 +165,11 @@ class Restore extends Component {
 		} else if ( true === restoredSuccessfully ) {
 			return (
 				<Fragment>
-					<div className="newspack-logo__wrapper">
-						<Button
-							href="https://newspack.com/"
-							target="_blank"
-							label={ __( 'By Newspack' ) }
-						>
-							<NewspackLogo />
-						</Button>
+					<div className="newspack-header">
+						<NewspackIcon />
+						<h2>{ __( 'Content Converter / Content restored' ) }</h2>
 					</div>
 					<Card>
-						<CardHeader isShady>
-						<FlexBlock>
-							<h2>{ __( 'Content restored' ) }</h2>
-							<p>{ __( 'Restoring content is now complete' ) }</p>
-						</FlexBlock>
-						</CardHeader>
 						<CardBody>
 							<Notice isDismissible={ false } status="success">
 								{ __( 'Content has been restored to before conversion.' ) }
@@ -212,22 +186,11 @@ class Restore extends Component {
 		} else if ( false === restoredSuccessfully ) {
 			return (
 				<Fragment>
-					<div className="newspack-logo__wrapper">
-						<Button
-							href="https://newspack.com/"
-							target="_blank"
-							label={ __( 'By Newspack' ) }
-						>
-							<NewspackLogo />
-						</Button>
+					<div className="newspack-header">
+						<NewspackIcon />
+						<h2>{ __( 'Content Converter / Error' ) }</h2>
 					</div>
 					<Card>
-						<CardHeader isShady>
-							<FlexBlock>
-								<h2>{ __( 'Restore error' ) }</h2>
-								<p>{ __( 'An error occurred' ) }</p>
-							</FlexBlock>
-						</CardHeader>
 						<CardBody>
 							<Notice status="warning" isDismissible={ false }>
 								{ __(
