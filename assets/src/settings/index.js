@@ -8,15 +8,13 @@ import {
 	Card,
 	CardBody,
 	CardFooter,
-	CardHeader,
-	FlexBlock,
 	TextControl
 } from '@wordpress/components';
 
 /**
  * Newspack dependencies.
  */
-import { NewspackLogo } from 'newspack-components';
+import { NewspackIcon } from 'newspack-components';
 
 /**
  * Internal dependencies.
@@ -57,24 +55,11 @@ class Settings extends Component {
 
 		return (
 			<Fragment>
-				<div className="newspack-logo__wrapper">
-					<Button
-						href="https://newspack.com/"
-						target="_blank"
-						label={ __( 'By Newspack' ) }
-					>
-						<NewspackLogo />
-					</Button>
+				<div className="newspack-header">
+					<NewspackIcon />
+					<h2>{ __( 'Content Converter / Settings' ) }</h2>
 				</div>
 				<Card>
-					<CardHeader isShady>
-						<FlexBlock>
-							<h2>{ __( 'Settings' ) }</h2>
-							<p>
-								{ __( 'Adding content to the queue to convert it to Gutenberg blocks' ) }
-							</p>
-						</FlexBlock>
-					</CardHeader>
 					<CardBody>
 						<p>
 							{ __(

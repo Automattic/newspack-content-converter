@@ -8,8 +8,6 @@ import {
 	Card,
 	CardBody,
 	CardFooter,
-	CardHeader,
-	FlexBlock,
 	Notice,
 	TextControl
 } from '@wordpress/components';
@@ -17,7 +15,7 @@ import {
 /**
  * Newspack dependencies.
  */
-import { NewspackLogo } from 'newspack-components';
+import { NewspackIcon } from 'newspack-components';
 
 /**
  * Internal dependencies.
@@ -42,7 +40,6 @@ class Conversion extends Component {
 			areThereUnconvertedIds: false,
 			minIdToProcess: -1,
 			maxIdToProcess: -1,
-			pluginVersion: '',
 		};
 	}
 
@@ -57,7 +54,6 @@ class Conversion extends Component {
 					areThereUnconvertedIds,
 					minIdToProcess,
 					maxIdToProcess,
-					pluginVersion,
 				} = response;
 				this.setState( {
 					isConversionPrepared,
@@ -67,7 +63,6 @@ class Conversion extends Component {
 					areThereUnconvertedIds,
 					minIdToProcess,
 					maxIdToProcess,
-					pluginVersion,
 				} );
 			}
 			return new Promise( ( resolve, reject ) => resolve() );
@@ -107,27 +102,15 @@ class Conversion extends Component {
 			areThereUnconvertedIds,
 			minIdToProcess,
 			maxIdToProcess,
-			pluginVersion,
 		} = this.state;
 		if ( '1' == isConversionPrepared ) {
 			return (
 				<Fragment>
-					<div className="newspack-logo__wrapper">
-						<Button
-							href="https://newspack.com/"
-							target="_blank"
-							label={ __( 'By Newspack' ) }
-						>
-							<NewspackLogo />
-						</Button>
+					<div className="newspack-header">
+						<NewspackIcon />
+						<h2>{ __( 'Content Converter / Converting...' ) }</h2>
 					</div>
 					<Card>
-						<CardHeader isShady>
-							<FlexBlock>
-								<h2>{ __( 'Converting...' ) }</h2>
-								<p>{ __( 'A conversion is already running' ) }</p>
-							</FlexBlock>
-						</CardHeader>
 						<CardBody>
 							<Notice status="warning" isDismissible={ false }>
 								{ __(
@@ -151,27 +134,11 @@ class Conversion extends Component {
 		} else {
 			return (
 				<Fragment>
-					<div className="newspack-logo__wrapper">
-						<Button
-							href="https://newspack.com/"
-							target="_blank"
-							label={ __( 'By Newspack' ) }
-						>
-							<NewspackLogo />
-						</Button>
+					<div className="newspack-header">
+						<NewspackIcon />
+						<h2>{ __( 'Content Converter' ) }</h2>
 					</div>
 					<Card>
-						<CardHeader isShady>
-							<FlexBlock>
-								<h2>{ __( 'Newspack Content Converter' ) }</h2>
-								<p>
-									{ __( 'Convert classic HTML to Gutenberg blocks' ) }
-								</p>
-								<p>
-									{ __('Plugin version: ') + pluginVersion }
-								</p>
-							</FlexBlock>
-						</CardHeader>
 						<CardBody>
 							<Notice status="warning" isDismissible={ false }>
 								{ __(

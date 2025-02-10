@@ -1,5 +1,13 @@
 @import '~newspack-components/shared/scss/colors';
 
+#wpwrap {
+	background: white;
+
+	#wpcontent {
+		padding: 0;
+	}
+}
+
 .components-card {
 	margin: 2rem auto;
 	max-width: 520px;
@@ -19,61 +27,37 @@
 	}
 }
 
-.newspack-logo__wrapper {
-    height: 56px;
+.newspack-header {
+	align-items: center;
+	border-bottom: 1px solid #ddd;
+	display: flex;
+	flex-wrap: wrap;
+	height: 59px;
+	justify-content: space-between;
+	margin-bottom: 2.5rem;
+	padding: 0 24px 0 74px;
+
+	h2, p {
+		margin: 0;
+	}
 }
 
-.newspack-logo {
-	display: block;
-	fill: currentColor;
-	height: inherit;
-	padding: 0;
+.newspack-icon {
+	background: $primary-600;
+	left: 0;
+	padding: 14px;
+	position: absolute;
+	top: 46px;
+	z-index: 3;
 
-	&__wrapper {
-		background: $primary-500;
-		display: flex;
-		padding: 12px 0;
-		position: relative;
-
-		&::before {
-			background: $primary-500;
-			bottom: 0;
-			content: '';
-			display: block;
-			left: -20px;
-			position: absolute;
-			right: 0;
-			top: 0;
-			z-index: -1;
-		}
-
-		.components-button {
-			color: white;
-			display: block;
-			height: 32px;
-			padding: 0;
-			width: 100%;
-
-			&:focus,
-			&:hover {
-				box-shadow: none;
-				color: white;
-				outline: none;
-			}
-
-			&:focus {
-				svg {
-					outline: 1px solid white;
-					outline-offset: 4px;
-				}
-			}
-		}
+	@media screen and (min-width: 601px) {
+		top: 0;
 	}
 }
 
 .newspack-content-converter {
 	&__wrapper {
-		background: #f1f1f1;
+		background: white;
 		bottom: 0;
 		display: block;
 		flex-direction: column;
