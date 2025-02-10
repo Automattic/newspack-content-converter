@@ -9,7 +9,7 @@ This plugin is open source, and the creators can not be held responsible for any
 
 ### Convert HTML to Blocks
 
-The "Newspack Content Converter" > "Converter" submenu item in the Dashboard's main allows you to mass convert all your HTML posts to Gutenberg blocks.
+The "Content Converter" > "Converter" submenu item in the Dashboard's main allows you to mass convert all your HTML posts to Gutenberg blocks.
 
 Every time this screen is loaded, it will scan your existing posts and display the number of unconverted posts which can then be converted. All Posts which do not begin with block syntax `<!-- wp...` can be converted.
 
