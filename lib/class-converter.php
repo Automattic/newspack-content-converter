@@ -47,6 +47,7 @@ class Converter {
 		 */
 		$preconversion_filters = [
 			// Encode blocks as very first thing.
+			[ ContentPatcher\Patchers\SocialEmbedsPatcher::class, 'patch_html_source' ],
 			[ ContentPatcher\Patchers\BlockEncodePatcher::class, 'patch_html_source' ],
 			[ ContentPatcher\Patchers\WpFiltersPatcher::class, 'patch_html_source' ],
 			[ ContentPatcher\Patchers\ShortcodePreconversionPatcher::class, 'patch_html_source' ],
