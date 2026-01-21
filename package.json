@@ -17,7 +17,7 @@
   },
   "devDependencies": {
     "eslint": "^7.32.0",
-    "newspack-scripts": "^5.5.2",
+    "newspack-scripts": "^5.8.0",
     "prettier": "npm:wp-prettier@^2.6.2-beta-1"
   }
 }
